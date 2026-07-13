@@ -1,6 +1,6 @@
 # Detailed Implementation Plan
 
-Status: **In execution - Phase 2 approved, Phase 3 next**
+Status: **In execution - Phase 3 in progress**
 
 This plan implements `DATA_DICTIONARY.md` and `TARGET_ARCHITECTURE.md`. All
 tasks are governed by `PROJECT_RULES.md` and must include evidence from
@@ -21,6 +21,9 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
 - Phase 0 is approved in `docs/reviews/phase-0-baseline.md`.
 - Phase 1 is approved in `docs/reviews/phase-1-canonical-schema.md`.
 - Phase 2 is approved in `docs/reviews/phase-2-raw-staging-profile.md`.
+- Phase 3 has an initial executable ETL pass in
+  `docs/reviews/phase-3-canonical-etl-initial.md`, but the review gate remains
+  open pending stricter source-row reconciliation and transfer/run inference.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft
