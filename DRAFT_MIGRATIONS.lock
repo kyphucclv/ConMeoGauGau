@@ -1,0 +1,3 @@
+The target data contract is approved, but database migrations are not rebuilt yet.
+setup.ps1 must not run until this file is removed after schema verification.
+
