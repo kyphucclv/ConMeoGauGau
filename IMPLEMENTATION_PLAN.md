@@ -1,6 +1,6 @@
 # Detailed Implementation Plan
 
-Status: **In execution - Phase 1 approved, Phase 2 next**
+Status: **In execution - Phase 2 approved, Phase 3 next**
 
 This plan implements `DATA_DICTIONARY.md` and `TARGET_ARCHITECTURE.md`. All
 tasks are governed by `PROJECT_RULES.md` and must include evidence from
@@ -20,10 +20,13 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
 
 - Phase 0 is approved in `docs/reviews/phase-0-baseline.md`.
 - Phase 1 is approved in `docs/reviews/phase-1-canonical-schema.md`.
+- Phase 2 is approved in `docs/reviews/phase-2-raw-staging-profile.md`.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft
   migration chain.
+- `migrations/002_raw_staging_and_profile.sql` adds auditable raw workbook
+  staging and profiling metadata.
 - The working `english_class` database has not been migrated to v3.
 - Local PostgreSQL test access uses `%APPDATA%\postgresql\pgpass.conf` entries
   for `english_class`, `postgres`, and `english_class_p1_test`.
