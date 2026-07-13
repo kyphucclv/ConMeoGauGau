@@ -1,6 +1,6 @@
 # Detailed Implementation Plan
 
-Status: **In execution - Phase 3 in progress**
+Status: **In execution - Phase 3 approved, Phase 4 next**
 
 This plan implements `DATA_DICTIONARY.md` and `TARGET_ARCHITECTURE.md`. All
 tasks are governed by `PROJECT_RULES.md` and must include evidence from
@@ -34,6 +34,9 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
   `docs/reviews/phase-3-transfer-midrun-audit.json`; mid-run starts are loaded
   through `start_session_number`, and unresolved transfers are quarantined as
   `transfer_membership_unresolved`.
+- Phase 3 canonical ETL batch handling is implemented through
+  `migrations/004_canonical_etl_batches.sql`; forced failure tests confirm
+  rollback of canonical writes and failed-batch recording.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft

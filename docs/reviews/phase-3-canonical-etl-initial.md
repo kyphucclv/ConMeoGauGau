@@ -7,6 +7,7 @@
 - Date: 2026-07-13
 - Files changed:
   - `migrations/003_etl_source_row_outcomes.sql`
+  - `migrations/004_canonical_etl_batches.sql`
   - `scripts/canonical_etl_v3.py`
   - `scripts/audit_course_run_inference.py`
   - `scripts/audit_transfer_midrun.py`
@@ -20,6 +21,8 @@
 - Valid rows are loaded into canonical v3 tables.
 - Ambiguous rows are routed to `data_quality_issues` with source sheet and source row number.
 - Every core source row receives at least one `etl_source_row_outcomes` ledger entry.
+- Canonical ETL writes are wrapped in a canonical batch transaction with
+  `running`, `completed`, and `failed` states.
 - The working `english_class` database was not migrated or loaded.
 
 Row grain:
@@ -29,6 +32,8 @@ One run_enrollments row represents exactly one employee participating in one cou
 One attendance row represents exactly one enrollment result for one applicable session unit.
 One data_quality_issues row represents exactly one detected source-row problem requiring review.
 One etl_source_row_outcomes row represents exactly one loaded, issue, or ignored outcome for one raw source row.
+One canonical_etl_batches row represents exactly one canonical transform attempt
+against one completed staging import batch.
 ```
 
 ## Implementation summary
@@ -43,7 +48,8 @@ One etl_source_row_outcomes row represents exactly one loaded, issue, or ignored
 - evaluations: `evaluations`, `evaluation_versions`;
 - schedule/attendance: `meetings`, `session_units`, `attendance`;
 - issue queue: `data_quality_issues`;
-- reconciliation ledger: `etl_source_row_outcomes`.
+- reconciliation ledger: `etl_source_row_outcomes`;
+- canonical ETL batch state: `canonical_etl_batches`.
 
 The loader is conservative:
 
@@ -79,6 +85,9 @@ psql ... table counts
 psql ... issue counts
 python .\scripts\audit_course_run_inference.py .\okok_FIXED_v2.xlsx --output .\docs\reviews\phase-3-course-run-inference-audit.json
 python .\scripts\audit_transfer_midrun.py .\okok_FIXED_v2.xlsx --output .\docs\reviews\phase-3-transfer-midrun-audit.json
+python .\scripts\canonical_etl_v3.py ... --fail-after-step placements
+python .\scripts\canonical_etl_v3.py ...
+python .\scripts\canonical_etl_v3.py ...
 ```
 
 Important output from first ETL run:
@@ -98,6 +107,7 @@ issues.transfer_membership_unresolved: 143
 outcomes.loaded: 22031
 outcomes.issue: 994
 outcomes.ignored: 174
+canonical_etl_batch status: completed
 ```
 
 Important output from second ETL run:
@@ -114,6 +124,26 @@ issues.unmapped_pic_employee: 0
 outcomes.loaded: 0
 outcomes.issue: 0
 outcomes.ignored: 0
+canonical_etl result: already_completed
+```
+
+Forced failure test:
+
+```text
+python .\scripts\canonical_etl_v3.py ... --fail-after-step placements
+canonical_etl_batches: failed=1
+employees=0
+placements=0
+data_quality_issues=0
+etl_source_row_outcomes=0
+```
+
+Success after failure:
+
+```text
+canonical_etl_batches: completed=1, failed=1
+completed batch stats attendance.inserted=5458
+completed batch stats outcomes.issue=994
 ```
 
 Final table counts:
@@ -131,8 +161,9 @@ Final table counts:
 | `attendance` | 5458 |
 | `placements` | 316 |
 | `evaluations` | 326 |
-| `data_quality_issues` | 851 |
-| `etl_source_row_outcomes` | 23056 |
+| `data_quality_issues` | 994 |
+| `etl_source_row_outcomes` | 23199 |
+| `canonical_etl_batches` | 2 |
 
 Issue counts:
 
@@ -235,7 +266,7 @@ unmapped_pic_employee: PIC row 6, EL005, PIC="Duc Nguyen"
 
 ## Review gate
 
-Decision: **Changes required / Phase 3 remains in progress.**
+Decision: **Approved for Phase 4 planning/implementation with constraints.**
 
 What passed:
 
@@ -249,6 +280,8 @@ What passed:
 - [x] Possible run-boundary rows are quarantined instead of silently entering Run 1.
 - [x] Mid-run join candidates were audited and loaded with `start_session_number`.
 - [x] Multi-class employee histories are issue-routed instead of silently rewiring memberships.
+- [x] Failure-state batch transitions are implemented and tested around canonical writes.
+- [x] Forced mid-ETL failure rolls back canonical writes and records a failed batch.
 
 What is not yet approved:
 
@@ -256,15 +289,16 @@ What is not yet approved:
 - [x] Helper/header rows in `Placement` and trailing helper rows in `PIC` have an explicit loaded/issue/ignored outcome rule.
 - [x] Course-run inference has been reviewed against repeated-course evidence; unresolved candidates are issues.
 - [x] Transfer and mid-run join scenarios are traced; transfer boundaries remain issues pending human confirmation.
-- [ ] Failure-state batch transitions are not yet implemented around canonical writes.
+- [x] Failure-state batch transitions are implemented around canonical writes.
 
 Residual risks / deferred work:
 
-- The ETL is good enough as a first executable pass, but not yet a cutover-ready canonical import.
+- The ETL is approved for the next phase, but not yet a cutover-ready production import.
 - Issue rows can overlap canonical rows for partially loadable rows; the source-row outcome ledger now makes that overlap explicit for review.
+- `run_boundary_unresolved` and `transfer_membership_unresolved` issues require business review before cutover.
 - `DRAFT_MIGRATIONS.lock` remains in place.
 
 Reviewer decision:
 
-- [ ] Approved
-- [x] Changes required
+- [x] Approved
+- [ ] Changes required

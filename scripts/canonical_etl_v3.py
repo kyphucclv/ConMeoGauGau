@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import traceback
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -134,10 +135,15 @@ def detect_session_resets(rows: list[tuple[datetime, int]]) -> list[dict[str, An
 
 
 class CanonicalLoader:
-    def __init__(self, conn):
+    def __init__(self, conn, fail_after_step: str | None = None):
         self.conn = conn
         self.issues_seen: set[tuple[str, str, str | None, int | None, int | None]] = set()
         self.stats: Counter[str] = Counter()
+        self.fail_after_step = fail_after_step
+
+    def maybe_fail(self, step: str) -> None:
+        if self.fail_after_step == step:
+            raise RuntimeError(f"Forced failure after step: {step}")
 
     def outcome(
         self,
@@ -880,28 +886,153 @@ class CanonicalLoader:
 
     def run(self) -> Counter[str]:
         self.load_levels()
+        self.maybe_fail("levels")
         self.load_courses()
+        self.maybe_fail("courses")
         self.load_employees()
+        self.maybe_fail("employees")
         self.load_org_history()
+        self.maybe_fail("org_history")
         self.load_placements()
+        self.maybe_fail("placements")
         self.load_cohorts()
         self.mark_cohort_source_outcomes()
         self.load_pic_assignments()
+        self.maybe_fail("cohorts")
         self.load_course_runs()
         self.mark_course_run_source_outcomes()
+        self.maybe_fail("course_runs")
         self.load_memberships_and_enrollments()
+        self.maybe_fail("enrollments")
         self.load_schedule_and_attendance()
+        self.maybe_fail("attendance")
         return self.stats
+
+
+def get_staging_batch(conn) -> tuple[int, str]:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT import_batch_id, source_checksum
+            FROM import_batches
+            WHERE status = 'completed'
+            ORDER BY completed_at DESC, import_batch_id DESC
+            LIMIT 1
+            """
+        )
+        row = cur.fetchone()
+        if not row:
+            raise RuntimeError("No completed staging import batch found. Run stage_workbook.py first.")
+        return row[0], row[1]
+
+
+def completed_batch_stats(conn, source_checksum: str) -> dict[str, Any] | None:
+    with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(
+            """
+            SELECT canonical_etl_batch_id, stats
+            FROM canonical_etl_batches
+            WHERE source_checksum = %s AND status = 'completed'
+            ORDER BY completed_at DESC
+            LIMIT 1
+            """,
+            (source_checksum,),
+        )
+        row = cur.fetchone()
+        return dict(row) if row else None
+
+
+def create_running_batch(conn, import_batch_id: int, source_checksum: str) -> int:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO canonical_etl_batches (import_batch_id, source_checksum, status)
+            VALUES (%s, %s, 'running')
+            RETURNING canonical_etl_batch_id
+            """,
+            (import_batch_id, source_checksum),
+        )
+        return cur.fetchone()[0]
+
+
+def mark_batch_completed(conn, batch_id: int, stats: Counter[str]) -> None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE canonical_etl_batches
+            SET status = 'completed',
+                stats = %s,
+                completed_at = NOW()
+            WHERE canonical_etl_batch_id = %s
+            """,
+            (psycopg2.extras.Json(dict(sorted(stats.items()))), batch_id),
+        )
+
+
+def record_failed_batch(database_url: str, import_batch_id: int, source_checksum: str, error: BaseException) -> None:
+    details = {
+        "error_type": type(error).__name__,
+        "message": str(error),
+        "traceback": traceback.format_exc(limit=12),
+    }
+    with psycopg2.connect(database_url) as failure_conn:
+        with failure_conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO canonical_etl_batches (
+                    import_batch_id, source_checksum, status, failure_details, failed_at
+                )
+                VALUES (%s, %s, 'failed', %s, NOW())
+                """,
+                (import_batch_id, source_checksum, psycopg2.extras.Json(details)),
+            )
+
+
+def run_canonical_etl(database_url: str, fail_after_step: str | None = None, force: bool = False) -> dict[str, Any]:
+    with psycopg2.connect(database_url) as conn:
+        import_batch_id, source_checksum = get_staging_batch(conn)
+        existing = completed_batch_stats(conn, source_checksum)
+        if existing and not force and not fail_after_step:
+            return {
+                "status": "already_completed",
+                "canonical_etl_batch_id": existing["canonical_etl_batch_id"],
+                "stats": existing["stats"],
+            }
+
+    try:
+        with psycopg2.connect(database_url) as conn:
+            batch_id = create_running_batch(conn, import_batch_id, source_checksum)
+            loader = CanonicalLoader(conn, fail_after_step=fail_after_step)
+            stats = loader.run()
+            mark_batch_completed(conn, batch_id, stats)
+            return {
+                "status": "completed",
+                "canonical_etl_batch_id": batch_id,
+                "stats": dict(sorted(stats.items())),
+            }
+    except BaseException as error:
+        record_failed_batch(database_url, import_batch_id, source_checksum, error)
+        raise
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("database_url")
+    parser.add_argument("--force", action="store_true", help="Run again even if this checksum already has a completed canonical ETL batch.")
+    parser.add_argument("--fail-after-step", choices=[
+        "levels",
+        "courses",
+        "employees",
+        "org_history",
+        "placements",
+        "cohorts",
+        "course_runs",
+        "enrollments",
+        "attendance",
+    ])
     args = parser.parse_args()
-    with psycopg2.connect(args.database_url) as conn:
-        loader = CanonicalLoader(conn)
-        stats = loader.run()
-    print(json.dumps(dict(sorted(stats.items())), indent=2, ensure_ascii=False))
+    result = run_canonical_etl(args.database_url, fail_after_step=args.fail_after_step, force=args.force)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
