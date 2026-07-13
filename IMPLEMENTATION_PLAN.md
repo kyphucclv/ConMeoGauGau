@@ -24,6 +24,10 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
 - Phase 3 has an initial executable ETL pass in
   `docs/reviews/phase-3-canonical-etl-initial.md`, but the review gate remains
   open pending stricter source-row reconciliation and transfer/run inference.
+- Phase 3 source-row outcome coverage now passes for the core workbook sheets
+  through `migrations/003_etl_source_row_outcomes.sql`; the gate remains open
+  for course-run inference, transfer/mid-run tracing, and failure-state
+  handling.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft

@@ -115,6 +115,55 @@ class CanonicalLoader:
         self.issues_seen: set[tuple[str, str, str | None, int | None, int | None]] = set()
         self.stats: Counter[str] = Counter()
 
+    def outcome(
+        self,
+        row: RawRow,
+        outcome_type: str,
+        outcome_code: str,
+        target_entity: str | None = None,
+        target_key: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO etl_source_row_outcomes (
+                    import_batch_id, raw_row_id, source_sheet, source_row_number,
+                    outcome_type, outcome_code, target_entity, target_key, details
+                )
+                SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM etl_source_row_outcomes
+                    WHERE raw_row_id = %s
+                      AND outcome_type = %s
+                      AND outcome_code = %s
+                      AND COALESCE(target_entity, '') = COALESCE(%s, '')
+                      AND COALESCE(target_key, '') = COALESCE(%s, '')
+                )
+                """,
+                (
+                    row.import_batch_id,
+                    row.raw_row_id,
+                    row.sheet_name,
+                    row.source_row_number,
+                    outcome_type,
+                    outcome_code,
+                    target_entity,
+                    target_key,
+                    psycopg2.extras.Json(details or {}),
+                    row.raw_row_id,
+                    outcome_type,
+                    outcome_code,
+                    target_entity,
+                    target_key,
+                ),
+            )
+            self.stats[f"outcomes.{outcome_type}"] += cur.rowcount
+
+    def ignored(self, row: RawRow, code: str, details: dict[str, Any] | None = None) -> None:
+        self.outcome(row, "ignored", code, None, None, details)
+
     def rows(self, sheet_name: str) -> list[RawRow]:
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
@@ -180,6 +229,7 @@ class CanonicalLoader:
                 ),
             )
             self.stats[f"issues.{code}"] += cur.rowcount
+        self.outcome(row, "issue", code, entity_type, entity_key, details)
 
     def scalar_id(self, sql: str, params: tuple[Any, ...]) -> int | None:
         with self.conn.cursor() as cur:
@@ -205,6 +255,7 @@ class CanonicalLoader:
                     """,
                     (name, numeric, sequence),
                 )
+            self.outcome(row, "loaded", "level_loaded", "levels", name)
             self.stats["levels.upserted"] += 1
             sequence += 1
 
@@ -225,6 +276,7 @@ class CanonicalLoader:
                     """,
                     (code, name, expected),
                 )
+            self.outcome(row, "loaded", "course_loaded", "courses", name)
             self.stats["courses.upserted"] += 1
 
     def employee_id(self, emp_code: str) -> int | None:
@@ -257,18 +309,37 @@ class CanonicalLoader:
                 self.issue(row, "missing_emp_code", "employee", None, {"sheet": "STUDENTS"})
                 continue
             self.ensure_employee(emp_code, full_name)
+            self.outcome(row, "loaded", "employee_loaded", "employees", emp_code)
 
         for row in self.rows("PIC"):
             emp_code = clean_emp_code(row.values.get("EMP Code"))
             full_name = clean_text(row.values.get("PIC"))
             if emp_code:
                 self.ensure_employee(emp_code, full_name, clean_text(row.values.get("Mail")), clean_text(row.values.get("English name")))
+                self.outcome(row, "loaded", "pic_employee_loaded", "employees", emp_code)
+            else:
+                class_code = clean_code(row.values.get("Class Code"))
+                pic_name = clean_text(row.values.get("PIC"))
+                if not class_code and not pic_name:
+                    self.ignored(row, "pic_helper_or_trailing_row")
 
         for row in self.rows("Placement"):
             emp_code = clean_emp_code(row.values.get("Emp. Code"))
             full_name = clean_text(row.values.get("Full name"))
             if emp_code:
                 self.ensure_employee(emp_code, full_name)
+                self.outcome(row, "loaded", "placement_employee_loaded", "employees", emp_code)
+            else:
+                marker_values = [
+                    clean_text(row.values.get("Emp. Code")),
+                    clean_text(row.values.get("Full name")),
+                    clean_text(row.values.get("Entrance Test date")),
+                    clean_text(row.values.get("1st session:")),
+                ]
+                if any(marker_values):
+                    self.ignored(row, "placement_header_or_helper_row", {"markers": marker_values})
+                else:
+                    self.ignored(row, "placement_blank_helper_row")
 
     def ensure_named_ref(self, table: str, column: str, value: str | None) -> int | None:
         if not value:
@@ -310,6 +381,7 @@ class CanonicalLoader:
                     """,
                     (employee_id, bu_id, role_id),
                 )
+            self.outcome(row, "loaded", "org_history_loaded", "employee_org_history", emp_code)
             seen.add(emp_code)
             self.stats["org_history.inserted"] += 1
 
@@ -369,6 +441,7 @@ class CanonicalLoader:
                         psycopg2.extras.Json({"sheet": row.sheet_name, "row": row.source_row_number}),
                     ),
                 )
+            self.outcome(row, "loaded", "placement_loaded", "placements", emp_code)
             self.stats["placements.inserted"] += 1
 
     def load_cohorts(self) -> None:
@@ -390,6 +463,13 @@ class CanonicalLoader:
                 )
             self.stats["cohorts.inserted"] += 1
 
+    def mark_cohort_source_outcomes(self) -> None:
+        for sheet, field in [("PIC", "Class Code"), ("CLASS_DATES", "Class Code"), ("sheet2", "Class Code"), ("ATTENDANCE_LOG", "Class Code")]:
+            for row in self.rows(sheet):
+                class_code = clean_code(row.values.get(field))
+                if class_code and self.cohort_id(class_code):
+                    self.outcome(row, "loaded", "cohort_resolved", "cohorts", class_code)
+
     def load_pic_assignments(self) -> None:
         for row in self.rows("PIC"):
             class_code = clean_code(row.values.get("Class Code"))
@@ -397,6 +477,9 @@ class CanonicalLoader:
             cohort_id = self.cohort_id(class_code)
             pic_employee_id = self.employee_id(emp_code) if emp_code else None
             if not class_code or not cohort_id:
+                if not class_code and not emp_code and not clean_text(row.values.get("PIC")):
+                    self.ignored(row, "pic_helper_or_trailing_row")
+                    continue
                 self.issue(row, "missing_class_code", "cohort_pic_assignment", class_code, {"class_code": class_code})
                 continue
             if not pic_employee_id:
@@ -411,6 +494,7 @@ class CanonicalLoader:
                     """,
                     (cohort_id, pic_employee_id),
                 )
+            self.outcome(row, "loaded", "pic_assignment_loaded", "cohort_pic_assignments", class_code)
             self.stats["pic_assignments.inserted"] += 1
 
     def load_course_runs(self) -> None:
@@ -441,6 +525,20 @@ class CanonicalLoader:
                     (cohort_id, course_id),
                 )
             self.stats["course_runs.inserted"] += 1
+
+    def mark_course_run_source_outcomes(self) -> None:
+        for sheet in ("CLASS_DATES", "sheet2", "ATTENDANCE_LOG"):
+            for row in self.rows(sheet):
+                class_code = clean_code(row.values.get("Class Code"))
+                course_name = clean_text(row.values.get("Course Name"))
+                if class_code and course_name and self.course_run_id(class_code, course_name):
+                    self.outcome(
+                        row,
+                        "loaded",
+                        "course_run_resolved",
+                        "course_runs",
+                        f"{class_code}:{course_name}:1",
+                    )
 
     def course_run_id(self, class_code: str | None, course_name: str | None) -> int | None:
         if not class_code or not course_name:
@@ -492,6 +590,7 @@ class CanonicalLoader:
                     """,
                     (cohort_id, employee_id, joined_at),
                 )
+            self.outcome(row, "loaded", "cohort_membership_resolved", "cohort_memberships", f"{emp_code}:{class_code}")
             membership_id = self.membership_id(employee_id, cohort_id)
             bu_id = self.ensure_named_ref("business_units", "business_unit_name", clean_text(row.values.get("BU")))
             role_id = self.ensure_named_ref("job_roles", "job_role_name", clean_text(row.values.get("Role")))
@@ -511,6 +610,7 @@ class CanonicalLoader:
                 inserted = cur.fetchone()
             if inserted:
                 self.stats["run_enrollments.inserted"] += 1
+            self.outcome(row, "loaded", "run_enrollment_loaded", "run_enrollments", f"{emp_code}:{class_code}:{course_name}")
             self.load_evaluation(row, course_run_id, employee_id)
 
     def run_enrollment_id(self, class_code: str | None, course_name: str | None, emp_code: str | None) -> int | None:
@@ -563,6 +663,7 @@ class CanonicalLoader:
                 """,
                 (evaluation_id, final_level_id),
             )
+        self.outcome(row, "loaded", "evaluation_loaded", "evaluations", emp_code)
         self.stats["evaluations.upserted"] += 1
 
     def load_schedule_and_attendance(self) -> None:
@@ -695,6 +796,7 @@ class CanonicalLoader:
                     ),
                 )
                 self.stats["attendance.inserted"] += cur.rowcount
+            self.outcome(row, "loaded", "attendance_loaded", "attendance", entity_key)
 
     def run(self) -> Counter[str]:
         self.load_levels()
@@ -703,8 +805,10 @@ class CanonicalLoader:
         self.load_org_history()
         self.load_placements()
         self.load_cohorts()
+        self.mark_cohort_source_outcomes()
         self.load_pic_assignments()
         self.load_course_runs()
+        self.mark_course_run_source_outcomes()
         self.load_memberships_and_enrollments()
         self.load_schedule_and_attendance()
         return self.stats
