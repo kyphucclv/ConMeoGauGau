@@ -1,0 +1,3681 @@
+{
+  "workbook": "okok_FIXED_v2.xlsx",
+  "pair_count": 84,
+  "cohorts_with_many_courses": {
+    "EL001": 3,
+    "EL004": 2,
+    "EL007": 2,
+    "EL008": 3,
+    "EL009": 2,
+    "EL010": 2,
+    "EL013": 3,
+    "EL015": 2,
+    "EL018": 2,
+    "EL020": 2,
+    "EL022": 3,
+    "EL024": 3,
+    "EL025": 2,
+    "EL026": 2,
+    "EL027": 3,
+    "EL032": 2,
+    "EL033": 2,
+    "EL034": 3,
+    "EL035": 3,
+    "EL037": 3,
+    "EL038": 2,
+    "EL040": 2,
+    "EL042": 2,
+    "EL050": 2
+  },
+  "repeated_run_candidate_count": 5,
+  "repeated_run_candidates": [
+    {
+      "class_code": "EL004",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2024-12-13"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 9,
+      "date_min": "2024-12-13T14:00:00",
+      "date_max": "2025-06-12T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "3": 2,
+        "5": 2,
+        "7": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-08T09:00:00",
+          "2025-01-15T10:00:00"
+        ],
+        "3": [
+          "2025-01-22T10:00:00",
+          "2025-02-14T14:00:00"
+        ],
+        "5": [
+          "2025-02-14T14:00:00",
+          "2025-02-28T09:00:00"
+        ],
+        "7": [
+          "2025-02-28T09:00:00",
+          "2025-04-22T09:00:00"
+        ],
+        "8": [
+          "2025-04-17T09:00:00",
+          "2025-05-08T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-02-21T09:00:00",
+          "session_order": 4,
+          "previous_date": "2025-02-14T14:00:00",
+          "previous_session_order": 5
+        },
+        {
+          "date": "2025-04-17T09:00:00",
+          "session_order": 6,
+          "previous_date": "2025-02-28T09:00:00",
+          "previous_session_order": 7
+        },
+        {
+          "date": "2025-04-22T09:00:00",
+          "session_order": 7,
+          "previous_date": "2025-04-17T09:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL007",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-07-03"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-07-03T14:00:00",
+      "date_max": "2026-03-02T11:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 7,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2
+      },
+      "conflicting_session_count": 7,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-07-03T14:00:00",
+          "2025-08-21T10:00:00"
+        ],
+        "2": [
+          "2025-07-15T10:00:00",
+          "2025-08-28T10:00:00"
+        ],
+        "3": [
+          "2025-08-13T15:00:00",
+          "2025-09-04T10:00:00"
+        ],
+        "4": [
+          "2025-08-20T15:00:00",
+          "2025-09-11T10:00:00"
+        ],
+        "5": [
+          "2025-09-17T15:00:00",
+          "2025-09-25T10:00:00"
+        ],
+        "6": [
+          "2025-09-24T15:00:00",
+          "2025-10-09T10:00:00"
+        ],
+        "7": [
+          "2025-10-01T15:00:00",
+          "2025-10-16T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-08-21T10:00:00",
+          "session_order": 1,
+          "previous_date": "2025-08-20T15:00:00",
+          "previous_session_order": 4
+        },
+        {
+          "date": "2025-09-25T10:00:00",
+          "session_order": 5,
+          "previous_date": "2025-09-24T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2025-10-09T10:00:00",
+          "session_order": 6,
+          "previous_date": "2025-10-01T15:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    },
+    {
+      "class_code": "EL026",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-08-26"
+      ],
+      "attendance_rows": 77,
+      "distinct_learners": 7,
+      "date_min": "2025-08-26T14:00:00",
+      "date_max": "2025-12-22T14:00:00",
+      "session_min": 1,
+      "session_max": 11,
+      "distinct_session_orders": 11,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "4": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "4": [
+          "2025-09-23T15:00:00",
+          "2025-10-23T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-10-23T15:00:00",
+          "session_order": 4,
+          "previous_date": "2025-09-30T15:00:00",
+          "previous_session_order": 5
+        }
+      ]
+    },
+    {
+      "class_code": "EL030",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2024-12-20"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2024-12-20T10:00:00",
+      "date_max": "2025-07-15T11:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "5": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-06T11:00:00",
+          "2025-01-09T11:00:00"
+        ],
+        "5": [
+          "2025-04-14T13:00:00",
+          "2025-04-15T10:00:00"
+        ],
+        "8": [
+          "2025-06-09T10:00:00",
+          "2025-06-23T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-06-09T14:00:00",
+          "session_order": 7,
+          "previous_date": "2025-06-09T10:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL046",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-04"
+      ],
+      "attendance_rows": 110,
+      "distinct_learners": 7,
+      "date_min": "2026-03-04T14:00:00",
+      "date_max": "2026-07-09T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "14": 2,
+        "15": 2,
+        "16": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "3": [
+          "2026-03-18T14:00:00",
+          "2026-04-15T11:00:00"
+        ],
+        "4": [
+          "2026-03-27T10:00:00",
+          "2026-04-22T11:00:00"
+        ],
+        "14": [
+          "2026-06-25T10:00:00",
+          "2026-06-25T11:00:00"
+        ],
+        "15": [
+          "2026-07-02T10:00:00",
+          "2026-07-02T14:00:00"
+        ],
+        "16": [
+          "2026-07-09T10:00:00",
+          "2026-07-09T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 2,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2026-04-15T11:00:00",
+          "session_order": 3,
+          "previous_date": "2026-04-09T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2026-04-22T11:00:00",
+          "session_order": 4,
+          "previous_date": "2026-04-17T10:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    }
+  ],
+  "ambiguous_pair_count": 22,
+  "ambiguous_pairs": [
+    {
+      "class_code": "EL002",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-02-27"
+      ],
+      "attendance_rows": 80,
+      "distinct_learners": 8,
+      "date_min": "2025-02-27T10:00:00",
+      "date_max": "2025-10-24T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-02-27T10:00:00",
+          "2025-02-27T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL003",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-02-27"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-02-27T11:00:00",
+      "date_max": "2025-08-13T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "6": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "6": [
+          "2025-06-05T14:00:00",
+          "2025-06-05T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL004",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2024-12-13"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 9,
+      "date_min": "2024-12-13T14:00:00",
+      "date_max": "2025-06-12T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "3": 2,
+        "5": 2,
+        "7": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-08T09:00:00",
+          "2025-01-15T10:00:00"
+        ],
+        "3": [
+          "2025-01-22T10:00:00",
+          "2025-02-14T14:00:00"
+        ],
+        "5": [
+          "2025-02-14T14:00:00",
+          "2025-02-28T09:00:00"
+        ],
+        "7": [
+          "2025-02-28T09:00:00",
+          "2025-04-22T09:00:00"
+        ],
+        "8": [
+          "2025-04-17T09:00:00",
+          "2025-05-08T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-02-21T09:00:00",
+          "session_order": 4,
+          "previous_date": "2025-02-14T14:00:00",
+          "previous_session_order": 5
+        },
+        {
+          "date": "2025-04-17T09:00:00",
+          "session_order": 6,
+          "previous_date": "2025-02-28T09:00:00",
+          "previous_session_order": 7
+        },
+        {
+          "date": "2025-04-22T09:00:00",
+          "session_order": 7,
+          "previous_date": "2025-04-17T09:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL005",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-11"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-11T10:00:00",
+      "date_max": "2025-07-01T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-11T10:00:00",
+          "2024-12-13T15:00:00"
+        ],
+        "2": [
+          "2024-12-23T11:00:00",
+          "2024-12-30T11:00:00"
+        ],
+        "8": [
+          "2025-05-05T13:00:00",
+          "2025-05-05T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL007",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-07-03"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-07-03T14:00:00",
+      "date_max": "2026-03-02T11:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 7,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2
+      },
+      "conflicting_session_count": 7,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-07-03T14:00:00",
+          "2025-08-21T10:00:00"
+        ],
+        "2": [
+          "2025-07-15T10:00:00",
+          "2025-08-28T10:00:00"
+        ],
+        "3": [
+          "2025-08-13T15:00:00",
+          "2025-09-04T10:00:00"
+        ],
+        "4": [
+          "2025-08-20T15:00:00",
+          "2025-09-11T10:00:00"
+        ],
+        "5": [
+          "2025-09-17T15:00:00",
+          "2025-09-25T10:00:00"
+        ],
+        "6": [
+          "2025-09-24T15:00:00",
+          "2025-10-09T10:00:00"
+        ],
+        "7": [
+          "2025-10-01T15:00:00",
+          "2025-10-16T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-08-21T10:00:00",
+          "session_order": 1,
+          "previous_date": "2025-08-20T15:00:00",
+          "previous_session_order": 4
+        },
+        {
+          "date": "2025-09-25T10:00:00",
+          "session_order": 5,
+          "previous_date": "2025-09-24T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2025-10-09T10:00:00",
+          "session_order": 6,
+          "previous_date": "2025-10-01T15:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    },
+    {
+      "class_code": "EL008",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-04-25"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-04-25T14:00:00",
+      "date_max": "2025-09-18T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "5": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "5": [
+          "2025-07-11T11:00:00",
+          "2025-07-17T13:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL012",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2024-12-20"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2024-12-20T09:00:00",
+      "date_max": "2025-05-14T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "3": [
+          "2025-01-16T09:00:00",
+          "2025-01-16T10:00:00"
+        ],
+        "4": [
+          "2025-01-23T09:00:00",
+          "2025-01-23T10:00:00"
+        ],
+        "5": [
+          "2025-02-06T09:00:00",
+          "2025-02-12T14:00:00"
+        ],
+        "6": [
+          "2025-02-13T09:00:00",
+          "2025-02-19T14:00:00"
+        ],
+        "7": [
+          "2025-02-20T09:00:00",
+          "2025-02-26T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL013",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-10"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-10T11:00:00",
+      "date_max": "2025-05-29T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 2,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 3,
+        "2": 2
+      },
+      "conflicting_session_count": 2,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-10T11:00:00",
+          "2024-12-11T09:00:00",
+          "2024-12-13T09:00:00"
+        ],
+        "2": [
+          "2024-12-19T09:00:00",
+          "2024-12-27T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL013",
+      "course_name": "Communication 3",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-13"
+      ],
+      "attendance_rows": 48,
+      "distinct_learners": 6,
+      "date_min": "2026-03-13T11:00:00",
+      "date_max": "2026-07-08T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 9,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "7": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "7": [
+          "2026-05-26T14:00:00",
+          "2026-05-26T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL014",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-09"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-09T10:30:00",
+      "date_max": "2025-05-24T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 4,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "6": 2,
+        "7": 2,
+        "9": 2
+      },
+      "conflicting_session_count": 4,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-09T10:30:00",
+          "2024-12-11T09:00:00"
+        ],
+        "6": [
+          "2025-02-04T10:00:00",
+          "2025-02-11T09:00:00"
+        ],
+        "7": [
+          "2025-02-11T09:00:00",
+          "2025-02-11T11:00:00"
+        ],
+        "9": [
+          "2025-02-18T13:00:00",
+          "2025-02-25T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL015",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-11"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-11T09:00:00",
+      "date_max": "2025-05-24T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 4,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
+      },
+      "conflicting_session_count": 4,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-11T09:00:00",
+          "2024-12-18T11:00:00"
+        ],
+        "4": [
+          "2025-01-14T11:00:00",
+          "2025-01-15T11:00:00"
+        ],
+        "5": [
+          "2025-01-21T11:00:00",
+          "2025-01-22T11:00:00"
+        ],
+        "6": [
+          "2025-02-04T10:00:00",
+          "2025-02-06T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL020",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2024-12-12"
+      ],
+      "attendance_rows": 79,
+      "distinct_learners": 8,
+      "date_min": "2024-12-12T10:00:00",
+      "date_max": "2025-05-30T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "5": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "3": [
+          "2024-12-30T10:00:00",
+          "2025-01-09T10:00:00"
+        ],
+        "4": [
+          "2025-01-13T10:00:00",
+          "2025-01-21T10:00:00"
+        ],
+        "5": [
+          "2025-02-06T10:00:00",
+          "2025-02-13T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL026",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-08-26"
+      ],
+      "attendance_rows": 77,
+      "distinct_learners": 7,
+      "date_min": "2025-08-26T14:00:00",
+      "date_max": "2025-12-22T14:00:00",
+      "session_min": 1,
+      "session_max": 11,
+      "distinct_session_orders": 11,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "4": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "4": [
+          "2025-09-23T15:00:00",
+          "2025-10-23T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-10-23T15:00:00",
+          "session_order": 4,
+          "previous_date": "2025-09-30T15:00:00",
+          "previous_session_order": 5
+        }
+      ]
+    },
+    {
+      "class_code": "EL029",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-19"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-19T11:00:00",
+      "date_max": "2025-07-21T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 2,
+      "session_orders_with_multiple_dates_examples": {
+        "8": 2,
+        "9": 2
+      },
+      "conflicting_session_count": 2,
+      "conflicting_session_examples": {
+        "8": [
+          "2025-06-09T10:00:00",
+          "2025-06-09T14:00:00"
+        ],
+        "9": [
+          "2025-06-23T10:00:00",
+          "2025-06-23T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL030",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2024-12-20"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2024-12-20T10:00:00",
+      "date_max": "2025-07-15T11:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "5": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-06T11:00:00",
+          "2025-01-09T11:00:00"
+        ],
+        "5": [
+          "2025-04-14T13:00:00",
+          "2025-04-15T10:00:00"
+        ],
+        "8": [
+          "2025-06-09T10:00:00",
+          "2025-06-23T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-06-09T14:00:00",
+          "session_order": 7,
+          "previous_date": "2025-06-09T10:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL033",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-08-13"
+      ],
+      "attendance_rows": 144,
+      "distinct_learners": 9,
+      "date_min": "2025-08-13T10:00:00",
+      "date_max": "2026-03-25T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-08-13T10:00:00",
+          "2025-08-13T14:00:00"
+        ],
+        "2": [
+          "2025-08-20T10:00:00",
+          "2025-08-20T13:00:00"
+        ],
+        "3": [
+          "2025-08-26T13:00:00",
+          "2025-08-27T10:00:00"
+        ],
+        "4": [
+          "2025-09-03T10:00:00",
+          "2025-09-03T13:00:00"
+        ],
+        "5": [
+          "2025-09-10T10:00:00",
+          "2025-09-10T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL035",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-04-17"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2025-04-17T11:00:00",
+      "date_max": "2025-07-30T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 3
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-04-17T11:00:00",
+          "2025-04-18T10:00:00",
+          "2025-04-25T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-09-30"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-09-30T10:00:00",
+      "date_max": "2025-12-09T15:00:00",
+      "session_min": 2,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "5": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "5": [
+          "2025-10-09T13:00:00",
+          "2025-10-09T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-08-13"
+      ],
+      "attendance_rows": 46,
+      "distinct_learners": 8,
+      "date_min": "2025-08-13T13:00:00",
+      "date_max": "2025-10-29T10:00:00",
+      "session_min": 5,
+      "session_max": 10,
+      "distinct_session_orders": 6,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "8": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "8": [
+          "2025-09-10T14:00:00",
+          "2025-09-10T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL046",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-04"
+      ],
+      "attendance_rows": 110,
+      "distinct_learners": 7,
+      "date_min": "2026-03-04T14:00:00",
+      "date_max": "2026-07-09T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "14": 2,
+        "15": 2,
+        "16": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "3": [
+          "2026-03-18T14:00:00",
+          "2026-04-15T11:00:00"
+        ],
+        "4": [
+          "2026-03-27T10:00:00",
+          "2026-04-22T11:00:00"
+        ],
+        "14": [
+          "2026-06-25T10:00:00",
+          "2026-06-25T11:00:00"
+        ],
+        "15": [
+          "2026-07-02T10:00:00",
+          "2026-07-02T14:00:00"
+        ],
+        "16": [
+          "2026-07-09T10:00:00",
+          "2026-07-09T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 2,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2026-04-15T11:00:00",
+          "session_order": 3,
+          "previous_date": "2026-04-09T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2026-04-22T11:00:00",
+          "session_order": 4,
+          "previous_date": "2026-04-17T10:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    },
+    {
+      "class_code": "EL047",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-04"
+      ],
+      "attendance_rows": 92,
+      "distinct_learners": 6,
+      "date_min": "2026-03-04T15:00:00",
+      "date_max": "2026-07-09T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "12": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "12": [
+          "2026-05-27T13:00:00",
+          "2026-05-27T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL049",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 10,
+      "enrollment_start_dates": [
+        "2026-03-05"
+      ],
+      "attendance_rows": 147,
+      "distinct_learners": 10,
+      "date_min": "2026-03-05T14:00:00",
+      "date_max": "2026-07-08T11:00:00",
+      "session_min": 1,
+      "session_max": 15,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2026-03-05T14:00:00",
+          "2026-03-06T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    }
+  ],
+  "pair_summaries": [
+    {
+      "class_code": "EL001",
+      "course_name": "Business English",
+      "class_dates_count": 1,
+      "enrollment_rows": 3,
+      "enrollment_start_dates": [
+        "2026-03-03"
+      ],
+      "attendance_rows": 42,
+      "distinct_learners": 3,
+      "date_min": "2026-03-03T13:00:00",
+      "date_max": "2026-07-08T14:00:00",
+      "session_min": 1,
+      "session_max": 14,
+      "distinct_session_orders": 14,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL001",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-02-12"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2025-02-12T10:00:00",
+      "date_max": "2025-07-29T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL001",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-08-20"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 6,
+      "date_min": "2025-08-20T11:00:00",
+      "date_max": "2026-01-20T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL002",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-02-27"
+      ],
+      "attendance_rows": 80,
+      "distinct_learners": 8,
+      "date_min": "2025-02-27T10:00:00",
+      "date_max": "2025-10-24T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-02-27T10:00:00",
+          "2025-02-27T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL003",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-02-27"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-02-27T11:00:00",
+      "date_max": "2025-08-13T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "6": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "6": [
+          "2025-06-05T14:00:00",
+          "2025-06-05T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL004",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2024-12-13"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 9,
+      "date_min": "2024-12-13T14:00:00",
+      "date_max": "2025-06-12T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "3": 2,
+        "5": 2,
+        "7": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-08T09:00:00",
+          "2025-01-15T10:00:00"
+        ],
+        "3": [
+          "2025-01-22T10:00:00",
+          "2025-02-14T14:00:00"
+        ],
+        "5": [
+          "2025-02-14T14:00:00",
+          "2025-02-28T09:00:00"
+        ],
+        "7": [
+          "2025-02-28T09:00:00",
+          "2025-04-22T09:00:00"
+        ],
+        "8": [
+          "2025-04-17T09:00:00",
+          "2025-05-08T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-02-21T09:00:00",
+          "session_order": 4,
+          "previous_date": "2025-02-14T14:00:00",
+          "previous_session_order": 5
+        },
+        {
+          "date": "2025-04-17T09:00:00",
+          "session_order": 6,
+          "previous_date": "2025-02-28T09:00:00",
+          "previous_session_order": 7
+        },
+        {
+          "date": "2025-04-22T09:00:00",
+          "session_order": 7,
+          "previous_date": "2025-04-17T09:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL004",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-07-31"
+      ],
+      "attendance_rows": 144,
+      "distinct_learners": 9,
+      "date_min": "2025-07-31T14:00:00",
+      "date_max": "2026-03-03T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL005",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-11"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-11T10:00:00",
+      "date_max": "2025-07-01T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-11T10:00:00",
+          "2024-12-13T15:00:00"
+        ],
+        "2": [
+          "2024-12-23T11:00:00",
+          "2024-12-30T11:00:00"
+        ],
+        "8": [
+          "2025-05-05T13:00:00",
+          "2025-05-05T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL006",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2024-12-13"
+      ],
+      "attendance_rows": 40,
+      "distinct_learners": 4,
+      "date_min": "2024-12-13T10:00:00",
+      "date_max": "2025-05-30T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL007",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-02-14"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 5,
+      "date_min": "2025-02-14T11:00:00",
+      "date_max": "2025-07-03T10:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL007",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-07-03"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-07-03T14:00:00",
+      "date_max": "2026-03-02T11:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 7,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2
+      },
+      "conflicting_session_count": 7,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-07-03T14:00:00",
+          "2025-08-21T10:00:00"
+        ],
+        "2": [
+          "2025-07-15T10:00:00",
+          "2025-08-28T10:00:00"
+        ],
+        "3": [
+          "2025-08-13T15:00:00",
+          "2025-09-04T10:00:00"
+        ],
+        "4": [
+          "2025-08-20T15:00:00",
+          "2025-09-11T10:00:00"
+        ],
+        "5": [
+          "2025-09-17T15:00:00",
+          "2025-09-25T10:00:00"
+        ],
+        "6": [
+          "2025-09-24T15:00:00",
+          "2025-10-09T10:00:00"
+        ],
+        "7": [
+          "2025-10-01T15:00:00",
+          "2025-10-16T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 3,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-08-21T10:00:00",
+          "session_order": 1,
+          "previous_date": "2025-08-20T15:00:00",
+          "previous_session_order": 4
+        },
+        {
+          "date": "2025-09-25T10:00:00",
+          "session_order": 5,
+          "previous_date": "2025-09-24T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2025-10-09T10:00:00",
+          "session_order": 6,
+          "previous_date": "2025-10-01T15:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    },
+    {
+      "class_code": "EL008",
+      "course_name": "Business English",
+      "class_dates_count": 0,
+      "enrollment_rows": 0,
+      "enrollment_start_dates": [],
+      "attendance_rows": 38,
+      "distinct_learners": 5,
+      "date_min": "2026-05-21T10:00:00",
+      "date_max": "2026-07-09T11:00:00",
+      "session_min": 2,
+      "session_max": 9,
+      "distinct_session_orders": 8,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL008",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-04-25"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-04-25T14:00:00",
+      "date_max": "2025-09-18T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "5": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "5": [
+          "2025-07-11T11:00:00",
+          "2025-07-17T13:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL008",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-10-16"
+      ],
+      "attendance_rows": 79,
+      "distinct_learners": 5,
+      "date_min": "2025-10-16T11:00:00",
+      "date_max": "2026-03-23T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL009",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-01-06"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2025-01-06T14:00:00",
+      "date_max": "2025-07-14T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL009",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-09-15"
+      ],
+      "attendance_rows": 144,
+      "distinct_learners": 9,
+      "date_min": "2025-09-15T13:00:00",
+      "date_max": "2026-04-03T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL010",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-18"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-18T09:00:00",
+      "date_max": "2025-05-22T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL010",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-07-15"
+      ],
+      "attendance_rows": 32,
+      "distinct_learners": 8,
+      "date_min": "2025-07-15T09:00:00",
+      "date_max": "2025-08-26T11:00:00",
+      "session_min": 1,
+      "session_max": 4,
+      "distinct_session_orders": 4,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL011",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-18"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-18T09:00:00",
+      "date_max": "2025-05-22T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL012",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2024-12-20"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2024-12-20T09:00:00",
+      "date_max": "2025-05-14T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "3": [
+          "2025-01-16T09:00:00",
+          "2025-01-16T10:00:00"
+        ],
+        "4": [
+          "2025-01-23T09:00:00",
+          "2025-01-23T10:00:00"
+        ],
+        "5": [
+          "2025-02-06T09:00:00",
+          "2025-02-12T14:00:00"
+        ],
+        "6": [
+          "2025-02-13T09:00:00",
+          "2025-02-19T14:00:00"
+        ],
+        "7": [
+          "2025-02-20T09:00:00",
+          "2025-02-26T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL013",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-10"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-10T11:00:00",
+      "date_max": "2025-05-29T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 2,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 3,
+        "2": 2
+      },
+      "conflicting_session_count": 2,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-10T11:00:00",
+          "2024-12-11T09:00:00",
+          "2024-12-13T09:00:00"
+        ],
+        "2": [
+          "2024-12-19T09:00:00",
+          "2024-12-27T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL013",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-07-03"
+      ],
+      "attendance_rows": 96,
+      "distinct_learners": 6,
+      "date_min": "2025-07-03T09:00:00",
+      "date_max": "2026-01-23T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL013",
+      "course_name": "Communication 3",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-13"
+      ],
+      "attendance_rows": 48,
+      "distinct_learners": 6,
+      "date_min": "2026-03-13T11:00:00",
+      "date_max": "2026-07-08T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 9,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "7": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "7": [
+          "2026-05-26T14:00:00",
+          "2026-05-26T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL014",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2024-12-09"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2024-12-09T10:30:00",
+      "date_max": "2025-05-24T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 4,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "6": 2,
+        "7": 2,
+        "9": 2
+      },
+      "conflicting_session_count": 4,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-09T10:30:00",
+          "2024-12-11T09:00:00"
+        ],
+        "6": [
+          "2025-02-04T10:00:00",
+          "2025-02-11T09:00:00"
+        ],
+        "7": [
+          "2025-02-11T09:00:00",
+          "2025-02-11T11:00:00"
+        ],
+        "9": [
+          "2025-02-18T13:00:00",
+          "2025-02-25T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL015",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-11"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-11T09:00:00",
+      "date_max": "2025-05-24T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 4,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
+      },
+      "conflicting_session_count": 4,
+      "conflicting_session_examples": {
+        "1": [
+          "2024-12-11T09:00:00",
+          "2024-12-18T11:00:00"
+        ],
+        "4": [
+          "2025-01-14T11:00:00",
+          "2025-01-15T11:00:00"
+        ],
+        "5": [
+          "2025-01-21T11:00:00",
+          "2025-01-22T11:00:00"
+        ],
+        "6": [
+          "2025-02-04T10:00:00",
+          "2025-02-06T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL015",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2025-07-01"
+      ],
+      "attendance_rows": 16,
+      "distinct_learners": 4,
+      "date_min": "2025-07-01T09:00:00",
+      "date_max": "2025-07-21T10:00:00",
+      "session_min": 1,
+      "session_max": 4,
+      "distinct_session_orders": 4,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL016",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-02-05"
+      ],
+      "attendance_rows": 18,
+      "distinct_learners": 6,
+      "date_min": "2025-02-05T11:00:00",
+      "date_max": "2025-02-24T14:00:00",
+      "session_min": 1,
+      "session_max": 3,
+      "distinct_session_orders": 3,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL017",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2024-12-13"
+      ],
+      "attendance_rows": 80,
+      "distinct_learners": 8,
+      "date_min": "2024-12-13T11:00:00",
+      "date_max": "2025-04-22T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL018",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2024-12-19"
+      ],
+      "attendance_rows": 47,
+      "distinct_learners": 4,
+      "date_min": "2024-12-19T10:00:00",
+      "date_max": "2025-07-15T10:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL018",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-08-18"
+      ],
+      "attendance_rows": 72,
+      "distinct_learners": 6,
+      "date_min": "2025-08-18T09:00:00",
+      "date_max": "2025-12-30T14:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL019",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-01-06"
+      ],
+      "attendance_rows": 72,
+      "distinct_learners": 6,
+      "date_min": "2025-01-06T10:00:00",
+      "date_max": "2025-04-25T10:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL020",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2024-12-12"
+      ],
+      "attendance_rows": 79,
+      "distinct_learners": 8,
+      "date_min": "2024-12-12T10:00:00",
+      "date_max": "2025-05-30T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "5": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "3": [
+          "2024-12-30T10:00:00",
+          "2025-01-09T10:00:00"
+        ],
+        "4": [
+          "2025-01-13T10:00:00",
+          "2025-01-21T10:00:00"
+        ],
+        "5": [
+          "2025-02-06T10:00:00",
+          "2025-02-13T10:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL020",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-07-03"
+      ],
+      "attendance_rows": 35,
+      "distinct_learners": 5,
+      "date_min": "2025-07-03T14:00:00",
+      "date_max": "2025-10-01T15:00:00",
+      "session_min": 1,
+      "session_max": 7,
+      "distinct_session_orders": 7,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL021",
+      "course_name": "Business English",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-02-25"
+      ],
+      "attendance_rows": 112,
+      "distinct_learners": 7,
+      "date_min": "2025-02-25T14:00:00",
+      "date_max": "2026-02-04T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL022",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-01-13"
+      ],
+      "attendance_rows": 96,
+      "distinct_learners": 8,
+      "date_min": "2025-01-13T13:00:00",
+      "date_max": "2025-06-24T09:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL022",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-07-28"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-07-28T13:00:00",
+      "date_max": "2026-01-26T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL022",
+      "course_name": "Communication 3",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2026-03-03"
+      ],
+      "attendance_rows": 71,
+      "distinct_learners": 8,
+      "date_min": "2026-03-03T14:00:00",
+      "date_max": "2026-07-08T13:00:00",
+      "session_min": 1,
+      "session_max": 9,
+      "distinct_session_orders": 9,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL023",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-04-18"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-04-18T09:00:00",
+      "date_max": "2025-07-29T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL024",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-06-05"
+      ],
+      "attendance_rows": 97,
+      "distinct_learners": 7,
+      "date_min": "2025-06-05T09:00:00",
+      "date_max": "2025-11-24T10:00:00",
+      "session_min": 1,
+      "session_max": 14,
+      "distinct_session_orders": 14,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-03-25"
+      ],
+      "attendance_rows": 82,
+      "distinct_learners": 7,
+      "date_min": "2026-03-25T10:00:00",
+      "date_max": "2026-07-07T10:00:00",
+      "session_min": 2,
+      "session_max": 13,
+      "distinct_session_orders": 12,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL024",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-06-10"
+      ],
+      "attendance_rows": 96,
+      "distinct_learners": 6,
+      "date_min": "2025-06-10T09:00:00",
+      "date_max": "2026-01-19T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL025",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-04-14"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2025-04-14T10:00:00",
+      "date_max": "2025-08-25T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL025",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-09-22"
+      ],
+      "attendance_rows": 75,
+      "distinct_learners": 5,
+      "date_min": "2025-09-22T10:00:00",
+      "date_max": "2026-04-24T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL026",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-04-16"
+      ],
+      "attendance_rows": 80,
+      "distinct_learners": 8,
+      "date_min": "2025-04-16T13:00:00",
+      "date_max": "2025-07-30T09:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL026",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-08-26"
+      ],
+      "attendance_rows": 77,
+      "distinct_learners": 7,
+      "date_min": "2025-08-26T14:00:00",
+      "date_max": "2025-12-22T14:00:00",
+      "session_min": 1,
+      "session_max": 11,
+      "distinct_session_orders": 11,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "4": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "4": [
+          "2025-09-23T15:00:00",
+          "2025-10-23T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-10-23T15:00:00",
+          "session_order": 4,
+          "previous_date": "2025-09-30T15:00:00",
+          "previous_session_order": 5
+        }
+      ]
+    },
+    {
+      "class_code": "EL027",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-02-27"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 9,
+      "date_min": "2025-02-27T14:00:00",
+      "date_max": "2025-07-11T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL027",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-08-21"
+      ],
+      "attendance_rows": 127,
+      "distinct_learners": 8,
+      "date_min": "2025-08-21T13:00:00",
+      "date_max": "2026-01-22T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2026-03-26"
+      ],
+      "attendance_rows": 67,
+      "distinct_learners": 7,
+      "date_min": "2026-03-26T14:00:00",
+      "date_max": "2026-06-18T13:00:00",
+      "session_min": 2,
+      "session_max": 11,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL028",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-12"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-12T11:00:00",
+      "date_max": "2025-08-18T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL029",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2024-12-19"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2024-12-19T11:00:00",
+      "date_max": "2025-07-21T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 2,
+      "session_orders_with_multiple_dates_examples": {
+        "8": 2,
+        "9": 2
+      },
+      "conflicting_session_count": 2,
+      "conflicting_session_examples": {
+        "8": [
+          "2025-06-09T10:00:00",
+          "2025-06-09T14:00:00"
+        ],
+        "9": [
+          "2025-06-23T10:00:00",
+          "2025-06-23T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL030",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2024-12-20"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2024-12-20T10:00:00",
+      "date_max": "2025-07-15T11:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 3,
+      "session_orders_with_multiple_dates_examples": {
+        "2": 2,
+        "5": 2,
+        "8": 2
+      },
+      "conflicting_session_count": 3,
+      "conflicting_session_examples": {
+        "2": [
+          "2025-01-06T11:00:00",
+          "2025-01-09T11:00:00"
+        ],
+        "5": [
+          "2025-04-14T13:00:00",
+          "2025-04-15T10:00:00"
+        ],
+        "8": [
+          "2025-06-09T10:00:00",
+          "2025-06-23T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 1,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2025-06-09T14:00:00",
+          "session_order": 7,
+          "previous_date": "2025-06-09T10:00:00",
+          "previous_session_order": 8
+        }
+      ]
+    },
+    {
+      "class_code": "EL031",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2025-04-18"
+      ],
+      "attendance_rows": 40,
+      "distinct_learners": 4,
+      "date_min": "2025-04-18T10:00:00",
+      "date_max": "2025-08-14T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL032",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-04-18"
+      ],
+      "attendance_rows": 50,
+      "distinct_learners": 5,
+      "date_min": "2025-04-18T14:00:00",
+      "date_max": "2025-07-15T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL032",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-08-12"
+      ],
+      "attendance_rows": 114,
+      "distinct_learners": 8,
+      "date_min": "2025-08-12T13:00:00",
+      "date_max": "2026-01-13T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL033",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-04-17"
+      ],
+      "attendance_rows": 70,
+      "distinct_learners": 7,
+      "date_min": "2025-04-17T10:00:00",
+      "date_max": "2025-07-23T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL033",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-08-13"
+      ],
+      "attendance_rows": 144,
+      "distinct_learners": 9,
+      "date_min": "2025-08-13T10:00:00",
+      "date_max": "2026-03-25T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-08-13T10:00:00",
+          "2025-08-13T14:00:00"
+        ],
+        "2": [
+          "2025-08-20T10:00:00",
+          "2025-08-20T13:00:00"
+        ],
+        "3": [
+          "2025-08-26T13:00:00",
+          "2025-08-27T10:00:00"
+        ],
+        "4": [
+          "2025-09-03T10:00:00",
+          "2025-09-03T13:00:00"
+        ],
+        "5": [
+          "2025-09-10T10:00:00",
+          "2025-09-10T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL034",
+      "course_name": "Business English",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-03-10"
+      ],
+      "attendance_rows": 94,
+      "distinct_learners": 7,
+      "date_min": "2026-03-10T13:00:00",
+      "date_max": "2026-07-07T13:00:00",
+      "session_min": 1,
+      "session_max": 15,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL034",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 10,
+      "enrollment_start_dates": [
+        "2025-04-17"
+      ],
+      "attendance_rows": 99,
+      "distinct_learners": 10,
+      "date_min": "2025-04-17T14:00:00",
+      "date_max": "2025-07-22T10:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL034",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2025-08-13"
+      ],
+      "attendance_rows": 112,
+      "distinct_learners": 7,
+      "date_min": "2025-08-13T14:00:00",
+      "date_max": "2026-01-23T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL035",
+      "course_name": "Business English",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-03-05"
+      ],
+      "attendance_rows": 96,
+      "distinct_learners": 7,
+      "date_min": "2026-03-05T11:00:00",
+      "date_max": "2026-07-08T15:00:00",
+      "session_min": 1,
+      "session_max": 14,
+      "distinct_session_orders": 14,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL035",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-04-17"
+      ],
+      "attendance_rows": 60,
+      "distinct_learners": 6,
+      "date_min": "2025-04-17T11:00:00",
+      "date_max": "2025-07-30T13:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 3
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2025-04-17T11:00:00",
+          "2025-04-18T10:00:00",
+          "2025-04-25T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL035",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-09-10"
+      ],
+      "attendance_rows": 135,
+      "distinct_learners": 9,
+      "date_min": "2025-09-10T13:00:00",
+      "date_max": "2026-01-29T10:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-09-30"
+      ],
+      "attendance_rows": 120,
+      "distinct_learners": 8,
+      "date_min": "2025-09-30T10:00:00",
+      "date_max": "2025-12-09T15:00:00",
+      "session_min": 2,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "5": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "5": [
+          "2025-10-09T13:00:00",
+          "2025-10-09T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL037",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2026-03-17"
+      ],
+      "attendance_rows": 46,
+      "distinct_learners": 5,
+      "date_min": "2026-03-17T15:00:00",
+      "date_max": "2026-07-07T15:00:00",
+      "session_min": 1,
+      "session_max": 11,
+      "distinct_session_orders": 11,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL037",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 9,
+      "enrollment_start_dates": [
+        "2025-05-28"
+      ],
+      "attendance_rows": 144,
+      "distinct_learners": 9,
+      "date_min": "2025-05-28T09:00:00",
+      "date_max": "2025-10-02T15:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL038",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2025-06-05"
+      ],
+      "attendance_rows": 40,
+      "distinct_learners": 4,
+      "date_min": "2025-06-05T11:00:00",
+      "date_max": "2025-12-05T11:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL038",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 4,
+      "enrollment_start_dates": [
+        "2026-01-16"
+      ],
+      "attendance_rows": 20,
+      "distinct_learners": 4,
+      "date_min": "2026-01-16T10:00:00",
+      "date_max": "2026-03-05T13:00:00",
+      "session_min": 1,
+      "session_max": 5,
+      "distinct_session_orders": 5,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-08-13"
+      ],
+      "attendance_rows": 46,
+      "distinct_learners": 8,
+      "date_min": "2025-08-13T13:00:00",
+      "date_max": "2025-10-29T10:00:00",
+      "session_min": 5,
+      "session_max": 10,
+      "distinct_session_orders": 6,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "8": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "8": [
+          "2025-09-10T14:00:00",
+          "2025-09-10T15:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL040",
+      "course_name": "Extension of Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 3,
+      "enrollment_start_dates": [
+        "2026-04-14"
+      ],
+      "attendance_rows": 18,
+      "distinct_learners": 3,
+      "date_min": "2026-04-14T14:00:00",
+      "date_max": "2026-05-15T14:00:00",
+      "session_min": 1,
+      "session_max": 6,
+      "distinct_session_orders": 6,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL040",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-09-16"
+      ],
+      "attendance_rows": 128,
+      "distinct_learners": 8,
+      "date_min": "2025-09-16T11:00:00",
+      "date_max": "2026-03-27T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL041",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-09-17"
+      ],
+      "attendance_rows": 80,
+      "distinct_learners": 8,
+      "date_min": "2025-09-17T14:00:00",
+      "date_max": "2025-12-02T14:00:00",
+      "session_min": 1,
+      "session_max": 10,
+      "distinct_session_orders": 10,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL042",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2025-09-09"
+      ],
+      "attendance_rows": 90,
+      "distinct_learners": 6,
+      "date_min": "2025-09-09T13:00:00",
+      "date_max": "2026-01-14T13:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL042",
+      "course_name": "Communication 2",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-12"
+      ],
+      "attendance_rows": 48,
+      "distinct_learners": 6,
+      "date_min": "2026-03-12T13:00:00",
+      "date_max": "2026-06-25T13:00:00",
+      "session_min": 1,
+      "session_max": 9,
+      "distinct_session_orders": 8,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 8,
+      "enrollment_start_dates": [
+        "2025-09-17"
+      ],
+      "attendance_rows": 109,
+      "distinct_learners": 8,
+      "date_min": "2025-09-17T14:00:00",
+      "date_max": "2026-03-02T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL044",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 5,
+      "enrollment_start_dates": [
+        "2025-09-29"
+      ],
+      "attendance_rows": 73,
+      "distinct_learners": 6,
+      "date_min": "2025-09-29T14:00:00",
+      "date_max": "2026-03-13T13:00:00",
+      "session_min": 1,
+      "session_max": 15,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL045",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-03-02"
+      ],
+      "attendance_rows": 96,
+      "distinct_learners": 7,
+      "date_min": "2026-03-02T15:00:00",
+      "date_max": "2026-07-07T11:00:00",
+      "session_min": 1,
+      "session_max": 14,
+      "distinct_session_orders": 14,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL046",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-04"
+      ],
+      "attendance_rows": 110,
+      "distinct_learners": 7,
+      "date_min": "2026-03-04T14:00:00",
+      "date_max": "2026-07-09T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 5,
+      "session_orders_with_multiple_dates_examples": {
+        "3": 2,
+        "4": 2,
+        "14": 2,
+        "15": 2,
+        "16": 2
+      },
+      "conflicting_session_count": 5,
+      "conflicting_session_examples": {
+        "3": [
+          "2026-03-18T14:00:00",
+          "2026-04-15T11:00:00"
+        ],
+        "4": [
+          "2026-03-27T10:00:00",
+          "2026-04-22T11:00:00"
+        ],
+        "14": [
+          "2026-06-25T10:00:00",
+          "2026-06-25T11:00:00"
+        ],
+        "15": [
+          "2026-07-02T10:00:00",
+          "2026-07-02T14:00:00"
+        ],
+        "16": [
+          "2026-07-09T10:00:00",
+          "2026-07-09T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 2,
+      "session_reset_candidate_examples": [
+        {
+          "date": "2026-04-15T11:00:00",
+          "session_order": 3,
+          "previous_date": "2026-04-09T15:00:00",
+          "previous_session_order": 6
+        },
+        {
+          "date": "2026-04-22T11:00:00",
+          "session_order": 4,
+          "previous_date": "2026-04-17T10:00:00",
+          "previous_session_order": 7
+        }
+      ]
+    },
+    {
+      "class_code": "EL047",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-03-04"
+      ],
+      "attendance_rows": 92,
+      "distinct_learners": 6,
+      "date_min": "2026-03-04T15:00:00",
+      "date_max": "2026-07-09T14:00:00",
+      "session_min": 1,
+      "session_max": 16,
+      "distinct_session_orders": 16,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "12": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "12": [
+          "2026-05-27T13:00:00",
+          "2026-05-27T14:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "class_dates_count": 0,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-04-01"
+      ],
+      "attendance_rows": 91,
+      "distinct_learners": 7,
+      "date_min": "2026-04-01T14:00:00",
+      "date_max": "2026-07-09T13:00:00",
+      "session_min": 3,
+      "session_max": 15,
+      "distinct_session_orders": 13,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL049",
+      "course_name": "Foundation",
+      "class_dates_count": 1,
+      "enrollment_rows": 10,
+      "enrollment_start_dates": [
+        "2026-03-05"
+      ],
+      "attendance_rows": 147,
+      "distinct_learners": 10,
+      "date_min": "2026-03-05T14:00:00",
+      "date_max": "2026-07-08T11:00:00",
+      "session_min": 1,
+      "session_max": 15,
+      "distinct_session_orders": 15,
+      "session_orders_with_multiple_dates_count": 1,
+      "session_orders_with_multiple_dates_examples": {
+        "1": 2
+      },
+      "conflicting_session_count": 1,
+      "conflicting_session_examples": {
+        "1": [
+          "2026-03-05T14:00:00",
+          "2026-03-06T11:00:00"
+        ]
+      },
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 7,
+      "enrollment_start_dates": [
+        "2026-04-08"
+      ],
+      "attendance_rows": 24,
+      "distinct_learners": 6,
+      "date_min": "2026-04-08T11:00:00",
+      "date_max": "2026-05-13T11:00:00",
+      "session_min": 2,
+      "session_max": 5,
+      "distinct_session_orders": 4,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL050",
+      "course_name": "Foundation",
+      "class_dates_count": 0,
+      "enrollment_rows": 0,
+      "enrollment_start_dates": [],
+      "attendance_rows": 36,
+      "distinct_learners": 6,
+      "date_min": "2026-05-20T10:00:00",
+      "date_max": "2026-07-08T10:00:00",
+      "session_min": 2,
+      "session_max": 7,
+      "distinct_session_orders": 6,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL051",
+      "course_name": "Communication 1",
+      "class_dates_count": 1,
+      "enrollment_rows": 6,
+      "enrollment_start_dates": [
+        "2026-04-14"
+      ],
+      "attendance_rows": 69,
+      "distinct_learners": 7,
+      "date_min": "2026-04-14T15:00:00",
+      "date_max": "2026-07-07T14:00:00",
+      "session_min": 1,
+      "session_max": 12,
+      "distinct_session_orders": 11,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    },
+    {
+      "class_code": "EL052",
+      "course_name": "Foundation",
+      "class_dates_count": 0,
+      "enrollment_rows": 0,
+      "enrollment_start_dates": [],
+      "attendance_rows": 18,
+      "distinct_learners": 6,
+      "date_min": "2026-06-17T11:00:00",
+      "date_max": "2026-07-01T14:00:00",
+      "session_min": 2,
+      "session_max": 4,
+      "distinct_session_orders": 3,
+      "session_orders_with_multiple_dates_count": 0,
+      "session_orders_with_multiple_dates_examples": {},
+      "conflicting_session_count": 0,
+      "conflicting_session_examples": {},
+      "overfull_meeting_count": 0,
+      "overfull_meeting_examples": {},
+      "session_reset_candidate_count": 0,
+      "session_reset_candidate_examples": []
+    }
+  ],
+  "decision": {
+    "recommended_rule": "Keep one course_run per class_code/course_name as Run 1 for the current ETL pass. The workbook does not expose a stable run identifier; repeated-session and conflicting-session evidence should remain issues until reviewed."
+  }
+}

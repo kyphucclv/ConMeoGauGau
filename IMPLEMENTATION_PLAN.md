@@ -26,8 +26,10 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
   open pending stricter source-row reconciliation and transfer/run inference.
 - Phase 3 source-row outcome coverage now passes for the core workbook sheets
   through `migrations/003_etl_source_row_outcomes.sql`; the gate remains open
-  for course-run inference, transfer/mid-run tracing, and failure-state
-  handling.
+  for transfer/mid-run tracing and failure-state handling.
+- Phase 3 course-run inference audit is captured in
+  `docs/reviews/phase-3-course-run-inference-audit.json`; unresolved repeated
+  run candidates are quarantined as `run_boundary_unresolved`.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft

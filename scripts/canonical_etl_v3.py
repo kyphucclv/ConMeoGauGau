@@ -109,6 +109,30 @@ def parse_datetime(value: Any) -> datetime | None:
     return None
 
 
+def detect_session_resets(rows: list[tuple[datetime, int]]) -> list[dict[str, Any]]:
+    reset_candidates: list[dict[str, Any]] = []
+    previous_date = None
+    previous_session = None
+    for starts_at, session_order in sorted(set(rows)):
+        if (
+            previous_date is not None
+            and starts_at > previous_date
+            and session_order < previous_session
+        ):
+            reset_candidates.append(
+                {
+                    "date": starts_at.isoformat(),
+                    "session_order": session_order,
+                    "previous_date": previous_date.isoformat(),
+                    "previous_session_order": previous_session,
+                }
+            )
+        if previous_date is None or starts_at > previous_date or session_order > previous_session:
+            previous_date = starts_at
+            previous_session = session_order
+    return reset_candidates
+
+
 class CanonicalLoader:
     def __init__(self, conn):
         self.conn = conn
@@ -678,10 +702,21 @@ class CanonicalLoader:
                 groups[(class_code, course_name, session_order)].add(starts_at)
 
         conflicting = {key for key, dates in groups.items() if len(dates) > 1}
+        pair_session_rows: dict[tuple[str, str], list[tuple[datetime, int]]] = defaultdict(list)
+        for (class_code, course_name, session_order), dates in groups.items():
+            for starts_at in dates:
+                pair_session_rows[(class_code, course_name)].append((starts_at, session_order))
+        run_boundary_resets = {
+            pair: resets
+            for pair, rows in pair_session_rows.items()
+            if (resets := detect_session_resets(rows))
+        }
         meeting_unit_numbers: dict[tuple[int, datetime, int], int] = {}
         sessions_by_meeting: dict[tuple[int, datetime], list[int]] = defaultdict(list)
         for (class_code, course_name, session_order), dates in groups.items():
             if (class_code, course_name, session_order) in conflicting or len(dates) != 1:
+                continue
+            if (class_code, course_name) in run_boundary_resets:
                 continue
             course_run_id = self.course_run_id(class_code, course_name)
             if not course_run_id:
@@ -702,6 +737,8 @@ class CanonicalLoader:
         session_unit_by_key: dict[tuple[str, str, int, datetime], int] = {}
         for (class_code, course_name, session_order), dates in groups.items():
             if (class_code, course_name, session_order) in conflicting:
+                continue
+            if (class_code, course_name) in run_boundary_resets:
                 continue
             starts_at = next(iter(dates))
             course_run_id = self.course_run_id(class_code, course_name)
@@ -764,6 +801,15 @@ class CanonicalLoader:
                 continue
             if not session_order or (class_code, course_name, session_order) in conflicting:
                 self.issue(row, "conflicting_session_structure", "attendance", entity_key, {"session_order": session_order})
+                continue
+            if (class_code, course_name) in run_boundary_resets:
+                self.issue(
+                    row,
+                    "run_boundary_unresolved",
+                    "attendance",
+                    entity_key,
+                    {"reset_examples": run_boundary_resets[(class_code, course_name)][:5]},
+                )
                 continue
             if status not in {"Present", "Absent"}:
                 self.issue(row, "invalid_attendance_status", "attendance", entity_key, {"status": status})

@@ -8,6 +8,8 @@
 - Files changed:
   - `migrations/003_etl_source_row_outcomes.sql`
   - `scripts/canonical_etl_v3.py`
+  - `scripts/audit_course_run_inference.py`
+  - `docs/reviews/phase-3-course-run-inference-audit.json`
 - Data entities affected: none in the working database; ETL was tested only on disposable database `english_class_p1_test`
 
 ## Contract review
@@ -48,6 +50,8 @@ The loader is conservative:
 - attendance without matching enrollment is quarantined;
 - missing course/date/class/employee identifiers are quarantined;
 - repeated run inference remains limited to Run 1 until stronger evidence exists.
+- possible repeated-run/run-boundary evidence is quarantined as
+  `run_boundary_unresolved` instead of being forced into Run 1.
 
 ## Test evidence
 
@@ -67,6 +71,7 @@ python .\scripts\canonical_etl_v3.py postgresql://postgres@localhost:5432/englis
 python .\scripts\canonical_etl_v3.py postgresql://postgres@localhost:5432/english_class_p1_test
 psql ... table counts
 psql ... issue counts
+python .\scripts\audit_course_run_inference.py .\okok_FIXED_v2.xlsx --output .\docs\reviews\phase-3-course-run-inference-audit.json
 ```
 
 Important output from first ETL run:
@@ -80,9 +85,10 @@ course_runs.inserted: 84
 run_enrollments.inserted: 530
 placements.inserted: 316
 evaluations.upserted: 326
-attendance.inserted: 5751
-outcomes.loaded: 22324
-outcomes.issue: 558
+attendance.inserted: 5458
+issues.run_boundary_unresolved: 303
+outcomes.loaded: 22031
+outcomes.issue: 851
 outcomes.ignored: 174
 ```
 
@@ -112,12 +118,12 @@ Final table counts:
 | `cohorts` | 52 |
 | `course_runs` | 84 |
 | `run_enrollments` | 530 |
-| `meetings` | 893 |
-| `session_units` | 896 |
-| `attendance` | 5751 |
+| `meetings` | 852 |
+| `session_units` | 854 |
+| `attendance` | 5458 |
 | `placements` | 316 |
 | `evaluations` | 326 |
-| `data_quality_issues` | 558 |
+| `data_quality_issues` | 851 |
 | `etl_source_row_outcomes` | 23056 |
 
 Issue counts:
@@ -129,8 +135,29 @@ Issue counts:
 | `duplicate_business_placement` | 3 |
 | `malformed_date` | 3 |
 | `missing_course` | 7 |
+| `run_boundary_unresolved` | 303 |
 | `unknown_level` | 9 |
 | `unmapped_pic_employee` | 9 |
+
+Course-run inference audit:
+
+```text
+pair_count: 84
+repeated_run_candidate_count: 5
+ambiguous_pair_count: 22
+```
+
+Repeated-run candidates requiring human review:
+
+| Class | Course | Attendance rows | Reset candidates |
+|---|---|---:|---:|
+| `EL004` | `Communication 1` | 90 | 3 |
+| `EL007` | `Communication 2` | 120 | 3 |
+| `EL026` | `Communication 2` | 77 | 1 |
+| `EL030` | `Communication 1` | 70 | 1 |
+| `EL046` | `Communication 1` | 110 | 2 |
+
+Decision: keep one `course_run` per `class_code + course_name` as Run 1 for now, but exclude attendance rows from the five unresolved run-boundary candidates from canonical attendance until reviewed.
 
 Ignored outcome counts:
 
@@ -165,6 +192,7 @@ Representative traced issues:
 ```text
 attendance_without_enrollment: ATTENDANCE_LOG row 957, 237117:EL008:Business English:2
 conflicting_session_structure: ATTENDANCE_LOG row 194, 247300:EL002:Communication 1:1
+run_boundary_unresolved: ATTENDANCE_LOG row 324, 193479:EL004:Communication 1:1
 duplicate_business_placement: Placement row 336, 247313
 malformed_date: ATTENDANCE_LOG row 4118, 227097:EL034:Business English:13
 missing_course: sheet2 row 532, 267040:EL052
@@ -184,12 +212,14 @@ What passed:
 - [x] Canonical attendance/enrollment/evaluation rows can be traced through FKs.
 - [x] Every source row in each Phase 3 core sheet has at least one loaded, issue, or ignored outcome.
 - [x] Helper/header rows in `Placement` and trailing/helper rows in `PIC` have explicit ignored outcomes.
+- [x] Course-run inference was audited against workbook evidence.
+- [x] Possible run-boundary rows are quarantined instead of silently entering Run 1.
 
 What is not yet approved:
 
 - [x] Full source-row outcome coverage exists for every core sheet.
 - [x] Helper/header rows in `Placement` and trailing helper rows in `PIC` have an explicit loaded/issue/ignored outcome rule.
-- [ ] Course-run inference currently creates only Run 1 per cohort/course and must be reviewed against repeated-course evidence.
+- [x] Course-run inference has been reviewed against repeated-course evidence; unresolved candidates are issues.
 - [ ] Transfer and mid-run join scenarios are not yet fully traced.
 - [ ] Failure-state batch transitions are not yet implemented around canonical writes.
 
