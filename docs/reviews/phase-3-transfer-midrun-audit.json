@@ -1,0 +1,3969 @@
+{
+  "workbook": "okok_FIXED_v2.xlsx",
+  "enrollment_rows": 530,
+  "enrollments_with_attendance": 527,
+  "enrollments_without_attendance": 3,
+  "midrun_candidate_count": 54,
+  "midrun_candidates": [
+    {
+      "source_row_number": 135,
+      "emp_code": "227244",
+      "class_code": "EL013",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-13T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 7,
+      "first_attendance_date": "2026-03-27T11:00:00",
+      "last_attendance_date": "2026-06-09T14:00:00",
+      "first_session_order": 2,
+      "last_session_order": 8
+    },
+    {
+      "source_row_number": 168,
+      "emp_code": "183432",
+      "class_code": "EL018",
+      "course_name": "Communication 1",
+      "start_date": "2024-12-19T10:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Pre-Intermediate",
+      "attendance_rows": 11,
+      "first_attendance_date": "2025-01-08T10:00:00",
+      "last_attendance_date": "2025-07-15T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 12
+    },
+    {
+      "source_row_number": 186,
+      "emp_code": "227183",
+      "class_code": "EL020",
+      "course_name": "Communication 1",
+      "start_date": "2024-12-12T10:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 9,
+      "first_attendance_date": "2024-12-23T10:00:00",
+      "last_attendance_date": "2025-05-30T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 227,
+      "emp_code": "227122",
+      "class_code": "EL022",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-03T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 8,
+      "first_attendance_date": "2026-03-18T11:00:00",
+      "last_attendance_date": "2026-07-08T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 9
+    },
+    {
+      "source_row_number": 246,
+      "emp_code": "213901",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 247,
+      "emp_code": "213835",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 248,
+      "emp_code": "227081",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 249,
+      "emp_code": "247332",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 11,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 250,
+      "emp_code": "193613",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 251,
+      "emp_code": "247097",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 252,
+      "emp_code": "247086",
+      "class_code": "EL024",
+      "course_name": "Communication 2",
+      "start_date": "2026-03-25T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 11,
+      "first_attendance_date": "2026-03-25T10:00:00",
+      "last_attendance_date": "2026-07-07T10:00:00",
+      "first_session_order": 2,
+      "last_session_order": 13
+    },
+    {
+      "source_row_number": 295,
+      "emp_code": "227214",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 10,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 297,
+      "emp_code": "237226",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 9,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 298,
+      "emp_code": "173272",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 10,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 299,
+      "emp_code": "193584",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 10,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 300,
+      "emp_code": "203790",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 10,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 301,
+      "emp_code": "247083",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 9,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 302,
+      "emp_code": "247178",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 9,
+      "first_attendance_date": "2026-03-26T14:00:00",
+      "last_attendance_date": "2026-06-18T13:00:00",
+      "first_session_order": 2,
+      "last_session_order": 11
+    },
+    {
+      "source_row_number": 411,
+      "emp_code": "247172",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Pre-Intermediate 1",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 412,
+      "emp_code": "213854",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Beginner 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 413,
+      "emp_code": "213805",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 414,
+      "emp_code": "173232",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Pre-Intermediate 1",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 415,
+      "emp_code": "203701",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Pre-Intermediate 1",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 416,
+      "emp_code": "213935",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 417,
+      "emp_code": "227063",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 418,
+      "emp_code": "213916",
+      "class_code": "EL037",
+      "course_name": "Communication 1",
+      "start_date": "2025-09-30T10:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 15,
+      "first_attendance_date": "2025-09-30T10:00:00",
+      "last_attendance_date": "2025-12-09T15:00:00",
+      "first_session_order": 2,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 431,
+      "emp_code": "237061",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Beginner 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 432,
+      "emp_code": "247265",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 5,
+      "first_attendance_date": "2025-08-20T14:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 6,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 433,
+      "emp_code": "227035",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 434,
+      "emp_code": "247415",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 5,
+      "first_attendance_date": "2025-08-20T14:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 6,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 435,
+      "emp_code": "183423",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": null,
+      "entrance_level": "Pre-Intermediate",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 436,
+      "emp_code": "213946",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Pre-Intermediate 1",
+      "entrance_level": "Beginner",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 437,
+      "emp_code": "237245",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Beginner 2",
+      "entrance_level": "Beginner",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 438,
+      "emp_code": "227188",
+      "class_code": "EL039",
+      "course_name": "Communication 1",
+      "start_date": "2025-08-13T13:00:00.288000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Pre-Intermediate 1",
+      "attendance_rows": 6,
+      "first_attendance_date": "2025-08-13T13:00:00",
+      "last_attendance_date": "2025-10-29T10:00:00",
+      "first_session_order": 5,
+      "last_session_order": 10
+    },
+    {
+      "source_row_number": 471,
+      "emp_code": "213881",
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "start_date": "2025-09-17T13:59:59.712000",
+      "final_level": "Foundation",
+      "entrance_level": "Foundation",
+      "attendance_rows": 13,
+      "first_attendance_date": "2025-10-08T14:00:00",
+      "last_attendance_date": "2026-03-02T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 472,
+      "emp_code": "213844",
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "start_date": "2025-09-17T13:59:59.712000",
+      "final_level": "Beginner",
+      "entrance_level": "Foundation",
+      "attendance_rows": 13,
+      "first_attendance_date": "2025-10-08T14:00:00",
+      "last_attendance_date": "2026-03-02T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 473,
+      "emp_code": "213929",
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "start_date": "2025-09-17T13:59:59.712000",
+      "final_level": "Beginner",
+      "entrance_level": "Foundation",
+      "attendance_rows": 13,
+      "first_attendance_date": "2025-10-08T14:00:00",
+      "last_attendance_date": "2026-03-02T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 474,
+      "emp_code": "227058",
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "start_date": "2025-09-17T13:59:59.712000",
+      "final_level": "Foundation",
+      "entrance_level": "Foundation",
+      "attendance_rows": 13,
+      "first_attendance_date": "2025-10-08T14:00:00",
+      "last_attendance_date": "2026-03-02T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 475,
+      "emp_code": "247082",
+      "class_code": "EL043",
+      "course_name": "Foundation",
+      "start_date": "2025-09-17T13:59:59.712000",
+      "final_level": "Foundation",
+      "entrance_level": "Foundation",
+      "attendance_rows": 13,
+      "first_attendance_date": "2025-10-08T14:00:00",
+      "last_attendance_date": "2026-03-02T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 484,
+      "emp_code": "213856",
+      "class_code": "EL045",
+      "course_name": "Communication 1",
+      "start_date": "2026-03-02T15:00:00",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-17T10:00:00",
+      "last_attendance_date": "2026-07-07T11:00:00",
+      "first_session_order": 3,
+      "last_session_order": 14
+    },
+    {
+      "source_row_number": 501,
+      "emp_code": "193607",
+      "class_code": "EL047",
+      "course_name": "Communication 1",
+      "start_date": "2026-03-04T15:00:00",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 12,
+      "first_attendance_date": "2026-03-26T10:00:00",
+      "last_attendance_date": "2026-07-09T14:00:00",
+      "first_session_order": 4,
+      "last_session_order": 16
+    },
+    {
+      "source_row_number": 502,
+      "emp_code": "227005",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Pre-Intermediate 2",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 503,
+      "emp_code": "213813",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 504,
+      "emp_code": "203786",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Pre-Intermediate 2",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 505,
+      "emp_code": "257121",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner 2",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 506,
+      "emp_code": "257135",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 507,
+      "emp_code": "257059",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 508,
+      "emp_code": "237103",
+      "class_code": "EL048",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-01T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner",
+      "attendance_rows": 13,
+      "first_attendance_date": "2026-04-01T14:00:00",
+      "last_attendance_date": "2026-07-09T13:00:00",
+      "first_session_order": 3,
+      "last_session_order": 15
+    },
+    {
+      "source_row_number": 519,
+      "emp_code": "193633",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    },
+    {
+      "source_row_number": 521,
+      "emp_code": "247185",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    },
+    {
+      "source_row_number": 522,
+      "emp_code": "257133",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    },
+    {
+      "source_row_number": 523,
+      "emp_code": "227177",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    },
+    {
+      "source_row_number": 524,
+      "emp_code": "257132",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    },
+    {
+      "source_row_number": 525,
+      "emp_code": "193511",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Foundation",
+      "attendance_rows": 4,
+      "first_attendance_date": "2026-04-08T11:00:00",
+      "last_attendance_date": "2026-05-13T11:00:00",
+      "first_session_order": 2,
+      "last_session_order": 5
+    }
+  ],
+  "multi_class_employee_count": 62,
+  "multi_class_employee_examples": [
+    {
+      "emp_code": "143079",
+      "classes": [
+        "EL001",
+        "EL022"
+      ],
+      "rows": [
+        {
+          "source_row_number": 4,
+          "emp_code": "143079",
+          "class_code": "EL001",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-12T10:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-12T10:00:00",
+          "last_attendance_date": "2025-07-29T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 10,
+          "emp_code": "143079",
+          "class_code": "EL001",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-20T10:59:59.712000",
+          "final_level": "Beginner 3",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-20T11:00:00",
+          "last_attendance_date": "2026-01-20T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 225,
+          "emp_code": "143079",
+          "class_code": "EL022",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 9,
+          "first_attendance_date": "2026-03-03T14:00:00",
+          "last_attendance_date": "2026-07-08T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 9
+        }
+      ]
+    },
+    {
+      "emp_code": "163188",
+      "classes": [
+        "EL023",
+        "EL032",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 228,
+          "emp_code": "163188",
+          "class_code": "EL023",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T09:00:00",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T09:00:00",
+          "last_attendance_date": "2025-07-29T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 336,
+          "emp_code": "163188",
+          "class_code": "EL032",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-12T13:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-12T13:00:00",
+          "last_attendance_date": "2026-01-13T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 384,
+          "emp_code": "163188",
+          "class_code": "EL035",
+          "course_name": "Business English",
+          "start_date": "2026-03-05T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 14,
+          "first_attendance_date": "2026-03-05T11:00:00",
+          "last_attendance_date": "2026-07-08T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 14
+        }
+      ]
+    },
+    {
+      "emp_code": "173230",
+      "classes": [
+        "EL001",
+        "EL022"
+      ],
+      "rows": [
+        {
+          "source_row_number": 3,
+          "emp_code": "173230",
+          "class_code": "EL001",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-12T10:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-12T10:00:00",
+          "last_attendance_date": "2025-07-29T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 9,
+          "emp_code": "173230",
+          "class_code": "EL001",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-20T10:59:59.712000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-20T11:00:00",
+          "last_attendance_date": "2026-01-20T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 223,
+          "emp_code": "173230",
+          "class_code": "EL022",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 9,
+          "first_attendance_date": "2026-03-03T14:00:00",
+          "last_attendance_date": "2026-07-08T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 9
+        }
+      ]
+    },
+    {
+      "emp_code": "173246",
+      "classes": [
+        "EL040",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 444,
+          "emp_code": "173246",
+          "class_code": "EL040",
+          "course_name": "Foundation",
+          "start_date": "2025-09-16T10:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-16T11:00:00",
+          "last_attendance_date": "2026-03-27T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 529,
+          "emp_code": "173246",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "173272",
+      "classes": [
+        "EL009",
+        "EL027"
+      ],
+      "rows": [
+        {
+          "source_row_number": 82,
+          "emp_code": "173272",
+          "class_code": "EL009",
+          "course_name": "Communication 1",
+          "start_date": "2025-01-06T13:59:59.712000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-01-06T14:00:00",
+          "last_attendance_date": "2025-07-14T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 290,
+          "emp_code": "173272",
+          "class_code": "EL027",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-21T13:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-08-21T13:00:00",
+          "last_attendance_date": "2026-01-22T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 298,
+          "emp_code": "173272",
+          "class_code": "EL027",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-26T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 10,
+          "first_attendance_date": "2026-03-26T14:00:00",
+          "last_attendance_date": "2026-06-18T13:00:00",
+          "first_session_order": 2,
+          "last_session_order": 11
+        }
+      ]
+    },
+    {
+      "emp_code": "183322",
+      "classes": [
+        "EL040",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 443,
+          "emp_code": "183322",
+          "class_code": "EL040",
+          "course_name": "Foundation",
+          "start_date": "2025-09-16T10:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-16T11:00:00",
+          "last_attendance_date": "2026-03-27T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 527,
+          "emp_code": "183322",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "183330",
+      "classes": [
+        "EL043",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 476,
+          "emp_code": "183330",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Beginner",
+          "entrance_level": "Foundation",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-09-17T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 526,
+          "emp_code": "183330",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "183427",
+      "classes": [
+        "EL004",
+        "EL013"
+      ],
+      "rows": [
+        {
+          "source_row_number": 37,
+          "emp_code": "183427",
+          "class_code": "EL004",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-13T13:59:59.712000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-13T14:00:00",
+          "last_attendance_date": "2025-06-12T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 46,
+          "emp_code": "183427",
+          "class_code": "EL004",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-31T13:59:59.712000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Pre-Intermediate 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-07-31T14:00:00",
+          "last_attendance_date": "2026-03-03T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 136,
+          "emp_code": "183427",
+          "class_code": "EL013",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-13T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 8,
+          "first_attendance_date": "2026-03-13T11:00:00",
+          "last_attendance_date": "2026-06-09T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 8
+        }
+      ]
+    },
+    {
+      "emp_code": "193445",
+      "classes": [
+        "EL033",
+        "EL034"
+      ],
+      "rows": [
+        {
+          "source_row_number": 348,
+          "emp_code": "193445",
+          "class_code": "EL033",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-13T10:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-08-13T14:00:00",
+          "last_attendance_date": "2026-03-25T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 364,
+          "emp_code": "193445",
+          "class_code": "EL034",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-17T13:59:59.712000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-17T14:00:00",
+          "last_attendance_date": "2025-07-22T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "193447",
+      "classes": [
+        "EL005",
+        "EL009"
+      ],
+      "rows": [
+        {
+          "source_row_number": 49,
+          "emp_code": "193447",
+          "class_code": "EL005",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-11T10:00:00.288000",
+          "final_level": "Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-11T10:00:00",
+          "last_attendance_date": "2025-07-01T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 87,
+          "emp_code": "193447",
+          "class_code": "EL009",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-15T13:00:00.288000",
+          "final_level": "Intermediate 2",
+          "entrance_level": "Intermediate",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-15T13:00:00",
+          "last_attendance_date": "2026-04-03T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "193588",
+      "classes": [
+        "EL033",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 340,
+          "emp_code": "193588",
+          "class_code": "EL033",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-17T10:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-17T10:00:00",
+          "last_attendance_date": "2025-07-23T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 347,
+          "emp_code": "193588",
+          "class_code": "EL033",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-13T10:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Pre-Intermediate 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-08-13T10:00:00",
+          "last_attendance_date": "2026-03-25T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 382,
+          "emp_code": "193588",
+          "class_code": "EL035",
+          "course_name": "Business English",
+          "start_date": "2026-03-05T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 14,
+          "first_attendance_date": "2026-03-05T11:00:00",
+          "last_attendance_date": "2026-07-08T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 14
+        }
+      ]
+    },
+    {
+      "emp_code": "193607",
+      "classes": [
+        "EL041",
+        "EL047"
+      ],
+      "rows": [
+        {
+          "source_row_number": 456,
+          "emp_code": "193607",
+          "class_code": "EL041",
+          "course_name": "Communication 1",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-09-17T14:00:00",
+          "last_attendance_date": "2025-12-02T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 501,
+          "emp_code": "193607",
+          "class_code": "EL047",
+          "course_name": "Communication 1",
+          "start_date": "2026-03-04T15:00:00",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 12,
+          "first_attendance_date": "2026-03-26T10:00:00",
+          "last_attendance_date": "2026-07-09T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "193633",
+      "classes": [
+        "EL014",
+        "EL050"
+      ],
+      "rows": [
+        {
+          "source_row_number": 142,
+          "emp_code": "193633",
+          "class_code": "EL014",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-09T10:30:00",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-09T10:30:00",
+          "last_attendance_date": "2025-05-24T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 519,
+          "emp_code": "193633",
+          "class_code": "EL050",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-08T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 4,
+          "first_attendance_date": "2026-04-08T11:00:00",
+          "last_attendance_date": "2026-05-13T11:00:00",
+          "first_session_order": 2,
+          "last_session_order": 5
+        }
+      ]
+    },
+    {
+      "emp_code": "203764",
+      "classes": [
+        "EL031",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 326,
+          "emp_code": "203764",
+          "class_code": "EL031",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T10:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T10:00:00",
+          "last_attendance_date": "2025-08-14T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 386,
+          "emp_code": "203764",
+          "class_code": "EL035",
+          "course_name": "Business English",
+          "start_date": "2026-03-05T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 14,
+          "first_attendance_date": "2026-03-05T11:00:00",
+          "last_attendance_date": "2026-07-08T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 14
+        },
+        {
+          "source_row_number": 400,
+          "emp_code": "203764",
+          "class_code": "EL035",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-10T13:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Pre-Intermediate 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-10T13:00:00",
+          "last_attendance_date": "2026-01-29T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "203790",
+      "classes": [
+        "EL009",
+        "EL027"
+      ],
+      "rows": [
+        {
+          "source_row_number": 84,
+          "emp_code": "203790",
+          "class_code": "EL009",
+          "course_name": "Communication 1",
+          "start_date": "2025-01-06T13:59:59.712000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-01-06T14:00:00",
+          "last_attendance_date": "2025-07-14T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 292,
+          "emp_code": "203790",
+          "class_code": "EL027",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-21T13:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-08-21T13:00:00",
+          "last_attendance_date": "2026-01-22T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 300,
+          "emp_code": "203790",
+          "class_code": "EL027",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-26T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 10,
+          "first_attendance_date": "2026-03-26T14:00:00",
+          "last_attendance_date": "2026-06-18T13:00:00",
+          "first_session_order": 2,
+          "last_session_order": 11
+        }
+      ]
+    },
+    {
+      "emp_code": "213844",
+      "classes": [
+        "EL043",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 472,
+          "emp_code": "213844",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Beginner",
+          "entrance_level": "Foundation",
+          "attendance_rows": 13,
+          "first_attendance_date": "2025-10-08T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 528,
+          "emp_code": "213844",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "213856",
+      "classes": [
+        "EL015",
+        "EL045"
+      ],
+      "rows": [
+        {
+          "source_row_number": 144,
+          "emp_code": "213856",
+          "class_code": "EL015",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-11T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-18T11:00:00",
+          "last_attendance_date": "2025-05-24T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 484,
+          "emp_code": "213856",
+          "class_code": "EL045",
+          "course_name": "Communication 1",
+          "start_date": "2026-03-02T15:00:00",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 12,
+          "first_attendance_date": "2026-03-17T10:00:00",
+          "last_attendance_date": "2026-07-07T11:00:00",
+          "first_session_order": 3,
+          "last_session_order": 14
+        }
+      ]
+    },
+    {
+      "emp_code": "213881",
+      "classes": [
+        "EL037",
+        "EL043"
+      ],
+      "rows": [
+        {
+          "source_row_number": 403,
+          "emp_code": "213881",
+          "class_code": "EL037",
+          "course_name": "Foundation",
+          "start_date": "2025-05-28T09:00:00",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-05-28T09:00:00",
+          "last_attendance_date": "2025-10-02T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 471,
+          "emp_code": "213881",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 13,
+          "first_attendance_date": "2025-10-08T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "213889",
+      "classes": [
+        "EL032",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 330,
+          "emp_code": "213889",
+          "class_code": "EL032",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T13:59:59.712000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T14:00:00",
+          "last_attendance_date": "2025-07-15T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 335,
+          "emp_code": "213889",
+          "class_code": "EL032",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-12T13:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-12T13:00:00",
+          "last_attendance_date": "2026-01-13T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 383,
+          "emp_code": "213889",
+          "class_code": "EL035",
+          "course_name": "Business English",
+          "start_date": "2026-03-05T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 13,
+          "first_attendance_date": "2026-03-05T11:00:00",
+          "last_attendance_date": "2026-07-08T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 14
+        }
+      ]
+    },
+    {
+      "emp_code": "213891",
+      "classes": [
+        "EL007",
+        "EL020"
+      ],
+      "rows": [
+        {
+          "source_row_number": 70,
+          "emp_code": "213891",
+          "class_code": "EL007",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-07-03T14:00:00",
+          "last_attendance_date": "2026-01-16T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 15
+        },
+        {
+          "source_row_number": 191,
+          "emp_code": "213891",
+          "class_code": "EL020",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-12T10:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-12T10:00:00",
+          "last_attendance_date": "2025-05-30T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 196,
+          "emp_code": "213891",
+          "class_code": "EL020",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate 2",
+          "attendance_rows": 7,
+          "first_attendance_date": "2025-07-03T14:00:00",
+          "last_attendance_date": "2025-10-01T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 7
+        }
+      ]
+    },
+    {
+      "emp_code": "213929",
+      "classes": [
+        "EL027",
+        "EL043"
+      ],
+      "rows": [
+        {
+          "source_row_number": 283,
+          "emp_code": "213929",
+          "class_code": "EL027",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-27T13:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-27T14:00:00",
+          "last_attendance_date": "2025-07-11T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 473,
+          "emp_code": "213929",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Beginner",
+          "entrance_level": "Foundation",
+          "attendance_rows": 13,
+          "first_attendance_date": "2025-10-08T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "213946",
+      "classes": [
+        "EL035",
+        "EL039"
+      ],
+      "rows": [
+        {
+          "source_row_number": 391,
+          "emp_code": "213946",
+          "class_code": "EL035",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-17T10:59:59.712000",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-17T11:00:00",
+          "last_attendance_date": "2025-07-30T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 436,
+          "emp_code": "213946",
+          "class_code": "EL039",
+          "course_name": "Communication 1",
+          "start_date": "2025-08-13T13:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 6,
+          "first_attendance_date": "2025-08-13T13:00:00",
+          "last_attendance_date": "2025-10-29T10:00:00",
+          "first_session_order": 5,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "213968",
+      "classes": [
+        "EL033",
+        "EL034"
+      ],
+      "rows": [
+        {
+          "source_row_number": 352,
+          "emp_code": "213968",
+          "class_code": "EL033",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-13T10:00:00.288000",
+          "final_level": null,
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-08-13T14:00:00",
+          "last_attendance_date": "2026-03-25T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 367,
+          "emp_code": "213968",
+          "class_code": "EL034",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-17T13:59:59.712000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-17T14:00:00",
+          "last_attendance_date": "2025-07-22T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "227024",
+      "classes": [
+        "EL018",
+        "EL019"
+      ],
+      "rows": [
+        {
+          "source_row_number": 175,
+          "emp_code": "227024",
+          "class_code": "EL018",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-18T09:00:00",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 12,
+          "first_attendance_date": "2025-08-18T09:00:00",
+          "last_attendance_date": "2025-12-30T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        },
+        {
+          "source_row_number": 182,
+          "emp_code": "227024",
+          "class_code": "EL019",
+          "course_name": "Communication 1",
+          "start_date": "2025-01-06T10:00:00.288000",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 12,
+          "first_attendance_date": "2025-01-06T10:00:00",
+          "last_attendance_date": "2025-04-25T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "227032",
+      "classes": [
+        "EL018",
+        "EL019"
+      ],
+      "rows": [
+        {
+          "source_row_number": 177,
+          "emp_code": "227032",
+          "class_code": "EL018",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-18T09:00:00",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 12,
+          "first_attendance_date": "2025-08-18T09:00:00",
+          "last_attendance_date": "2025-12-30T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        },
+        {
+          "source_row_number": 183,
+          "emp_code": "227032",
+          "class_code": "EL019",
+          "course_name": "Communication 1",
+          "start_date": "2025-01-06T10:00:00.288000",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 12,
+          "first_attendance_date": "2025-01-06T10:00:00",
+          "last_attendance_date": "2025-04-25T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "227035",
+      "classes": [
+        "EL023",
+        "EL039",
+        "EL042"
+      ],
+      "rows": [
+        {
+          "source_row_number": 230,
+          "emp_code": "227035",
+          "class_code": "EL023",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T09:00:00",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T09:00:00",
+          "last_attendance_date": "2025-07-29T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 433,
+          "emp_code": "227035",
+          "class_code": "EL039",
+          "course_name": "Communication 1",
+          "start_date": "2025-08-13T13:00:00.288000",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 6,
+          "first_attendance_date": "2025-08-13T13:00:00",
+          "last_attendance_date": "2025-10-29T10:00:00",
+          "first_session_order": 5,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 461,
+          "emp_code": "227035",
+          "class_code": "EL042",
+          "course_name": "Communication 1",
+          "start_date": "2025-09-09T13:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-09-09T13:00:00",
+          "last_attendance_date": "2026-01-14T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 467,
+          "emp_code": "227035",
+          "class_code": "EL042",
+          "course_name": "Communication 2",
+          "start_date": "2026-03-12T13:00:00.288000",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 8,
+          "first_attendance_date": "2026-03-12T13:00:00",
+          "last_attendance_date": "2026-06-25T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 9
+        }
+      ]
+    },
+    {
+      "emp_code": "227058",
+      "classes": [
+        "EL027",
+        "EL043"
+      ],
+      "rows": [
+        {
+          "source_row_number": 284,
+          "emp_code": "227058",
+          "class_code": "EL027",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-27T13:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-27T14:00:00",
+          "last_attendance_date": "2025-07-11T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 474,
+          "emp_code": "227058",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 13,
+          "first_attendance_date": "2025-10-08T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "227091",
+      "classes": [
+        "EL040",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 447,
+          "emp_code": "227091",
+          "class_code": "EL040",
+          "course_name": "Foundation",
+          "start_date": "2025-09-16T10:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-16T11:00:00",
+          "last_attendance_date": "2026-03-27T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 531,
+          "emp_code": "227091",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "227092",
+      "classes": [
+        "EL005",
+        "EL009"
+      ],
+      "rows": [
+        {
+          "source_row_number": 53,
+          "emp_code": "227092",
+          "class_code": "EL005",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-11T10:00:00.288000",
+          "final_level": "Intermediate",
+          "entrance_level": "Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-13T15:00:00",
+          "last_attendance_date": "2025-07-01T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 95,
+          "emp_code": "227092",
+          "class_code": "EL009",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-15T13:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Intermediate",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-15T13:00:00",
+          "last_attendance_date": "2026-04-03T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "227122",
+      "classes": [
+        "EL001",
+        "EL022"
+      ],
+      "rows": [
+        {
+          "source_row_number": 5,
+          "emp_code": "227122",
+          "class_code": "EL001",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-12T10:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-12T10:00:00",
+          "last_attendance_date": "2025-07-29T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 11,
+          "emp_code": "227122",
+          "class_code": "EL001",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-20T10:59:59.712000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-20T11:00:00",
+          "last_attendance_date": "2026-01-20T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 227,
+          "emp_code": "227122",
+          "class_code": "EL022",
+          "course_name": "Communication 3",
+          "start_date": "2026-03-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 8,
+          "first_attendance_date": "2026-03-18T11:00:00",
+          "last_attendance_date": "2026-07-08T13:00:00",
+          "first_session_order": 2,
+          "last_session_order": 9
+        }
+      ]
+    },
+    {
+      "emp_code": "227160",
+      "classes": [
+        "EL005",
+        "EL009"
+      ],
+      "rows": [
+        {
+          "source_row_number": 50,
+          "emp_code": "227160",
+          "class_code": "EL005",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-11T10:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-13T15:00:00",
+          "last_attendance_date": "2025-07-01T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 89,
+          "emp_code": "227160",
+          "class_code": "EL009",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-15T13:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-15T13:00:00",
+          "last_attendance_date": "2026-04-03T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "227177",
+      "classes": [
+        "EL015",
+        "EL050"
+      ],
+      "rows": [
+        {
+          "source_row_number": 147,
+          "emp_code": "227177",
+          "class_code": "EL015",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-11T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-11T09:00:00",
+          "last_attendance_date": "2025-05-24T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 150,
+          "emp_code": "227177",
+          "class_code": "EL015",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-01T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 4,
+          "first_attendance_date": "2025-07-01T09:00:00",
+          "last_attendance_date": "2025-07-21T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 4
+        },
+        {
+          "source_row_number": 523,
+          "emp_code": "227177",
+          "class_code": "EL050",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-08T10:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 4,
+          "first_attendance_date": "2026-04-08T11:00:00",
+          "last_attendance_date": "2026-05-13T11:00:00",
+          "first_session_order": 2,
+          "last_session_order": 5
+        }
+      ]
+    },
+    {
+      "emp_code": "227183",
+      "classes": [
+        "EL007",
+        "EL020"
+      ],
+      "rows": [
+        {
+          "source_row_number": 65,
+          "emp_code": "227183",
+          "class_code": "EL007",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": null,
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-07-03T14:00:00",
+          "last_attendance_date": "2026-03-02T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 186,
+          "emp_code": "227183",
+          "class_code": "EL020",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-12T10:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 9,
+          "first_attendance_date": "2024-12-23T10:00:00",
+          "last_attendance_date": "2025-05-30T10:00:00",
+          "first_session_order": 2,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 194,
+          "emp_code": "227183",
+          "class_code": "EL020",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-03T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate 2",
+          "attendance_rows": 7,
+          "first_attendance_date": "2025-07-03T14:00:00",
+          "last_attendance_date": "2025-10-01T15:00:00",
+          "first_session_order": 1,
+          "last_session_order": 7
+        }
+      ]
+    },
+    {
+      "emp_code": "227188",
+      "classes": [
+        "EL026",
+        "EL039"
+      ],
+      "rows": [
+        {
+          "source_row_number": 271,
+          "emp_code": "227188",
+          "class_code": "EL026",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-16T13:00:00.288000",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-16T13:00:00",
+          "last_attendance_date": "2025-07-30T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 438,
+          "emp_code": "227188",
+          "class_code": "EL039",
+          "course_name": "Communication 1",
+          "start_date": "2025-08-13T13:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 6,
+          "first_attendance_date": "2025-08-13T13:00:00",
+          "last_attendance_date": "2025-10-29T10:00:00",
+          "first_session_order": 5,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "237008",
+      "classes": [
+        "EL009",
+        "EL027"
+      ],
+      "rows": [
+        {
+          "source_row_number": 88,
+          "emp_code": "237008",
+          "class_code": "EL009",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-15T13:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-15T13:00:00",
+          "last_attendance_date": "2026-04-03T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 281,
+          "emp_code": "237008",
+          "class_code": "EL027",
+          "course_name": "Communication 1",
+          "start_date": "2025-02-27T13:59:59.712000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-02-27T14:00:00",
+          "last_attendance_date": "2025-07-11T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "237043",
+      "classes": [
+        "EL006",
+        "EL026"
+      ],
+      "rows": [
+        {
+          "source_row_number": 56,
+          "emp_code": "237043",
+          "class_code": "EL006",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-13T10:00:00.288000",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-13T10:00:00",
+          "last_attendance_date": "2025-05-30T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 274,
+          "emp_code": "237043",
+          "class_code": "EL026",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-26T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 11,
+          "first_attendance_date": "2025-08-26T14:00:00",
+          "last_attendance_date": "2025-12-22T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 11
+        }
+      ]
+    },
+    {
+      "emp_code": "237061",
+      "classes": [
+        "EL026",
+        "EL039"
+      ],
+      "rows": [
+        {
+          "source_row_number": 266,
+          "emp_code": "237061",
+          "class_code": "EL026",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-16T13:00:00.288000",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-16T13:00:00",
+          "last_attendance_date": "2025-07-30T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 431,
+          "emp_code": "237061",
+          "class_code": "EL039",
+          "course_name": "Communication 1",
+          "start_date": "2025-08-13T13:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 6,
+          "first_attendance_date": "2025-08-13T13:00:00",
+          "last_attendance_date": "2025-10-29T10:00:00",
+          "first_session_order": 5,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "237103",
+      "classes": [
+        "EL048",
+        "EL049"
+      ],
+      "rows": [
+        {
+          "source_row_number": 508,
+          "emp_code": "237103",
+          "class_code": "EL048",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-01T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 13,
+          "first_attendance_date": "2026-04-01T14:00:00",
+          "last_attendance_date": "2026-07-09T13:00:00",
+          "first_session_order": 3,
+          "last_session_order": 15
+        },
+        {
+          "source_row_number": 517,
+          "emp_code": "237103",
+          "class_code": "EL049",
+          "course_name": "Foundation",
+          "start_date": "2026-03-05T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 14,
+          "first_attendance_date": "2026-03-06T11:00:00",
+          "last_attendance_date": "2026-07-08T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 15
+        }
+      ]
+    },
+    {
+      "emp_code": "237156",
+      "classes": [
+        "EL031",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 324,
+          "emp_code": "237156",
+          "class_code": "EL031",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T10:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Foundation",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T10:00:00",
+          "last_attendance_date": "2025-08-14T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 398,
+          "emp_code": "237156",
+          "class_code": "EL035",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-10T13:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Beginner 2",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-10T13:00:00",
+          "last_attendance_date": "2026-01-29T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "237157",
+      "classes": [
+        "EL023",
+        "EL032"
+      ],
+      "rows": [
+        {
+          "source_row_number": 229,
+          "emp_code": "237157",
+          "class_code": "EL023",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T09:00:00",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T09:00:00",
+          "last_attendance_date": "2025-07-29T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 337,
+          "emp_code": "237157",
+          "class_code": "EL032",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-12T13:00:00.288000",
+          "final_level": "Intermediate 1",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-12T13:00:00",
+          "last_attendance_date": "2026-01-13T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "237196",
+      "classes": [
+        "EL023",
+        "EL032"
+      ],
+      "rows": [
+        {
+          "source_row_number": 232,
+          "emp_code": "237196",
+          "class_code": "EL023",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T09:00:00",
+          "final_level": "Pre-Intermediate 1",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T09:00:00",
+          "last_attendance_date": "2025-07-29T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 339,
+          "emp_code": "237196",
+          "class_code": "EL032",
+          "course_name": "Communication 2",
+          "start_date": "2025-08-12T13:00:00.288000",
+          "final_level": "Pre-Intermediate 2",
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 15,
+          "first_attendance_date": "2025-08-12T13:00:00",
+          "last_attendance_date": "2026-01-13T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "237245",
+      "classes": [
+        "EL026",
+        "EL039"
+      ],
+      "rows": [
+        {
+          "source_row_number": 270,
+          "emp_code": "237245",
+          "class_code": "EL026",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-16T13:00:00.288000",
+          "final_level": "Beginner",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-16T13:00:00",
+          "last_attendance_date": "2025-07-30T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 437,
+          "emp_code": "237245",
+          "class_code": "EL039",
+          "course_name": "Communication 1",
+          "start_date": "2025-08-13T13:00:00.288000",
+          "final_level": "Beginner 2",
+          "entrance_level": "Beginner",
+          "attendance_rows": 6,
+          "first_attendance_date": "2025-08-13T13:00:00",
+          "last_attendance_date": "2025-10-29T10:00:00",
+          "first_session_order": 5,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "242001",
+      "classes": [
+        "EL017",
+        "EL021"
+      ],
+      "rows": [
+        {
+          "source_row_number": 164,
+          "emp_code": "242001",
+          "class_code": "EL017",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-13T10:59:59.712000",
+          "final_level": "Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-13T11:00:00",
+          "last_attendance_date": "2025-04-22T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 199,
+          "emp_code": "242001",
+          "class_code": "EL021",
+          "course_name": "Business English",
+          "start_date": "2025-02-25T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Intermediate",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-02-25T14:00:00",
+          "last_attendance_date": "2026-02-04T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        }
+      ]
+    },
+    {
+      "emp_code": "247037",
+      "classes": [
+        "EL010",
+        "EL011"
+      ],
+      "rows": [
+        {
+          "source_row_number": 102,
+          "emp_code": "247037",
+          "class_code": "EL010",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-15T09:00:00",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 4,
+          "first_attendance_date": "2025-07-15T09:00:00",
+          "last_attendance_date": "2025-08-26T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 4
+        },
+        {
+          "source_row_number": 110,
+          "emp_code": "247037",
+          "class_code": "EL011",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-18T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-18T09:00:00",
+          "last_attendance_date": "2025-05-22T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "247038",
+      "classes": [
+        "EL010",
+        "EL011"
+      ],
+      "rows": [
+        {
+          "source_row_number": 108,
+          "emp_code": "247038",
+          "class_code": "EL010",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-15T09:00:00",
+          "final_level": null,
+          "entrance_level": "Intermediate",
+          "attendance_rows": 4,
+          "first_attendance_date": "2025-07-15T09:00:00",
+          "last_attendance_date": "2025-08-26T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 4
+        },
+        {
+          "source_row_number": 113,
+          "emp_code": "247038",
+          "class_code": "EL011",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-18T09:00:00",
+          "final_level": "Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-18T09:00:00",
+          "last_attendance_date": "2025-05-22T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "247064",
+      "classes": [
+        "EL040",
+        "EL051"
+      ],
+      "rows": [
+        {
+          "source_row_number": 446,
+          "emp_code": "247064",
+          "class_code": "EL040",
+          "course_name": "Foundation",
+          "start_date": "2025-09-16T10:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 16,
+          "first_attendance_date": "2025-09-16T11:00:00",
+          "last_attendance_date": "2026-03-27T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 530,
+          "emp_code": "247064",
+          "class_code": "EL051",
+          "course_name": "Communication 1",
+          "start_date": "2026-04-14T15:00:00",
+          "final_level": null,
+          "entrance_level": "Foundation",
+          "attendance_rows": 11,
+          "first_attendance_date": "2026-04-14T15:00:00",
+          "last_attendance_date": "2026-07-07T14:00:00",
+          "first_session_order": 1,
+          "last_session_order": 12
+        }
+      ]
+    },
+    {
+      "emp_code": "247078",
+      "classes": [
+        "EL010",
+        "EL011"
+      ],
+      "rows": [
+        {
+          "source_row_number": 106,
+          "emp_code": "247078",
+          "class_code": "EL010",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-15T09:00:00",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 4,
+          "first_attendance_date": "2025-07-15T09:00:00",
+          "last_attendance_date": "2025-08-26T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 4
+        },
+        {
+          "source_row_number": 111,
+          "emp_code": "247078",
+          "class_code": "EL011",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-18T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-18T09:00:00",
+          "last_attendance_date": "2025-05-22T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "247082",
+      "classes": [
+        "EL043",
+        "EL044"
+      ],
+      "rows": [
+        {
+          "source_row_number": 475,
+          "emp_code": "247082",
+          "class_code": "EL043",
+          "course_name": "Foundation",
+          "start_date": "2025-09-17T13:59:59.712000",
+          "final_level": "Foundation",
+          "entrance_level": "Foundation",
+          "attendance_rows": 13,
+          "first_attendance_date": "2025-10-08T14:00:00",
+          "last_attendance_date": "2026-03-02T14:00:00",
+          "first_session_order": 4,
+          "last_session_order": 16
+        },
+        {
+          "source_row_number": 479,
+          "emp_code": "247082",
+          "class_code": "EL044",
+          "course_name": "Communication 1",
+          "start_date": "2025-09-29T13:59:59.712000",
+          "final_level": null,
+          "entrance_level": "Beginner",
+          "attendance_rows": 7,
+          "first_attendance_date": "2025-09-29T14:00:00",
+          "last_attendance_date": "2025-11-24T13:00:00",
+          "first_session_order": 1,
+          "last_session_order": 7
+        }
+      ]
+    },
+    {
+      "emp_code": "247098",
+      "classes": [
+        "EL031",
+        "EL035"
+      ],
+      "rows": [
+        {
+          "source_row_number": 323,
+          "emp_code": "247098",
+          "class_code": "EL031",
+          "course_name": "Communication 1",
+          "start_date": "2025-04-18T10:00:00.288000",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Beginner",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-04-18T10:00:00",
+          "last_attendance_date": "2025-08-14T10:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        },
+        {
+          "source_row_number": 397,
+          "emp_code": "247098",
+          "class_code": "EL035",
+          "course_name": "Communication 2",
+          "start_date": "2025-09-10T13:00:00.288000",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate 1",
+          "attendance_rows": 10,
+          "first_attendance_date": "2025-09-10T13:00:00",
+          "last_attendance_date": "2025-11-13T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    },
+    {
+      "emp_code": "247106",
+      "classes": [
+        "EL010",
+        "EL011"
+      ],
+      "rows": [
+        {
+          "source_row_number": 107,
+          "emp_code": "247106",
+          "class_code": "EL010",
+          "course_name": "Communication 2",
+          "start_date": "2025-07-15T09:00:00",
+          "final_level": null,
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 4,
+          "first_attendance_date": "2025-07-15T09:00:00",
+          "last_attendance_date": "2025-08-26T11:00:00",
+          "first_session_order": 1,
+          "last_session_order": 4
+        },
+        {
+          "source_row_number": 109,
+          "emp_code": "247106",
+          "class_code": "EL011",
+          "course_name": "Communication 1",
+          "start_date": "2024-12-18T09:00:00",
+          "final_level": "Pre-Intermediate",
+          "entrance_level": "Pre-Intermediate",
+          "attendance_rows": 10,
+          "first_attendance_date": "2024-12-18T09:00:00",
+          "last_attendance_date": "2025-05-22T09:00:00",
+          "first_session_order": 1,
+          "last_session_order": 10
+        }
+      ]
+    }
+  ],
+  "multi_course_employee_count": 162,
+  "transfer_candidate_count": 68,
+  "transfer_candidates": [
+    {
+      "emp_code": "143079",
+      "from": {
+        "class_code": "EL001",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-20T10:00:00",
+        "source_row_number": 10
+      },
+      "to": {
+        "class_code": "EL022",
+        "course_name": "Communication 3",
+        "first_attendance_date": "2026-03-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 225
+      }
+    },
+    {
+      "emp_code": "163188",
+      "from": {
+        "class_code": "EL023",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-29T14:00:00",
+        "source_row_number": 228
+      },
+      "to": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-12T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 336
+      }
+    },
+    {
+      "emp_code": "163188",
+      "from": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-13T10:00:00",
+        "source_row_number": 336
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Business English",
+        "first_attendance_date": "2026-03-05T11:00:00",
+        "first_session_order": 1,
+        "source_row_number": 384
+      }
+    },
+    {
+      "emp_code": "173230",
+      "from": {
+        "class_code": "EL001",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-20T10:00:00",
+        "source_row_number": 9
+      },
+      "to": {
+        "class_code": "EL022",
+        "course_name": "Communication 3",
+        "first_attendance_date": "2026-03-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 223
+      }
+    },
+    {
+      "emp_code": "173246",
+      "from": {
+        "class_code": "EL040",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-27T13:00:00",
+        "source_row_number": 444
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 529
+      }
+    },
+    {
+      "emp_code": "173272",
+      "from": {
+        "class_code": "EL009",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-14T13:00:00",
+        "source_row_number": 82
+      },
+      "to": {
+        "class_code": "EL027",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-21T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 290
+      }
+    },
+    {
+      "emp_code": "183322",
+      "from": {
+        "class_code": "EL040",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-27T13:00:00",
+        "source_row_number": 443
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 527
+      }
+    },
+    {
+      "emp_code": "183330",
+      "from": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-02T14:00:00",
+        "source_row_number": 476
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 526
+      }
+    },
+    {
+      "emp_code": "183427",
+      "from": {
+        "class_code": "EL004",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-03-03T10:00:00",
+        "source_row_number": 46
+      },
+      "to": {
+        "class_code": "EL013",
+        "course_name": "Communication 3",
+        "first_attendance_date": "2026-03-13T11:00:00",
+        "first_session_order": 1,
+        "source_row_number": 136
+      }
+    },
+    {
+      "emp_code": "193445",
+      "from": {
+        "class_code": "EL034",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-22T10:00:00",
+        "source_row_number": 364
+      },
+      "to": {
+        "class_code": "EL033",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-13T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 348
+      }
+    },
+    {
+      "emp_code": "193447",
+      "from": {
+        "class_code": "EL005",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-01T14:00:00",
+        "source_row_number": 49
+      },
+      "to": {
+        "class_code": "EL009",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-15T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 87
+      }
+    },
+    {
+      "emp_code": "193588",
+      "from": {
+        "class_code": "EL033",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-03-25T13:00:00",
+        "source_row_number": 347
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Business English",
+        "first_attendance_date": "2026-03-05T11:00:00",
+        "first_session_order": 1,
+        "source_row_number": 382
+      }
+    },
+    {
+      "emp_code": "193607",
+      "from": {
+        "class_code": "EL041",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-12-02T14:00:00",
+        "source_row_number": 456
+      },
+      "to": {
+        "class_code": "EL047",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-03-26T10:00:00",
+        "first_session_order": 4,
+        "source_row_number": 501
+      }
+    },
+    {
+      "emp_code": "193633",
+      "from": {
+        "class_code": "EL014",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-24T10:00:00",
+        "source_row_number": 142
+      },
+      "to": {
+        "class_code": "EL050",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-08T11:00:00",
+        "first_session_order": 2,
+        "source_row_number": 519
+      }
+    },
+    {
+      "emp_code": "203764",
+      "from": {
+        "class_code": "EL031",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-14T10:00:00",
+        "source_row_number": 326
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-10T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 400
+      }
+    },
+    {
+      "emp_code": "203790",
+      "from": {
+        "class_code": "EL009",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-14T13:00:00",
+        "source_row_number": 84
+      },
+      "to": {
+        "class_code": "EL027",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-21T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 292
+      }
+    },
+    {
+      "emp_code": "213844",
+      "from": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-02T14:00:00",
+        "source_row_number": 472
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 528
+      }
+    },
+    {
+      "emp_code": "213856",
+      "from": {
+        "class_code": "EL015",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-24T10:00:00",
+        "source_row_number": 144
+      },
+      "to": {
+        "class_code": "EL045",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-03-17T10:00:00",
+        "first_session_order": 3,
+        "source_row_number": 484
+      }
+    },
+    {
+      "emp_code": "213881",
+      "from": {
+        "class_code": "EL037",
+        "course_name": "Foundation",
+        "last_attendance_date": "2025-10-02T15:00:00",
+        "source_row_number": 403
+      },
+      "to": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "first_attendance_date": "2025-10-08T14:00:00",
+        "first_session_order": 4,
+        "source_row_number": 471
+      }
+    },
+    {
+      "emp_code": "213889",
+      "from": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-13T10:00:00",
+        "source_row_number": 335
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Business English",
+        "first_attendance_date": "2026-03-05T11:00:00",
+        "first_session_order": 1,
+        "source_row_number": 383
+      }
+    },
+    {
+      "emp_code": "213891",
+      "from": {
+        "class_code": "EL020",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-30T10:00:00",
+        "source_row_number": 191
+      },
+      "to": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 70
+      }
+    },
+    {
+      "emp_code": "213891",
+      "from": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-16T11:00:00",
+        "source_row_number": 70
+      },
+      "to": {
+        "class_code": "EL020",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 196
+      }
+    },
+    {
+      "emp_code": "213929",
+      "from": {
+        "class_code": "EL027",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-11T13:00:00",
+        "source_row_number": 283
+      },
+      "to": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "first_attendance_date": "2025-10-08T14:00:00",
+        "first_session_order": 4,
+        "source_row_number": 473
+      }
+    },
+    {
+      "emp_code": "213946",
+      "from": {
+        "class_code": "EL035",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-30T13:00:00",
+        "source_row_number": 391
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-13T13:00:00",
+        "first_session_order": 5,
+        "source_row_number": 436
+      }
+    },
+    {
+      "emp_code": "213968",
+      "from": {
+        "class_code": "EL034",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-22T10:00:00",
+        "source_row_number": 367
+      },
+      "to": {
+        "class_code": "EL033",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-13T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 352
+      }
+    },
+    {
+      "emp_code": "227024",
+      "from": {
+        "class_code": "EL019",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-04-25T10:00:00",
+        "source_row_number": 182
+      },
+      "to": {
+        "class_code": "EL018",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-18T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 175
+      }
+    },
+    {
+      "emp_code": "227032",
+      "from": {
+        "class_code": "EL019",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-04-25T10:00:00",
+        "source_row_number": 183
+      },
+      "to": {
+        "class_code": "EL018",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-18T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 177
+      }
+    },
+    {
+      "emp_code": "227035",
+      "from": {
+        "class_code": "EL023",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-29T14:00:00",
+        "source_row_number": 230
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-13T13:00:00",
+        "first_session_order": 5,
+        "source_row_number": 433
+      }
+    },
+    {
+      "emp_code": "227035",
+      "from": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-10-29T10:00:00",
+        "source_row_number": 433
+      },
+      "to": {
+        "class_code": "EL042",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-09-09T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 461
+      }
+    },
+    {
+      "emp_code": "227058",
+      "from": {
+        "class_code": "EL027",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-11T13:00:00",
+        "source_row_number": 284
+      },
+      "to": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "first_attendance_date": "2025-10-08T14:00:00",
+        "first_session_order": 4,
+        "source_row_number": 474
+      }
+    },
+    {
+      "emp_code": "227091",
+      "from": {
+        "class_code": "EL040",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-27T13:00:00",
+        "source_row_number": 447
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 531
+      }
+    },
+    {
+      "emp_code": "227092",
+      "from": {
+        "class_code": "EL005",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-01T14:00:00",
+        "source_row_number": 53
+      },
+      "to": {
+        "class_code": "EL009",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-15T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 95
+      }
+    },
+    {
+      "emp_code": "227122",
+      "from": {
+        "class_code": "EL001",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-20T10:00:00",
+        "source_row_number": 11
+      },
+      "to": {
+        "class_code": "EL022",
+        "course_name": "Communication 3",
+        "first_attendance_date": "2026-03-18T11:00:00",
+        "first_session_order": 2,
+        "source_row_number": 227
+      }
+    },
+    {
+      "emp_code": "227160",
+      "from": {
+        "class_code": "EL005",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-01T14:00:00",
+        "source_row_number": 50
+      },
+      "to": {
+        "class_code": "EL009",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-15T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 89
+      }
+    },
+    {
+      "emp_code": "227177",
+      "from": {
+        "class_code": "EL015",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2025-07-21T10:00:00",
+        "source_row_number": 150
+      },
+      "to": {
+        "class_code": "EL050",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-08T11:00:00",
+        "first_session_order": 2,
+        "source_row_number": 523
+      }
+    },
+    {
+      "emp_code": "227183",
+      "from": {
+        "class_code": "EL020",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-30T10:00:00",
+        "source_row_number": 186
+      },
+      "to": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 65
+      }
+    },
+    {
+      "emp_code": "227183",
+      "from": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-03-02T11:00:00",
+        "source_row_number": 65
+      },
+      "to": {
+        "class_code": "EL020",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 194
+      }
+    },
+    {
+      "emp_code": "227188",
+      "from": {
+        "class_code": "EL026",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-30T09:00:00",
+        "source_row_number": 271
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-13T13:00:00",
+        "first_session_order": 5,
+        "source_row_number": 438
+      }
+    },
+    {
+      "emp_code": "237008",
+      "from": {
+        "class_code": "EL027",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-11T13:00:00",
+        "source_row_number": 281
+      },
+      "to": {
+        "class_code": "EL009",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-15T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 88
+      }
+    },
+    {
+      "emp_code": "237043",
+      "from": {
+        "class_code": "EL006",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-30T14:00:00",
+        "source_row_number": 56
+      },
+      "to": {
+        "class_code": "EL026",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-26T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 274
+      }
+    },
+    {
+      "emp_code": "237061",
+      "from": {
+        "class_code": "EL026",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-30T09:00:00",
+        "source_row_number": 266
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-13T13:00:00",
+        "first_session_order": 5,
+        "source_row_number": 431
+      }
+    },
+    {
+      "emp_code": "237103",
+      "from": {
+        "class_code": "EL049",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-07-08T11:00:00",
+        "source_row_number": 517
+      },
+      "to": {
+        "class_code": "EL048",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-01T14:00:00",
+        "first_session_order": 3,
+        "source_row_number": 508
+      }
+    },
+    {
+      "emp_code": "237156",
+      "from": {
+        "class_code": "EL031",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-14T10:00:00",
+        "source_row_number": 324
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-10T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 398
+      }
+    },
+    {
+      "emp_code": "237157",
+      "from": {
+        "class_code": "EL023",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-29T14:00:00",
+        "source_row_number": 229
+      },
+      "to": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-12T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 337
+      }
+    },
+    {
+      "emp_code": "237196",
+      "from": {
+        "class_code": "EL023",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-29T14:00:00",
+        "source_row_number": 232
+      },
+      "to": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-12T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 339
+      }
+    },
+    {
+      "emp_code": "237245",
+      "from": {
+        "class_code": "EL026",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-30T09:00:00",
+        "source_row_number": 270
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-13T13:00:00",
+        "first_session_order": 5,
+        "source_row_number": 437
+      }
+    },
+    {
+      "emp_code": "242001",
+      "from": {
+        "class_code": "EL017",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-04-22T14:00:00",
+        "source_row_number": 164
+      },
+      "to": {
+        "class_code": "EL021",
+        "course_name": "Business English",
+        "first_attendance_date": "2025-02-25T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 199
+      }
+    },
+    {
+      "emp_code": "247037",
+      "from": {
+        "class_code": "EL011",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-22T09:00:00",
+        "source_row_number": 110
+      },
+      "to": {
+        "class_code": "EL010",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-15T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 102
+      }
+    },
+    {
+      "emp_code": "247038",
+      "from": {
+        "class_code": "EL011",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-22T09:00:00",
+        "source_row_number": 113
+      },
+      "to": {
+        "class_code": "EL010",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-15T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 108
+      }
+    },
+    {
+      "emp_code": "247064",
+      "from": {
+        "class_code": "EL040",
+        "course_name": "Foundation",
+        "last_attendance_date": "2026-03-27T13:00:00",
+        "source_row_number": 446
+      },
+      "to": {
+        "class_code": "EL051",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-14T15:00:00",
+        "first_session_order": 1,
+        "source_row_number": 530
+      }
+    },
+    {
+      "emp_code": "247078",
+      "from": {
+        "class_code": "EL011",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-22T09:00:00",
+        "source_row_number": 111
+      },
+      "to": {
+        "class_code": "EL010",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-15T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 106
+      }
+    },
+    {
+      "emp_code": "247082",
+      "from": {
+        "class_code": "EL044",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-11-24T13:00:00",
+        "source_row_number": 479
+      },
+      "to": {
+        "class_code": "EL043",
+        "course_name": "Foundation",
+        "first_attendance_date": "2025-10-08T14:00:00",
+        "first_session_order": 4,
+        "source_row_number": 475
+      }
+    },
+    {
+      "emp_code": "247098",
+      "from": {
+        "class_code": "EL031",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-14T10:00:00",
+        "source_row_number": 323
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-10T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 397
+      }
+    },
+    {
+      "emp_code": "247106",
+      "from": {
+        "class_code": "EL011",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-22T09:00:00",
+        "source_row_number": 109
+      },
+      "to": {
+        "class_code": "EL010",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-15T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 107
+      }
+    },
+    {
+      "emp_code": "247119",
+      "from": {
+        "class_code": "EL031",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-14T10:00:00",
+        "source_row_number": 325
+      },
+      "to": {
+        "class_code": "EL035",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-10T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 399
+      }
+    },
+    {
+      "emp_code": "247185",
+      "from": {
+        "class_code": "EL015",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2025-07-21T10:00:00",
+        "source_row_number": 152
+      },
+      "to": {
+        "class_code": "EL050",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2026-04-08T11:00:00",
+        "first_session_order": 2,
+        "source_row_number": 521
+      }
+    },
+    {
+      "emp_code": "247187",
+      "from": {
+        "class_code": "EL005",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-01T14:00:00",
+        "source_row_number": 51
+      },
+      "to": {
+        "class_code": "EL009",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-09-15T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 91
+      }
+    },
+    {
+      "emp_code": "247203",
+      "from": {
+        "class_code": "EL023",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-07-29T14:00:00",
+        "source_row_number": 231
+      },
+      "to": {
+        "class_code": "EL032",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-12T13:00:00",
+        "first_session_order": 1,
+        "source_row_number": 338
+      }
+    },
+    {
+      "emp_code": "247207",
+      "from": {
+        "class_code": "EL011",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-22T09:00:00",
+        "source_row_number": 112
+      },
+      "to": {
+        "class_code": "EL010",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-15T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 101
+      }
+    },
+    {
+      "emp_code": "247265",
+      "from": {
+        "class_code": "EL003",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-13T13:00:00",
+        "source_row_number": 26
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-20T14:00:00",
+        "first_session_order": 6,
+        "source_row_number": 432
+      }
+    },
+    {
+      "emp_code": "247298",
+      "from": {
+        "class_code": "EL003",
+        "course_name": "Communication 1",
+        "last_attendance_date": null,
+        "source_row_number": 30
+      },
+      "to": {
+        "class_code": "EL026",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-26T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 275
+      }
+    },
+    {
+      "emp_code": "247357",
+      "from": {
+        "class_code": "EL019",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-04-25T10:00:00",
+        "source_row_number": 180
+      },
+      "to": {
+        "class_code": "EL018",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-18T09:00:00",
+        "first_session_order": 1,
+        "source_row_number": 174
+      }
+    },
+    {
+      "emp_code": "247389",
+      "from": {
+        "class_code": "EL020",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-30T10:00:00",
+        "source_row_number": 185
+      },
+      "to": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 64
+      }
+    },
+    {
+      "emp_code": "247389",
+      "from": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-03-02T11:00:00",
+        "source_row_number": 64
+      },
+      "to": {
+        "class_code": "EL020",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 193
+      }
+    },
+    {
+      "emp_code": "247390",
+      "from": {
+        "class_code": "EL020",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-05-30T10:00:00",
+        "source_row_number": 187
+      },
+      "to": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 66
+      }
+    },
+    {
+      "emp_code": "247390",
+      "from": {
+        "class_code": "EL007",
+        "course_name": "Communication 2",
+        "last_attendance_date": "2026-01-16T11:00:00",
+        "source_row_number": 66
+      },
+      "to": {
+        "class_code": "EL020",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-07-03T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 195
+      }
+    },
+    {
+      "emp_code": "247405",
+      "from": {
+        "class_code": "EL003",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-13T13:00:00",
+        "source_row_number": 25
+      },
+      "to": {
+        "class_code": "EL026",
+        "course_name": "Communication 2",
+        "first_attendance_date": "2025-08-26T14:00:00",
+        "first_session_order": 1,
+        "source_row_number": 276
+      }
+    },
+    {
+      "emp_code": "247415",
+      "from": {
+        "class_code": "EL003",
+        "course_name": "Communication 1",
+        "last_attendance_date": "2025-08-13T13:00:00",
+        "source_row_number": 28
+      },
+      "to": {
+        "class_code": "EL039",
+        "course_name": "Communication 1",
+        "first_attendance_date": "2025-08-20T14:00:00",
+        "first_session_order": 6,
+        "source_row_number": 434
+      }
+    }
+  ],
+  "no_attendance_enrollment_examples": [
+    {
+      "source_row_number": 30,
+      "emp_code": "247298",
+      "class_code": "EL003",
+      "course_name": "Communication 1",
+      "start_date": "2025-02-27T10:59:59.712000",
+      "final_level": "Pre-Intermediate 2",
+      "entrance_level": "Pre-Intermediate",
+      "attendance_rows": 0,
+      "first_attendance_date": null,
+      "last_attendance_date": null,
+      "first_session_order": null,
+      "last_session_order": null
+    },
+    {
+      "source_row_number": 303,
+      "emp_code": "143084",
+      "class_code": "EL027",
+      "course_name": "Communication 3",
+      "start_date": "2026-03-26T13:59:59.712000",
+      "final_level": null,
+      "entrance_level": null,
+      "attendance_rows": 0,
+      "first_attendance_date": null,
+      "last_attendance_date": null,
+      "first_session_order": null,
+      "last_session_order": null
+    },
+    {
+      "source_row_number": 520,
+      "emp_code": "213817",
+      "class_code": "EL050",
+      "course_name": "Communication 1",
+      "start_date": "2026-04-08T10:59:59.712000",
+      "final_level": null,
+      "entrance_level": "Beginner 2",
+      "attendance_rows": 0,
+      "first_attendance_date": null,
+      "last_attendance_date": null,
+      "first_session_order": null,
+      "last_session_order": null
+    }
+  ],
+  "decision": {
+    "recommended_rule": "Set start_session_number from the first observed attendance session only when it is > 1. Do not mark prior sessions absent. Treat multi-class employee histories as transfer candidates requiring review unless source rows define the transfer explicitly."
+  }
+}

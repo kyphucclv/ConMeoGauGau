@@ -584,7 +584,31 @@ class CanonicalLoader:
             (employee_id, cohort_id),
         )
 
+    def attendance_first_session_map(self) -> dict[tuple[str, str, str], int]:
+        first_sessions: dict[tuple[str, str, str], int] = {}
+        for row in self.rows("ATTENDANCE_LOG"):
+            emp_code = clean_emp_code(row.values.get("Emp Code"))
+            class_code = clean_code(row.values.get("Class Code"))
+            course_name = clean_text(row.values.get("Course Name"))
+            session_order = parse_int(row.values.get("Session Order"))
+            if not emp_code or not class_code or not course_name or not session_order:
+                continue
+            key = (emp_code, class_code, course_name)
+            first_sessions[key] = min(first_sessions.get(key, session_order), session_order)
+        return first_sessions
+
+    def employee_class_map(self) -> dict[str, set[str]]:
+        classes_by_employee: dict[str, set[str]] = defaultdict(set)
+        for row in self.rows("sheet2"):
+            emp_code = clean_emp_code(row.values.get("Emp Code"))
+            class_code = clean_code(row.values.get("Class Code"))
+            if emp_code and class_code:
+                classes_by_employee[emp_code].add(class_code)
+        return classes_by_employee
+
     def load_memberships_and_enrollments(self) -> None:
+        first_sessions = self.attendance_first_session_map()
+        classes_by_employee = self.employee_class_map()
         for row in self.rows("sheet2"):
             emp_code = clean_emp_code(row.values.get("Emp Code"))
             class_code = clean_code(row.values.get("Class Code"))
@@ -605,6 +629,15 @@ class CanonicalLoader:
                 self.issue(row, "unknown_course", "run_enrollment", f"{emp_code}:{class_code}:{course_name}", {"course_name": course_name})
                 continue
             joined_at = parse_date(row.values.get("start date")) or date(1900, 1, 1)
+            start_session_number = first_sessions.get((emp_code, class_code, course_name), 1)
+            if len(classes_by_employee.get(emp_code, set())) > 1:
+                self.issue(
+                    row,
+                    "transfer_membership_unresolved",
+                    "run_enrollment",
+                    f"{emp_code}:{class_code}:{course_name}",
+                    {"classes": sorted(classes_by_employee[emp_code])},
+                )
             with self.conn.cursor() as cur:
                 cur.execute(
                     """
@@ -623,13 +656,14 @@ class CanonicalLoader:
                     """
                     INSERT INTO run_enrollments (
                         course_run_id, employee_id, cohort_membership_id,
-                        business_unit_id_snapshot, job_role_id_snapshot
+                        business_unit_id_snapshot, job_role_id_snapshot,
+                        start_session_number
                     )
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     ON CONFLICT (course_run_id, employee_id) DO NOTHING
                     RETURNING run_enrollment_id
                     """,
-                    (course_run_id, employee_id, membership_id, bu_id, role_id),
+                    (course_run_id, employee_id, membership_id, bu_id, role_id, start_session_number),
                 )
                 inserted = cur.fetchone()
             if inserted:

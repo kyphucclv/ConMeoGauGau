@@ -20,6 +20,7 @@ loaded into canonical tables.
 | `attendance_without_enrollment` | Attendance row cannot be matched to a run enrollment. |
 | `conflicting_session_structure` | Class/course/session/date values do not form one consistent schedule. |
 | `run_boundary_unresolved` | Source suggests a possible repeated run or session reset, but no stable run identifier exists. |
+| `transfer_membership_unresolved` | Employee appears across multiple classes/cohorts but source does not explicitly define transfer transaction dates. |
 | `unmapped_pic_employee` | PIC name/class exists but no employee code can be resolved. |
 
 ## `LEVEL_HELPER`

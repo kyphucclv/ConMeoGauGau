@@ -9,7 +9,9 @@
   - `migrations/003_etl_source_row_outcomes.sql`
   - `scripts/canonical_etl_v3.py`
   - `scripts/audit_course_run_inference.py`
+  - `scripts/audit_transfer_midrun.py`
   - `docs/reviews/phase-3-course-run-inference-audit.json`
+  - `docs/reviews/phase-3-transfer-midrun-audit.json`
 - Data entities affected: none in the working database; ETL was tested only on disposable database `english_class_p1_test`
 
 ## Contract review
@@ -52,6 +54,10 @@ The loader is conservative:
 - repeated run inference remains limited to Run 1 until stronger evidence exists.
 - possible repeated-run/run-boundary evidence is quarantined as
   `run_boundary_unresolved` instead of being forced into Run 1.
+- mid-run joins set `run_enrollments.start_session_number` from the first
+  observed attendance session when that session is greater than 1.
+- multi-class employee histories are quarantined as
+  `transfer_membership_unresolved` until a human confirms transfer boundaries.
 
 ## Test evidence
 
@@ -72,6 +78,7 @@ python .\scripts\canonical_etl_v3.py postgresql://postgres@localhost:5432/englis
 psql ... table counts
 psql ... issue counts
 python .\scripts\audit_course_run_inference.py .\okok_FIXED_v2.xlsx --output .\docs\reviews\phase-3-course-run-inference-audit.json
+python .\scripts\audit_transfer_midrun.py .\okok_FIXED_v2.xlsx --output .\docs\reviews\phase-3-transfer-midrun-audit.json
 ```
 
 Important output from first ETL run:
@@ -87,8 +94,9 @@ placements.inserted: 316
 evaluations.upserted: 326
 attendance.inserted: 5458
 issues.run_boundary_unresolved: 303
+issues.transfer_membership_unresolved: 143
 outcomes.loaded: 22031
-outcomes.issue: 851
+outcomes.issue: 994
 outcomes.ignored: 174
 ```
 
@@ -136,6 +144,7 @@ Issue counts:
 | `malformed_date` | 3 |
 | `missing_course` | 7 |
 | `run_boundary_unresolved` | 303 |
+| `transfer_membership_unresolved` | 143 |
 | `unknown_level` | 9 |
 | `unmapped_pic_employee` | 9 |
 
@@ -158,6 +167,29 @@ Repeated-run candidates requiring human review:
 | `EL046` | `Communication 1` | 110 | 2 |
 
 Decision: keep one `course_run` per `class_code + course_name` as Run 1 for now, but exclude attendance rows from the five unresolved run-boundary candidates from canonical attendance until reviewed.
+
+Transfer and mid-run audit:
+
+```text
+enrollment_rows: 530
+enrollments_without_attendance: 3
+midrun_candidate_count: 54
+multi_class_employee_count: 62
+transfer_candidate_count: 68
+```
+
+Mid-run import result:
+
+| `start_session_number` | Enrollment count |
+|---:|---:|
+| 1 | 476 |
+| 2 | 32 |
+| 3 | 8 |
+| 4 | 6 |
+| 5 | 6 |
+| 6 | 2 |
+
+Decision: set `start_session_number` from first observed attendance session when the first observed session is greater than 1. Do not create absent rows for earlier sessions. Multi-class histories remain unresolved transfer candidates until reviewed.
 
 Ignored outcome counts:
 
@@ -193,6 +225,7 @@ Representative traced issues:
 attendance_without_enrollment: ATTENDANCE_LOG row 957, 237117:EL008:Business English:2
 conflicting_session_structure: ATTENDANCE_LOG row 194, 247300:EL002:Communication 1:1
 run_boundary_unresolved: ATTENDANCE_LOG row 324, 193479:EL004:Communication 1:1
+transfer_membership_unresolved: sheet2 row 3, 173230:EL001:Communication 1
 duplicate_business_placement: Placement row 336, 247313
 malformed_date: ATTENDANCE_LOG row 4118, 227097:EL034:Business English:13
 missing_course: sheet2 row 532, 267040:EL052
@@ -214,13 +247,15 @@ What passed:
 - [x] Helper/header rows in `Placement` and trailing/helper rows in `PIC` have explicit ignored outcomes.
 - [x] Course-run inference was audited against workbook evidence.
 - [x] Possible run-boundary rows are quarantined instead of silently entering Run 1.
+- [x] Mid-run join candidates were audited and loaded with `start_session_number`.
+- [x] Multi-class employee histories are issue-routed instead of silently rewiring memberships.
 
 What is not yet approved:
 
 - [x] Full source-row outcome coverage exists for every core sheet.
 - [x] Helper/header rows in `Placement` and trailing helper rows in `PIC` have an explicit loaded/issue/ignored outcome rule.
 - [x] Course-run inference has been reviewed against repeated-course evidence; unresolved candidates are issues.
-- [ ] Transfer and mid-run join scenarios are not yet fully traced.
+- [x] Transfer and mid-run join scenarios are traced; transfer boundaries remain issues pending human confirmation.
 - [ ] Failure-state batch transitions are not yet implemented around canonical writes.
 
 Residual risks / deferred work:
