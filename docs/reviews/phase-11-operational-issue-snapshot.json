@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "database_name": "english_class",
+    "database_name": "english_class_p9_rehearsal",
     "source_name": "okok_FIXED_v2.xlsx",
     "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
-    "issue_snapshot_sha256": "da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12",
-    "generated_at": "2026-07-14T14:06:55+07:00"
+    "issue_snapshot_sha256": "ed7ccc3f61bb7e3f50e289945c303938dd3ef4a6f870871fc547603ccd594a76",
+    "generated_at": "2026-07-14T19:28:22+07:00"
   },
   "allowed_decisions": [
     "accept_legacy_lineage_limitation",
@@ -151,7 +151,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "103",
+      "entity_key": "102",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -195,7 +195,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "131",
+      "entity_key": "130",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -239,7 +239,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "134",
+      "entity_key": "135",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -261,7 +261,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "136",
+      "entity_key": "137",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -399,7 +399,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 3
+        "missing_enrollment_count": 4
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -421,7 +421,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 4
+        "missing_enrollment_count": 3
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -443,7 +443,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 4,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 5
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -465,7 +465,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 4,
-        "missing_enrollment_count": 5
+        "missing_enrollment_count": 2
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -487,7 +487,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -509,7 +509,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -531,7 +531,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 6,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -553,7 +553,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 6,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -575,7 +575,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -597,7 +597,7 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -685,7 +685,7 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 3
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -707,7 +707,7 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 3
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -855,7 +855,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "308",
+      "entity_key": "309",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -877,7 +877,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "311",
+      "entity_key": "310",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -899,7 +899,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "313",
+      "entity_key": "312",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -927,7 +927,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -949,7 +949,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 2
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -971,7 +971,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 4,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 2
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -993,7 +993,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 4,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1015,7 +1015,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1037,7 +1037,7 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 2
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1059,7 +1059,7 @@
       "details": {
         "course_run_id": 4,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 7
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1081,7 +1081,7 @@
       "details": {
         "course_run_id": 4,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 7
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1433,7 +1433,7 @@
       "details": {
         "course_run_id": 50,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 5
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1455,7 +1455,7 @@
       "details": {
         "course_run_id": 50,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 5
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1565,7 +1565,7 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1587,7 +1587,7 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1609,7 +1609,7 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1631,7 +1631,7 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1779,7 +1779,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "658",
+      "entity_key": "659",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -1801,7 +1801,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "661",
+      "entity_key": "660",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -1823,7 +1823,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "663",
+      "entity_key": "662",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -2065,7 +2065,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "766",
+      "entity_key": "765",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -2093,7 +2093,7 @@
       "details": {
         "course_run_id": 68,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2115,7 +2115,7 @@
       "details": {
         "course_run_id": 68,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2373,7 +2373,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "929",
+      "entity_key": "930",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -2395,12 +2395,12 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "93",
+      "entity_key": "931",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
-        "course_run_id": 8,
-        "sequence_in_run": 1,
+        "course_run_id": 77,
+        "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
@@ -2417,12 +2417,12 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "931",
+      "entity_key": "94",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
-        "course_run_id": 77,
-        "sequence_in_run": 5,
+        "course_run_id": 8,
+        "sequence_in_run": 1,
         "missing_enrollment_count": 1
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
@@ -2505,7 +2505,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "945",
+      "entity_key": "944",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -2621,7 +2621,7 @@
       "details": {
         "course_run_id": 80,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 8
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2643,7 +2643,7 @@
       "details": {
         "course_run_id": 80,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 8
+        "missing_enrollment_count": 2
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [

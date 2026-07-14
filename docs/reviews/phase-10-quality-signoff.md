@@ -4,11 +4,11 @@ Status: **Quality remediation complete; final cutover authorization pending**
 
 ## Snapshot identity
 
-- Database: `english_class`
+- Database: `english_class_p9_rehearsal`
 - Source workbook: `okok_FIXED_v2.xlsx`
-- Source checksum: `d1447abfe9caa8010212f5086abb881154848004bed8806e0186b3741d2c0af3`
+- Source checksum: `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
 - Issue snapshot SHA-256: `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`
-- Generated at: `2026-07-13T15:46:41+07:00`
+- Generated at: `2026-07-14T19:29:55+07:00`
 - Open unique issues: **0**
 - P1 rows excluded from canonical enrollment/attendance facts: **0**
 - P2 lineage/reference issues requiring acceptance: **0**
