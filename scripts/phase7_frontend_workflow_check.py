@@ -84,18 +84,29 @@ def seed(conn) -> dict[str, int]:
     return ids
 
 
+def _workflow_sources() -> dict[str, str]:
+    """UI workflow sources: the frontend_workflows package (or legacy module)."""
+    package_dir = ROOT / "frontend_workflows"
+    if package_dir.is_dir():
+        return {
+            f"frontend_workflows/{path.name}": path.read_text(encoding="utf-8")
+            for path in sorted(package_dir.glob("*.py"))
+        }
+    return {"frontend_workflows.py": (ROOT / "frontend_workflows.py").read_text(encoding="utf-8")}
+
+
 def assert_static_ui_contract() -> None:
-    files = ["streamlit_app.py", "frontend_workflows.py"]
+    sources = {"streamlit_app.py": (ROOT / "streamlit_app.py").read_text(encoding="utf-8")}
+    sources.update(_workflow_sources())
     forbidden = ["st.exception", "Show SQL", "PostgreSQL connection string", "use_container_width"]
-    for filename in files:
-        text = (ROOT / filename).read_text(encoding="utf-8")
+    for filename, text in sources.items():
         for pattern in forbidden:
             if pattern in text:
                 raise AssertionError(f"{filename} contains forbidden UI pattern: {pattern}")
         for sql_pattern in ("fetch_all(", "SELECT ", "FROM ", "JOIN ", "WHERE "):
             if sql_pattern in text:
                 raise AssertionError(f"{filename} must delegate read SQL to frontend_queries.py: {sql_pattern}")
-    if "BusinessService" not in (ROOT / "frontend_workflows.py").read_text(encoding="utf-8"):
+    if "BusinessService" not in "".join(_workflow_sources().values()):
         raise AssertionError("frontend workflows must call the service layer")
     app_text = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
     app_patterns = [
@@ -110,7 +121,7 @@ def assert_static_ui_contract() -> None:
     for pattern in app_patterns:
         if pattern not in app_text:
             raise AssertionError(f"streamlit app missing P12.1 shell pattern: {pattern}")
-    workflow_text = (ROOT / "frontend_workflows.py").read_text(encoding="utf-8")
+    workflow_text = "".join(_workflow_sources().values())
     required_patterns = [
         "on_select=\"rerun\"",
         "selection_mode=\"single-row\"",
