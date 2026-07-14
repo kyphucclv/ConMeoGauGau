@@ -1,6 +1,6 @@
 # Phase 13 HR-first UX specification
 
-Status: **Started after Phase 12 polish exposed non-technical usability risk**
+Status: **Architecture gated; implementation paused pending P13.0 integrity foundation**
 
 Baseline commit: `712d6fb phase12 polish evaluation workflow`
 
@@ -12,6 +12,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- Architecture and transaction review completed on 2026-07-14 in
+  `docs/reviews/phase-13-hr-first-architecture.md`.
+- The P13.1 shell is treated as an exploratory baseline. No additional workflow
+  implementation proceeds before P13.0 blockers are remediated.
 
 ## Problem statement
 
@@ -31,15 +35,21 @@ not from database-adjacent nouns.
 
 ## Delivery slices
 
-1. P13.1 HR-first app shell and task start page.
-2. P13.2 Learner journey wording and guided add/transfer flow.
-3. P13.3 Attendance flow wording and session selection simplification.
-4. P13.4 Monthly review as the default manager-facing review path.
-5. P13.5 Data follow-up wording and owner-action simplification.
+1. P13.0 identity, transaction, audit, lifecycle, and data-contract foundation.
+2. P13.1 HR-first app shell and task start page v2.
+3. P13.2 First-time, returning, continuation, and transfer learner journeys.
+4. P13.3 Event-time attendance, schedule, and correction journeys.
+5. P13.4 Final-result, completion, and monthly-review journeys.
+6. P13.5 Guided data follow-up and admin journeys.
+7. P13.6 Scenario-based HR UAT and rollout.
 
 Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
 `python scripts\phase8_automated_uat.py` when workflow behavior is touched, and
 `.\run_app.cmd -CheckOnly` before commit.
+
+P13.0 additionally requires disposable-database transaction and failure-
+injection tests for each affected business event. UI smoke checks alone are not
+an integrity gate.
 
 ## P13.1 scope
 
@@ -51,6 +61,10 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
 
 ## Acceptance notes
 
-- Phase 13 does not change database design or owner decisions.
+- Phase 13 preserves canonical grains and owner decisions. Targeted migrations
+  may be proposed when needed for idempotency or complete correction history;
+  each requires migration review and rollback evidence.
 - Technical records remain accessible for admin users.
 - The running app remains available at `http://127.0.0.1:8501`.
+- The full architecture, transaction contract, workflows, blockers, and gates
+  are defined in `docs/reviews/phase-13-hr-first-architecture.md`.

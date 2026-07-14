@@ -1,6 +1,6 @@
 # Target Data Architecture
 
-Status: **Canonical backend implemented; Phase 11 operations UX approved**
+Status: **Canonical backend implemented; Phase 13 HR-first application architecture gated**
 
 ## Core relationship
 
@@ -120,6 +120,12 @@ The application records each business event once:
 
 The approved task-oriented UI contract is in
 `docs/reviews/phase-11-operations-workspace-spec.md`.
+
+The HR-facing application boundary, transaction contract, lifecycle flows, and
+pre-implementation integrity gates are in
+`docs/reviews/phase-13-hr-first-architecture.md`. Phase 13 UI work must call one
+atomic application use case per confirmed HR business event; Streamlit state is
+never a durable source of truth.
 
 ## Legacy migration policy
 
