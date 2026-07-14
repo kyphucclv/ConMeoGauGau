@@ -1,6 +1,22 @@
 # Phase 11 UAT and rollout checklist
 
-Status: **Implementation verified; Codex UAT passed; owner decisions approved for production rollout validation**
+Status: **Phase 11 release-ready baseline; Codex UAT passed; owner decisions approved**
+
+## Release readiness baseline
+
+Phase 11 is ready to serve as the stable business/data baseline before Phase 12
+UX/UI work. The current baseline is tagged as `phase-11-ready`.
+
+Release-readiness checks rerun on 2026-07-14:
+
+- `python scripts\phase11_p11_1_integration.py`
+- `$env:PHASE11_DB='english_class'; python scripts\phase11_operational_issue_snapshot.py --validate-decisions`
+- `.\run_app.cmd -CheckOnly`
+
+The production operational snapshot remains approved at
+`da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`.
+Owner visual signoff may still be performed in the running app, but no open
+technical gate blocks Phase 12 UX/UI work.
 
 ## Evidence inspected
 

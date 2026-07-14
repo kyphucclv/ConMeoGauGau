@@ -1,8 +1,10 @@
 # Phase 11 owner resolution checklist
 
-Status: **Owner decisions approved for production rollout validation**
+Status: **Owner decisions approved; Phase 11 release-ready baseline**
 
 Generated from the production rollout validation snapshot on 2026-07-14.
+
+Release-ready baseline tag: `phase-11-ready`
 
 Source workbook: `okok_FIXED_v2.xlsx`
 

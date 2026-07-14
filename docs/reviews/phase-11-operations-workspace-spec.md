@@ -1,11 +1,12 @@
 # Phase 11 operations workspace specification
 
-Status: **Owner approved - implementation verified; production rollout gated by legacy data issue resolution**
+Status: **Owner approved - implementation verified; Phase 11 release-ready baseline**
 
 Owner approval date: 2026-07-13
 
 Implementation evidence:
 
+- Release-ready baseline tag: `phase-11-ready`.
 - P11.1 learner transaction gate passed on 2026-07-14 through
   `python scripts\phase11_p11_1_integration.py`.
 - P11.2 learner workspace gate passed on 2026-07-14 through
