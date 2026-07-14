@@ -439,7 +439,6 @@ def render_cohort_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) ->
     """))
     cohorts = options(refs["cohorts"], "cohort_id", "class_code", "display_name")
     employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
-    memberships = options(refs["active_memberships"], "cohort_membership_id", "class_code", "emp_code", "full_name")
 
     with st.form("cohort_create"):
         st.markdown("Create cohort")
@@ -470,34 +469,12 @@ def render_cohort_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) ->
         ):
             st.rerun()
 
-    with st.form("membership_add"):
-        st.markdown("Add cohort membership")
-        cohort_id = selected_id("Cohort", cohorts, key="membership_cohort")
-        employee_id = selected_id("Employee", employees, key="membership_employee")
-        start_date = st.date_input("Membership start date", value=date.today())
-        submitted = st.form_submit_button("Add membership", icon=":material/group_add:")
-    if submitted and cohort_id and employee_id:
-        if safe_submit(pool, actor, lambda svc: svc.add_membership(cohort_id, employee_id, start_date)):
-            st.rerun()
-
-    with st.form("membership_transfer"):
-        st.markdown("Transfer membership")
-        membership_id = selected_id("Active membership", memberships, key="transfer_membership")
-        target_cohort_id = selected_id("Target cohort", cohorts, key="transfer_target_cohort")
-        transfer_date = st.date_input("Transfer date", value=date.today())
-        submitted = st.form_submit_button("Transfer membership", icon=":material/swap_horiz:")
-    if submitted and membership_id and target_cohort_id:
-        if safe_submit(pool, actor, lambda svc: svc.transfer_membership(membership_id, target_cohort_id, transfer_date)):
-            st.rerun()
-
 
 def render_course_run_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     st.dataframe(fetch_all(pool, "SELECT * FROM v_cohort_course_run_dashboard ORDER BY class_code, course_name, run_number LIMIT 200"))
     cohorts = options(refs["cohorts"], "cohort_id", "class_code", "display_name")
     courses = options(refs["courses"], "course_id", "course_code", "course_name")
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "run_number", "status")
-    employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
-    memberships = options(refs["active_memberships"], "cohort_membership_id", "class_code", "emp_code", "full_name")
 
     with st.form("course_run_create"):
         st.markdown("Create course run")
@@ -518,30 +495,6 @@ def render_course_run_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
         submitted = st.form_submit_button("Update status", icon=":material/published_with_changes:")
     if submitted and run_id:
         if safe_submit(pool, actor, lambda svc: svc.change_course_run_status(run_id, status, end_date=end_date if apply_end_date else None)):
-            st.rerun()
-
-    with st.form("enroll"):
-        st.markdown("Enroll learner")
-        run_id = selected_id("Course run", runs, key="enroll_run")
-        employee_id = selected_id("Employee", employees, key="enroll_employee")
-        membership_label = st.selectbox("Cohort membership", [""] + list(memberships.keys()), key="enroll_membership")
-        start_session = st.number_input("Start session number", min_value=1, value=1, step=1)
-        submitted = st.form_submit_button("Enroll", icon=":material/person_add:")
-    if submitted and run_id and employee_id:
-        membership_id = memberships.get(membership_label)
-        if safe_submit(pool, actor, lambda svc: svc.enroll(run_id, employee_id, membership_id, int(start_session))):
-            st.rerun()
-
-    enrollments = options(refs["enrollments"], "run_enrollment_id", "class_code", "course_code", "run_number", "emp_code", "status")
-    with st.form("enrollment_transfer"):
-        st.markdown("Transfer enrollment")
-        enrollment_id = selected_id("Enrollment", enrollments, key="transfer_enrollment")
-        target_run_id = selected_id("Target course run", runs, key="transfer_target_run")
-        transfer_date = st.date_input("Enrollment transfer date", value=date.today())
-        start_session = st.number_input("Target start session number", min_value=1, value=1, step=1, key="transfer_start_session")
-        submitted = st.form_submit_button("Transfer enrollment", icon=":material/move_up:")
-    if submitted and enrollment_id and target_run_id:
-        if safe_submit(pool, actor, lambda svc: svc.transfer_enrollment(enrollment_id, target_run_id, transfer_date, int(start_session))):
             st.rerun()
 
 

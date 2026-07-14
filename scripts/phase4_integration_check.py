@@ -176,12 +176,16 @@ def run_gate(database_url: str) -> dict[str, object]:
             "P4-TRANSFER",
             "Phase Four Transfer",
             employment_status="active",
+            business_unit_id=ids["business_unit_id"],
+            job_role_id=ids["job_role_id"],
+            valid_from=date(2026, 1, 1),
         ).entity_id
 
         cohort = editor.create_cohort("P4-COHORT", "Phase 4 Cohort").entity_id
         target_cohort = editor.create_cohort("P4-TARGET", "Phase 4 Target").entity_id
         editor.assign_pic(cohort, pic, date(2026, 1, 1))
         membership = editor.add_membership(cohort, student, date(2026, 1, 1)).entity_id
+        transfer_membership = editor.add_membership(cohort, transfer_student, date(2026, 1, 1)).entity_id
 
         run = editor.create_course_run(cohort, ids["course_a_id"], start_date=date(2026, 1, 2))
         assert run.values["run_number"] == 1
@@ -193,12 +197,12 @@ def run_gate(database_url: str) -> dict[str, object]:
         concurrent_run_numbers = run_concurrent_course_run_check(database_url, ids["phase4_editor"], ids["course_b_id"])
 
         enrollment = editor.enroll(run.entity_id, student, membership).entity_id
-        transfer_enrollment = editor.enroll(run.entity_id, transfer_student, start_session_number=2).entity_id
-        moved_enrollment = editor.transfer_enrollment(
+        transfer_enrollment = editor.enroll(run.entity_id, transfer_student, transfer_membership, start_session_number=2).entity_id
+        moved_enrollment = editor.transfer_learner(
             transfer_enrollment,
             target_run.entity_id,
             date(2026, 3, 15),
-            start_session_number=2,
+            confirmed_start_session_number=1,
         ).entity_id
         assert moved_enrollment != transfer_enrollment
 

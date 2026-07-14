@@ -42,6 +42,14 @@ ISSUE_POLICY = {
         "rollout_disposition": "Block rollout until only one active course-run enrollment remains for the employee.",
         "owner_decision_options": ["resolve_source", "reject_rollout"],
     },
+    "active_enrollment_membership_link_missing": {
+        "rollout_disposition": "Block rollout until each active enrollment is linked to its active cohort membership or re-created through the learner workflow.",
+        "owner_decision_options": ["resolve_source", "reject_rollout"],
+    },
+    "active_enrollment_snapshot_incomplete": {
+        "rollout_disposition": "Block rollout until each active enrollment has immutable BU and role snapshots from approved employee organization data.",
+        "owner_decision_options": ["resolve_source", "reject_rollout"],
+    },
     "missing_business_placement": {
         "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
         "owner_decision_options": ["resolve_source", "approve_unknown_placement_placeholder"],
@@ -312,7 +320,7 @@ def markdown_report(
             "Validation command:",
             "",
             "```powershell",
-            "python scripts\\phase11_operational_issue_snapshot.py --validate-decisions",
+            "$env:PHASE11_DB='english_class'; python scripts\\phase11_operational_issue_snapshot.py --validate-decisions",
             "```",
             "",
         ]

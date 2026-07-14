@@ -88,8 +88,22 @@ def run_fixture(database_url: str) -> dict[str, object]:
             job_role_id=ids["role_agent"],
             valid_from=date(2026, 1, 1),
         ).entity_id
-        midrun = editor.create_or_update_employee("RPT-002", "Midrun Learner", employment_status="active").entity_id
-        transfer = editor.create_or_update_employee("RPT-003", "Transfer Learner", employment_status="active").entity_id
+        midrun = editor.create_or_update_employee(
+            "RPT-002",
+            "Midrun Learner",
+            employment_status="active",
+            business_unit_id=ids["bu_sales"],
+            job_role_id=ids["role_agent"],
+            valid_from=date(2026, 1, 1),
+        ).entity_id
+        transfer = editor.create_or_update_employee(
+            "RPT-003",
+            "Transfer Learner",
+            employment_status="active",
+            business_unit_id=ids["bu_sales"],
+            job_role_id=ids["role_agent"],
+            valid_from=date(2026, 1, 1),
+        ).entity_id
         pic = editor.create_or_update_employee("RPT-PIC", "Reporting PIC", employment_status="active").entity_id
 
         with conn:
@@ -103,24 +117,20 @@ def run_fixture(database_url: str) -> dict[str, object]:
         cohort_b = editor.create_cohort("RPT-B", "Reporting Cohort B").entity_id
         editor.assign_pic(cohort_a, pic, date(2026, 1, 1))
         membership = editor.add_membership(cohort_a, learner, date(2026, 1, 1)).entity_id
+        midrun_membership = editor.add_membership(cohort_a, midrun, date(2026, 1, 1)).entity_id
+        transfer_membership = editor.add_membership(cohort_a, transfer, date(2026, 1, 1)).entity_id
 
         run_a = editor.create_course_run(cohort_a, ids["course_a"], start_date=date(2026, 1, 5)).entity_id
         run_b = editor.create_course_run(cohort_b, ids["course_b"], start_date=date(2026, 2, 1)).entity_id
         enrollment = editor.enroll(run_a, learner, membership, start_session_number=1).entity_id
-        midrun_enrollment = editor.enroll(run_a, midrun, start_session_number=2).entity_id
-        transfer_enrollment = editor.enroll(run_a, transfer, start_session_number=1).entity_id
-        moved_enrollment = editor.transfer_enrollment(transfer_enrollment, run_b, date(2026, 2, 1), start_session_number=2).entity_id
-
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE run_enrollments
-                    SET business_unit_id_snapshot = %s, job_role_id_snapshot = %s
-                    WHERE run_enrollment_id IN (%s, %s, %s, %s)
-                    """,
-                    (ids["bu_sales"], ids["role_agent"], enrollment, midrun_enrollment, transfer_enrollment, moved_enrollment),
-                )
+        midrun_enrollment = editor.enroll(run_a, midrun, midrun_membership, start_session_number=2).entity_id
+        transfer_enrollment = editor.enroll(run_a, transfer, transfer_membership, start_session_number=1).entity_id
+        moved_enrollment = editor.transfer_learner(
+            transfer_enrollment,
+            run_b,
+            date(2026, 2, 1),
+            confirmed_start_session_number=1,
+        ).entity_id
 
         meeting_1 = editor.save_meeting(run_a, datetime(2026, 1, 7, 9, 0, tzinfo=timezone.utc), 120, status="completed").entity_id
         meeting_cancelled = editor.save_meeting(run_a, datetime(2026, 1, 14, 9, 0, tzinfo=timezone.utc), 120).entity_id

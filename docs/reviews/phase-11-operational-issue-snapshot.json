@@ -4,7 +4,7 @@
     "source_name": "okok_FIXED_v2.xlsx",
     "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
     "issue_snapshot_sha256": "da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12",
-    "generated_at": "2026-07-14T12:22:03+07:00"
+    "generated_at": "2026-07-14T14:06:55+07:00"
   },
   "allowed_decisions": [
     "accept_legacy_lineage_limitation",

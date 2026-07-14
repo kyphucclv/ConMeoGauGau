@@ -118,6 +118,7 @@ def verify_migrations(conn) -> list[str]:
         "014_phase11_unknown_placement_placeholder",
         "015_phase11_unknown_placement_numeric_fix",
         "016_phase11_runtime_invariants",
+        "017_phase11_enrollment_membership_snapshot_remediation",
     ]
     assert versions == expected
     return versions
@@ -153,8 +154,22 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
         valid_from=date(2026, 8, 1),
     ).entity_id
     pic = editor.create_or_update_employee("UAT-PIC", "UAT PIC", employment_status="active").entity_id
-    midrun = editor.create_or_update_employee("UAT-MID", "Mid Course Learner", employment_status="active").entity_id
-    transfer = editor.create_or_update_employee("UAT-TRANSFER", "Transfer Learner", employment_status="active").entity_id
+    midrun = editor.create_or_update_employee(
+        "UAT-MID",
+        "Mid Course Learner",
+        employment_status="active",
+        business_unit_id=ids["original_bu"],
+        job_role_id=ids["original_role"],
+        valid_from=date(2026, 8, 1),
+    ).entity_id
+    transfer = editor.create_or_update_employee(
+        "UAT-TRANSFER",
+        "Transfer Learner",
+        employment_status="active",
+        business_unit_id=ids["original_bu"],
+        job_role_id=ids["original_role"],
+        valid_from=date(2026, 8, 1),
+    ).entity_id
 
     with conn:
         with conn.cursor() as cur:
@@ -167,6 +182,7 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     cohort_b = editor.create_cohort("UAT-B", "UAT Cohort B", status="active").entity_id
     editor.assign_pic(cohort_a, pic, date(2026, 8, 1))
     membership = editor.add_membership(cohort_a, learner, date(2026, 8, 1)).entity_id
+    midrun_membership = editor.add_membership(cohort_a, midrun, date(2026, 8, 1)).entity_id
     transfer_membership = editor.add_membership(cohort_b, transfer, date(2026, 8, 1)).entity_id
 
     run_a = editor.create_course_run(cohort_a, ids["course_a"], start_date=date(2026, 8, 3)).entity_id
@@ -175,7 +191,7 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     editor.change_course_run_status(run_b, "active")
 
     enrollment = editor.enroll(run_a, learner, membership, start_session_number=1).entity_id
-    midrun_enrollment = editor.enroll(run_a, midrun, start_session_number=2).entity_id
+    midrun_enrollment = editor.enroll(run_a, midrun, midrun_membership, start_session_number=2).entity_id
     transfer_enrollment = editor.enroll(run_b, transfer, transfer_membership, start_session_number=3).entity_id
 
     meeting = editor.save_meeting(run_a, datetime(2026, 8, 3, 9, 0, tzinfo=timezone.utc), 120, status="completed").entity_id
@@ -422,7 +438,7 @@ def backup_restore_rehearsal(database_url: str, restored_db: str, maintenance_ur
         restored_counts = one(restored_conn, "SELECT count(*) AS employees FROM employees")
         assert source_counts["employees"] == restored_counts["employees"]
         restored_schema = one(restored_conn, "SELECT count(*) AS versions FROM schema_migrations")
-        assert restored_schema["versions"] == 16
+        assert restored_schema["versions"] == 17
         return {"restored_employees": restored_counts["employees"], "restored_migrations": restored_schema["versions"]}
     finally:
         source_conn.close()

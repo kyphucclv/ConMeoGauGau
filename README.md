@@ -85,8 +85,9 @@ Latest rehearsal evidence is recorded in
 `docs/reviews/phase-9-cutover-rehearsal.md`.
 
 The current local production database is applied through
-`016_phase11_runtime_invariants`, which enforces attendance/enrollment
-course-run consistency at the database layer.
+`017_phase11_enrollment_membership_snapshot_remediation`, which enforces
+attendance/enrollment course-run consistency plus active enrollment membership
+and snapshot completeness at the database layer.
 
 ## Files
 

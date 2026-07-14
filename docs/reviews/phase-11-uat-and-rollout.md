@@ -42,7 +42,7 @@ records: 173 high-severity and 82 warnings. It preserved `365` employees,
 remaining findings. Owner decisions for supported legacy exceptions and
 placeholders are recorded, and `--validate-decisions` passes for the current
 snapshot. The current schema chain now includes
-`016_phase11_runtime_invariants`.
+`017_phase11_enrollment_membership_snapshot_remediation`.
 
 ## Owner UAT scenarios
 
@@ -61,7 +61,7 @@ snapshot. The current schema chain now includes
    disposable database.
 2. Query `schema_migrations`; current production must have the known chain
    through `007_session_occurrences_and_pic_labels` before applying P11.
-3. Apply migrations `008` through `015` using the restricted migration role.
+3. Apply migrations `008` through `017` using the restricted migration role.
 4. Run `python scripts\phase8_automated_uat.py` against a disposable copy, then
    smoke-test the app using the restricted application role.
 5. Generate `docs/reviews/phase-11-operational-issue-snapshot.json` from the
@@ -122,8 +122,10 @@ Phase 11 was rolled out to the local production database `english_class` on
   with `365` employees, `7` schema migrations, `552` run enrollments, and
   `6,281` attendance rows.
 - Production migrations now applied through
-  `016_phase11_runtime_invariants`; the follow-up hardening migration adds
-  database enforcement for attendance/enrollment course-run consistency.
+  `017_phase11_enrollment_membership_snapshot_remediation`; the follow-up
+  hardening migrations add database enforcement for attendance/enrollment
+  course-run consistency plus active enrollment membership and snapshot
+  completeness.
 - Production counts after rollout: `365` employees, `52` cohorts, `84` course
   runs, `552` run enrollments, `6,281` attendance rows, and `0` open quality
   issues.

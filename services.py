@@ -251,14 +251,27 @@ class BusinessService:
     def enroll(self, course_run_id: int, employee_id: int, membership_id: int | None = None, start_session_number: int = 1) -> CommandResult:
         def op(cur):
             if start_session_number < 1: raise CommandError("invalid_input","start_session_number must be positive")
+            if membership_id is None: raise CommandError("invalid_input","active cohort membership is required for enrollment")
+            cur.execute("SELECT cohort_id FROM course_runs WHERE course_run_id=%s", (course_run_id,))
+            run = cur.fetchone()
+            if not run: raise CommandError("not_found","course run not found")
+            cur.execute("SELECT employee_id,cohort_id,status FROM cohort_memberships WHERE cohort_membership_id=%s FOR UPDATE", (membership_id,))
+            membership = cur.fetchone()
+            if not membership: raise CommandError("not_found","cohort membership not found")
+            if membership[0] != employee_id or membership[1] != run[0]:
+                raise CommandError("invalid_input","cohort membership must belong to the employee and course run cohort")
+            if membership[2] != "active":
+                raise CommandError("invalid_state","cohort membership must be active")
+            cur.execute("SELECT business_unit_id,job_role_id FROM employee_org_history WHERE employee_id=%s AND is_current", (employee_id,))
+            org = cur.fetchone()
+            if not org or org[0] is None or org[1] is None:
+                raise CommandError("invalid_state","current employee BU and role are required for enrollment")
             cur.execute("""INSERT INTO run_enrollments(
                             course_run_id,employee_id,cohort_membership_id,start_session_number,
                             business_unit_id_snapshot,job_role_id_snapshot
                          )
-                         SELECT %s,%s,%s,%s,eoh.business_unit_id,eoh.job_role_id
-                         FROM (SELECT 1) seed
-                         LEFT JOIN employee_org_history eoh ON eoh.employee_id=%s AND eoh.is_current
-                         RETURNING run_enrollment_id""",(course_run_id,employee_id,membership_id,start_session_number,employee_id))
+                         VALUES(%s,%s,%s,%s,%s,%s)
+                         RETURNING run_enrollment_id""",(course_run_id,employee_id,membership_id,start_session_number,org[0],org[1]))
             entity_id=cur.fetchone()[0]; self._audit(cur,"enrollment.create","run_enrollment",entity_id); return CommandResult("run_enrollment",entity_id,{})
         return self._run({"admin","editor"},op)
 
@@ -377,6 +390,8 @@ class BusinessService:
             source = cur.fetchone()
             if not source: raise CommandError("invalid_state", "enrollment is not active or does not exist")
             employee_id, source_membership_id, source_cohort_id, source_course_run_id = source
+            if not source_membership_id:
+                raise CommandError("invalid_state", "active enrollment must be linked to its cohort membership before transfer")
             cur.execute("SELECT cr.cohort_id,c.capacity FROM course_runs cr JOIN cohorts c ON c.cohort_id=cr.cohort_id WHERE cr.course_run_id=%s FOR UPDATE", (target_course_run_id,))
             target = cur.fetchone()
             if not target: raise CommandError("not_found", "target course run not found")
@@ -388,13 +403,11 @@ class BusinessService:
             cur.execute("SELECT count(*) FROM cohort_memberships WHERE cohort_id=%s AND status='active'", (target_cohort_id,))
             if capacity is not None and cur.fetchone()[0] >= capacity: raise CommandError("capacity_exceeded", "target cohort is at capacity")
             cur.execute("UPDATE run_enrollments SET status='transferred' WHERE run_enrollment_id=%s", (run_enrollment_id,))
-            if source_membership_id:
-                cur.execute("UPDATE cohort_memberships SET end_date=%s,status='transferred' WHERE cohort_membership_id=%s", (transfer_date, source_membership_id))
+            cur.execute("UPDATE cohort_memberships SET end_date=%s,status='transferred' WHERE cohort_membership_id=%s", (transfer_date, source_membership_id))
             cur.execute("""INSERT INTO cohort_memberships(cohort_id,employee_id,start_date,status)
                            VALUES(%s,%s,%s,'active') RETURNING cohort_membership_id""", (target_cohort_id, employee_id, transfer_date))
             target_membership_id = cur.fetchone()[0]
-            if source_membership_id:
-                cur.execute("UPDATE cohort_memberships SET transfer_to_membership_id=%s WHERE cohort_membership_id=%s", (target_membership_id, source_membership_id))
+            cur.execute("UPDATE cohort_memberships SET transfer_to_membership_id=%s WHERE cohort_membership_id=%s", (target_membership_id, source_membership_id))
             cur.execute("""INSERT INTO run_enrollments(course_run_id,employee_id,cohort_membership_id,start_session_number,business_unit_id_snapshot,job_role_id_snapshot,transfer_from_enrollment_id)
                            VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING run_enrollment_id""",
                         (target_course_run_id, employee_id, target_membership_id, proposal, org[0], org[1], run_enrollment_id))
@@ -412,8 +425,18 @@ class BusinessService:
 
     def transfer_enrollment(self, run_enrollment_id: int, target_course_run_id: int, transfer_date: date, start_session_number: int = 1) -> CommandResult:
         def op(cur):
-            cur.execute("SELECT employee_id,cohort_membership_id,business_unit_id_snapshot,job_role_id_snapshot FROM run_enrollments WHERE run_enrollment_id=%s AND status='active' FOR UPDATE",(run_enrollment_id,)); old=cur.fetchone()
+            if start_session_number < 1: raise CommandError("invalid_input","start_session_number must be positive")
+            cur.execute("""SELECT re.employee_id,re.cohort_membership_id,re.business_unit_id_snapshot,re.job_role_id_snapshot,cr.cohort_id
+                           FROM run_enrollments re JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           WHERE re.run_enrollment_id=%s AND re.status='active' FOR UPDATE""",(run_enrollment_id,)); old=cur.fetchone()
             if not old: raise CommandError("invalid_state","enrollment is not active or does not exist")
+            if not old[1]: raise CommandError("invalid_state","active enrollment must be linked to its cohort membership before transfer")
+            if old[2] is None or old[3] is None: raise CommandError("invalid_state","enrollment organization snapshots are required before transfer")
+            cur.execute("SELECT cohort_id FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
+            target = cur.fetchone()
+            if not target: raise CommandError("not_found","target course run not found")
+            if target[0] != old[4]:
+                raise CommandError("invalid_input","use learner transfer for cross-cohort transfers")
             cur.execute("UPDATE run_enrollments SET status='transferred' WHERE run_enrollment_id=%s",(run_enrollment_id,))
             cur.execute("""INSERT INTO run_enrollments(course_run_id,employee_id,cohort_membership_id,start_session_number,business_unit_id_snapshot,job_role_id_snapshot,transfer_from_enrollment_id)
                          VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING run_enrollment_id""",(target_course_run_id,old[0],old[1],start_session_number,old[2],old[3],run_enrollment_id)); new_id=cur.fetchone()[0]

@@ -8,7 +8,7 @@ Status: **Owner decisions approved for current high-severity legacy issues**
 - Source workbook: `okok_FIXED_v2.xlsx`
 - Source checksum: `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
 - Operational issue snapshot SHA-256: `da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`
-- Generated at: `2026-07-14T12:22:03+07:00`
+- Generated at: `2026-07-14T14:06:55+07:00`
 - Total issues: **255**
 - High severity issues: **173**
 - Warning issues: **82**
