@@ -130,6 +130,9 @@ def assert_static_ui_contract() -> None:
         "data_issues_mode",
         "render_operational_decision_actions",
         "render_logged_quality_issues",
+        "monthly_review_mode",
+        "render_monthly_detail_tables",
+        "render_monthly_action_summary",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

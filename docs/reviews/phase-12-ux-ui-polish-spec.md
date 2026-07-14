@@ -24,6 +24,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- P12.5 monthly review export flow gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py`,
+  `python scripts\phase8_automated_uat.py`, and
+  `.\run_app.cmd -CheckOnly`.
 
 ## Objective
 
@@ -92,6 +96,15 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
   launch actions.
 - Move owner-approved remediation forms into a separate admin decision mode.
 - Move manually logged quality issues into a separate ledger mode.
+
+## P12.5 scope
+
+- Split monthly review into overview, detail tables, and summary export modes.
+- Keep KPI cards visible across all monthly review modes.
+- Keep overview focused on charts and high-level status.
+- Move detailed report tables into their own mode.
+- Move action summary save/export controls into a dedicated export mode with
+  saved/draft status.
 
 ## Acceptance notes
 

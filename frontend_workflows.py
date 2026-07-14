@@ -1148,6 +1148,12 @@ def render_monthly_review(pool, actor: AppUser) -> None:
     review_month = _month_start(selected)
     data = monthly_review_data(pool, review_month)
     summary = monthly_review_summary(data)
+    st.session_state.setdefault("monthly_review_mode", "Overview")
+    mode = st.segmented_control(
+        "Monthly review workflow",
+        ["Overview", "Detail tables", "Summary export"],
+        key="monthly_review_mode",
+    )
     with st.container(horizontal=True):
         st.metric("Active participants", summary["active"], border=True)
         st.metric("Repeated participants", summary["repeated"], border=True)
@@ -1156,6 +1162,13 @@ def render_monthly_review(pool, actor: AppUser) -> None:
         st.metric("Overall attendance", _percent(summary["attendance_ratio"]), border=True)
         st.metric("Below threshold", summary["low_count"], _percent(summary["low_rate"]), border=True, delta_color="inverse")
         st.metric("Improved latest test", f"{summary['improved_count']} / {summary['tested_count']}", _percent(summary["improved_rate"]), border=True)
+
+    if mode == "Summary export":
+        render_monthly_action_summary(pool, actor, review_month, data, summary)
+        return
+    if mode == "Detail tables":
+        render_monthly_detail_tables(data, summary)
+        return
 
     with st.container(border=True):
         st.subheader("Program status")
@@ -1168,9 +1181,25 @@ def render_monthly_review(pool, actor: AppUser) -> None:
         st.subheader("Participation")
         if data["course_participation"]:
             st.bar_chart(data["course_participation"], x="course_name", y="attendance_ratio")
-            st.dataframe(data["course_participation"], hide_index=True, column_config={
-                "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
-            })
+        else:
+            st.info("No participation activity for this month.")
+    with st.container(border=True):
+        st.subheader("Learning progress")
+        if data["level_distribution"]:
+            st.bar_chart(data["level_distribution"], x="course_name", y="learner_count", color="latest_level")
+        else:
+            st.info("No final evaluation activity for this month.")
+
+
+def render_monthly_detail_tables(data: dict, summary: dict) -> None:
+    with st.container(border=True):
+        st.subheader("Program status")
+        st.dataframe(data["program"], hide_index=True)
+    with st.container(border=True):
+        st.subheader("Participation")
+        st.dataframe(data["course_participation"], hide_index=True, column_config={
+            "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+        })
         st.dataframe(data["class_participation"], hide_index=True, column_config={
             "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
         })
@@ -1180,20 +1209,21 @@ def render_monthly_review(pool, actor: AppUser) -> None:
         })
     with st.container(border=True):
         st.subheader("Learning progress")
-        if data["level_distribution"]:
-            st.bar_chart(data["level_distribution"], x="course_name", y="learner_count", color="latest_level")
-            st.dataframe(data["level_distribution"], hide_index=True)
-        else:
-            st.info("No final evaluation activity for this month.")
+        st.dataframe(data["level_distribution"], hide_index=True)
         st.dataframe(data["progress"], hide_index=True)
-        st.caption(f"Courses created in month: {summary['new_course_count']}")
+        st.metric("Courses created", summary["new_course_count"], border=True)
         st.dataframe(data["new_courses"], hide_index=True)
 
+
+def render_monthly_action_summary(pool, actor: AppUser, review_month: date, data: dict, summary: dict) -> None:
     proposed = proposed_monthly_actions(summary)
     saved = data["action_summary"]
     defaults = saved or proposed
     st.subheader("Action summary")
-    st.caption("The proposed text is not an owner conclusion. It is saved only when HR explicitly selects Save.")
+    if saved:
+        st.badge("Saved summary", icon=":material/check_circle:", color="green")
+    else:
+        st.badge("Draft proposal", icon=":material/edit:", color="orange")
     with st.form("monthly_action_summary"):
         highlights = st.text_area("Highlights", value=defaults["highlights"])
         risks = st.text_area("Risks", value=defaults["risks"])
