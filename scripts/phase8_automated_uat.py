@@ -413,9 +413,9 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
     app.run(timeout=10)
     assert not app.exception
-    assert any("English class operations" in item.value for item in app.title)
+    assert any("English class HR workspace" in item.value for item in app.title)
     assert [tab.label for tab in app.tabs] == [
-        ":material/work: Operations",
+        ":material/home_work: HR workspace",
         ":material/table_chart: Reports",
         ":material/history: Audit",
     ]

@@ -12,7 +12,7 @@ from frontend_workflows import render_operations
 from reporting import REPORTS, metric_definitions, report_by_label, run_report
 
 
-st.set_page_config(page_title="English class operations", page_icon=":material/school:", layout="wide")
+st.set_page_config(page_title="English class HR workspace", page_icon=":material/school:", layout="wide")
 
 
 def configured_database_url() -> str:
@@ -58,17 +58,17 @@ def render_app_header(pool, user: AppUser) -> None:
         st.caption("Baseline: phase-11-ready")
 
     with st.container(horizontal=True, vertical_alignment="center"):
-        st.title("English class operations")
-        st.badge("Phase 12", icon=":material/design_services:", color="green")
+        st.title("English class HR workspace")
+        st.badge("Phase 13", icon=":material/accessibility_new:", color="green")
 
     snapshot = operations_snapshot(pool)
     with st.container(horizontal=True):
-        st.metric("Active employees", snapshot["active_employees"], border=True)
-        st.metric("Active learners", snapshot["active_learners"], border=True)
-        st.metric("Open course runs", snapshot["open_course_runs"], border=True)
-        st.metric("Operational issues", snapshot["operational_issues"], border=True)
-        st.metric("High severity", snapshot["high_issues"], border=True, delta_color="inverse")
-        st.metric("Open quality issues", snapshot["open_quality_issues"], border=True)
+        st.metric("People in scope", snapshot["active_employees"], border=True)
+        st.metric("Currently learning", snapshot["active_learners"], border=True)
+        st.metric("Open classes", snapshot["open_course_runs"], border=True)
+        st.metric("Needs review", snapshot["operational_issues"], border=True)
+        st.metric("Urgent review", snapshot["high_issues"], border=True, delta_color="inverse")
+        st.metric("Open follow-ups", snapshot["open_quality_issues"], border=True)
 
 
 def render_reports(pool) -> None:
@@ -129,12 +129,12 @@ def render_app() -> None:
     user = ensure_local_admin(pool)
     render_app_header(pool, user)
 
-    operations_tab, reports_tab, audit_tab = st.tabs(
-        [":material/work: Operations", ":material/table_chart: Reports", ":material/history: Audit"],
+    workspace_tab, reports_tab, audit_tab = st.tabs(
+        [":material/home_work: HR workspace", ":material/table_chart: Reports", ":material/history: Audit"],
         on_change="rerun",
     )
-    if operations_tab.open:
-        with operations_tab:
+    if workspace_tab.open:
+        with workspace_tab:
             render_operations(pool, user)
     if reports_tab.open:
         with reports_tab:

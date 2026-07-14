@@ -12,48 +12,122 @@ from reporting import monthly_review_data, monthly_review_summary, monthly_revie
 from services import BusinessService, CommandError
 
 
+HR_TASK_AREAS = [
+    "Start here",
+    "Learners",
+    "Attendance",
+    "Final results",
+    "Monthly review",
+    "Data follow-up",
+    "Class setup",
+    "Admin records",
+]
+
+
 def render_operations(pool, actor: AppUser) -> None:
-    st.subheader("Operations")
+    st.subheader("HR workspace")
     if actor.role not in {"admin", "editor"}:
         st.info("Viewer role can review reports but cannot change records.")
         return
 
+    if st.session_state.get("operations_section") not in HR_TASK_AREAS:
+        st.session_state["operations_section"] = "Start here"
     section = st.segmented_control(
-        "Workflow",
-        [
-            "Learners",
-            "Employees",
-            "Cohorts",
-            "Course runs",
-            "Schedule",
-            "Attendance",
-            "Evaluation",
-            "Review",
-            "Data issues",
-        ],
-        default="Learners",
+        "Task area",
+        HR_TASK_AREAS,
         key="operations_section",
     )
 
     refs = load_refs(pool)
-    if section == "Learners":
+    if section == "Start here":
+        render_hr_start(pool)
+    elif section == "Learners":
         render_learner_workspace(pool, actor, refs)
-    elif section == "Employees":
-        render_employee_workflow(pool, actor, refs)
-    elif section == "Cohorts":
-        render_cohort_workflow(pool, actor, refs)
-    elif section == "Course runs":
-        render_course_run_workflow(pool, actor, refs)
-    elif section == "Schedule":
-        render_schedule_workflow(pool, actor, refs)
     elif section == "Attendance":
         render_attendance_workflow(pool, actor, refs)
-    elif section == "Evaluation":
+    elif section == "Final results":
         render_evaluation_workflow(pool, actor, refs)
-    elif section == "Review":
-        render_review_workflow(pool, actor)
-    elif section == "Data issues":
+    elif section == "Monthly review":
+        render_monthly_review(pool, actor)
+    elif section == "Data follow-up":
         render_data_issues_workspace(pool, actor)
+    elif section == "Class setup":
+        render_class_setup_workspace(pool, actor, refs)
+    elif section == "Admin records":
+        render_admin_records_workspace(pool, actor, refs)
+
+
+def render_hr_start(pool) -> None:
+    rows = fetch_all(pool, """
+        SELECT
+            (SELECT count(*) FROM employees WHERE employment_status='active') AS active_people,
+            (SELECT count(*) FROM run_enrollments WHERE status='active') AS current_learners,
+            (SELECT count(*) FROM course_runs WHERE status IN ('planned','active')) AS open_classes,
+            (SELECT count(*) FROM v_operational_data_issues) AS review_items,
+            (SELECT count(*) FROM v_operational_data_issues WHERE severity='high') AS urgent_items,
+            (SELECT count(*) FROM data_quality_issues WHERE status='open') AS follow_ups
+    """)
+    summary = rows[0] if rows else {
+        "active_people": 0,
+        "current_learners": 0,
+        "open_classes": 0,
+        "review_items": 0,
+        "urgent_items": 0,
+        "follow_ups": 0,
+    }
+    with st.container(horizontal=True):
+        st.metric("Current learners", summary["current_learners"], border=True)
+        st.metric("Open classes", summary["open_classes"], border=True)
+        st.metric("Needs review", summary["review_items"], border=True)
+        st.metric("Urgent", summary["urgent_items"], border=True, delta_color="inverse")
+        st.metric("Follow-ups", summary["follow_ups"], border=True)
+
+    st.subheader("Common HR tasks")
+    with st.container(horizontal=True):
+        st.button("Find or add learner", icon=":material/person_search:", on_click=_open_operation_section, args=("Learners",))
+        st.button("Mark attendance", icon=":material/checklist:", on_click=_open_operation_section, args=("Attendance",))
+        st.button("Record final result", icon=":material/rate_review:", on_click=_open_operation_section, args=("Final results",))
+        st.button("Review this month", icon=":material/calendar_month:", on_click=_open_operation_section, args=("Monthly review",))
+        st.button("Resolve follow-ups", icon=":material/task_alt:", on_click=_open_operation_section, args=("Data follow-up",))
+
+    st.subheader("Setup and admin")
+    with st.container(horizontal=True):
+        st.button("Set up class", icon=":material/group_add:", on_click=_open_operation_section, args=("Class setup",))
+        st.button("Admin records", icon=":material/database:", on_click=_open_operation_section, args=("Admin records",))
+
+
+def render_class_setup_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.session_state.setdefault("class_setup_mode", "Create class")
+    mode = st.segmented_control(
+        "Class setup",
+        ["Create class", "Classes", "Course runs", "Sessions"],
+        key="class_setup_mode",
+    )
+    if mode == "Create class":
+        render_class_course_run_creator(pool, actor, refs)
+    elif mode == "Classes":
+        render_cohort_workflow(pool, actor, refs)
+    elif mode == "Course runs":
+        render_course_run_workflow(pool, actor, refs)
+    else:
+        render_schedule_workflow(pool, actor, refs)
+
+
+def render_admin_records_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    mode = st.segmented_control(
+        "Admin record type",
+        ["Employees", "Classes", "Course runs", "Sessions"],
+        default="Employees",
+        key="admin_records_mode",
+    )
+    if mode == "Employees":
+        render_employee_workflow(pool, actor, refs)
+    elif mode == "Classes":
+        render_cohort_workflow(pool, actor, refs)
+    elif mode == "Course runs":
+        render_course_run_workflow(pool, actor, refs)
+    else:
+        render_schedule_workflow(pool, actor, refs)
 
 
 def load_refs(pool) -> dict[str, list[dict]]:

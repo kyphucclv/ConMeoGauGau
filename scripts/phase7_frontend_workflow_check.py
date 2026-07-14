@@ -98,7 +98,7 @@ def assert_static_ui_contract() -> None:
         "operations_snapshot",
         "render_app_header",
         "phase-11-ready",
-        ":material/work: Operations",
+        ":material/home_work: HR workspace",
     ]
     for pattern in app_patterns:
         if pattern not in app_text:
@@ -137,6 +137,10 @@ def assert_static_ui_contract() -> None:
         "render_eligibility_override",
         "render_evaluation_record",
         "render_completion_action",
+        "HR_TASK_AREAS",
+        "render_hr_start",
+        "render_class_setup_workspace",
+        "render_admin_records_workspace",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:
