@@ -23,7 +23,9 @@ class AppUser:
 
 
 def hash_password(password: str) -> str:
-    iterations = 150000
+    # OWASP-recommended work factor for PBKDF2-HMAC-SHA256. Stored hashes
+    # embed their own iteration count, so older 150k hashes keep verifying.
+    iterations = 600000
     salt = os.urandom(16)
     derived = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
     return "pbkdf2_sha256${}${}${}".format(
