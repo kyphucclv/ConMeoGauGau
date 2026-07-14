@@ -847,20 +847,89 @@ def render_review_workflow(pool, actor: AppUser) -> None:
                 st.rerun()
 
 
+def _operational_issue_rows(pool) -> list[dict]:
+    return fetch_all(pool, """
+        SELECT severity, issue_code, entity_type, entity_key, title, workflow, details
+        FROM v_operational_data_issues
+        ORDER BY CASE severity WHEN 'high' THEN 0 ELSE 1 END, issue_code, entity_key
+        LIMIT 500
+    """)
+
+
+def _issue_filter_options(rows: list[dict], key: str) -> list[str]:
+    return ["All"] + sorted({row[key] for row in rows if row.get(key)})
+
+
+def _filtered_operational_issues(rows: list[dict], severity: str, workflow: str, issue_code: str) -> list[dict]:
+    return [
+        row for row in rows
+        if (severity == "All" or row["severity"] == severity.lower())
+        and (workflow == "All" or row["workflow"] == workflow)
+        and (issue_code == "All" or row["issue_code"] == issue_code)
+    ]
+
+
 def render_data_issues_workspace(pool, actor: AppUser) -> None:
     st.subheader("Data issues")
-    st.caption("Operational checks are derived from canonical data. Correct the source record; this inbox then updates automatically.")
-    rows = fetch_all(pool, """SELECT severity,issue_code,entity_type,entity_key,title,workflow,details
-                              FROM v_operational_data_issues
-                              ORDER BY CASE severity WHEN 'high' THEN 0 ELSE 1 END, issue_code, entity_key LIMIT 500""")
+    rows = _operational_issue_rows(pool)
+    high_count = sum(1 for row in rows if row["severity"] == "high")
+    warning_count = sum(1 for row in rows if row["severity"] == "warning")
+    workflow_count = len({row["workflow"] for row in rows})
+    with st.container(horizontal=True):
+        st.metric("Total issues", len(rows), border=True)
+        st.metric("High severity", high_count, border=True)
+        st.metric("Warnings", warning_count, border=True)
+        st.metric("Workflows", workflow_count, border=True)
+
     if rows:
-        st.dataframe(rows, hide_index=True)
-        workflows = sorted({row["workflow"] for row in rows})
+        with st.container(horizontal=True, vertical_alignment="bottom"):
+            severity_filter = st.segmented_control(
+                "Severity",
+                ["All", "High", "Warning"],
+                default="All",
+                key="issue_severity_filter",
+            )
+            workflow_filter = st.selectbox("Workflow", _issue_filter_options(rows, "workflow"), key="issue_workflow_filter")
+            code_filter = st.selectbox("Issue code", _issue_filter_options(rows, "issue_code"), key="issue_code_filter")
+        filtered_rows = _filtered_operational_issues(rows, severity_filter, workflow_filter, code_filter)
+        if filtered_rows:
+            event = st.dataframe(
+                filtered_rows,
+                key="operational_issue_grid",
+                on_select="rerun",
+                selection_mode="single-row",
+                hide_index=True,
+                column_config={
+                    "severity": st.column_config.TextColumn("Severity", pinned=True),
+                    "title": st.column_config.TextColumn("Title", width="large"),
+                    "details": st.column_config.JsonColumn("Details"),
+                },
+            )
+            if event.selection.rows:
+                selected_issue = filtered_rows[event.selection.rows[0]]
+                with st.container(border=True):
+                    st.markdown(f"**{selected_issue['title']}**")
+                    with st.container(horizontal=True):
+                        st.metric("Severity", selected_issue["severity"], border=True)
+                        st.metric("Workflow", selected_issue["workflow"], border=True)
+                        st.metric("Entity", f"{selected_issue['entity_type']} {selected_issue['entity_key']}", border=True)
+                    st.code(selected_issue["issue_code"])
+                    st.json(selected_issue["details"] or {})
+                    st.button(
+                        f"Open {selected_issue['workflow']}",
+                        icon=":material/open_in_new:",
+                        key=f"selected_issue_workflow_{selected_issue['workflow']}_{selected_issue['entity_type']}_{selected_issue['entity_key']}",
+                        on_click=_open_operation_section,
+                        args=(selected_issue["workflow"],),
+                    )
+        else:
+            st.info("No issues match the selected filters.")
+
+        workflows = sorted({row["workflow"] for row in filtered_rows})
         with st.container(horizontal=True):
             for workflow in workflows:
                 st.button(f"Open {workflow}", icon=":material/open_in_new:", key=f"issue_workflow_{workflow}",
                           on_click=_open_operation_section, args=(workflow,))
-        st.info("Use the matching Operations workflow to correct the source record. Derived issues are not manually closed.")
     else:
         st.success("No operational data issues are currently detected.")
 

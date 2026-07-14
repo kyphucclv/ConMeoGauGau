@@ -105,6 +105,10 @@ def assert_static_ui_contract() -> None:
         "course_participation",
         "class_participation",
         "Delivery rate",
+        "_operational_issue_rows",
+        "issue_severity_filter",
+        "operational_issue_grid",
+        "JsonColumn",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

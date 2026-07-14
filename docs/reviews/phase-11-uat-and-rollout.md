@@ -12,6 +12,8 @@ Status: **Implementation verified; owner decisions approved for production rollo
   fixture, KPI detail tables, editable versioned action summary, and XLSX bytes.
 - P11 data issues: an incomplete employee fixture appears in the operational
   inbox and disappears after organization and placement correction.
+- P11.5 inbox polish: issue metrics, filters, single-row detail selection, and
+  workflow launch actions are covered by the Phase 7 workflow gate.
 - Phase 8 UAT includes migration, restricted app smoke, backup, and restore.
 - Phase 9 production-shaped rehearsal applied the migration chain available at
   that time, loaded all `9,545` workbook rows idempotently, smoke-tested the
