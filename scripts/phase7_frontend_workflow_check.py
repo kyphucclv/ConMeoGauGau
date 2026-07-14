@@ -82,6 +82,16 @@ def assert_static_ui_contract() -> None:
                 raise AssertionError(f"{filename} contains forbidden UI pattern: {pattern}")
     if "BusinessService" not in (ROOT / "frontend_workflows.py").read_text(encoding="utf-8"):
         raise AssertionError("frontend workflows must call the service layer")
+    workflow_text = (ROOT / "frontend_workflows.py").read_text(encoding="utf-8")
+    required_patterns = [
+        "on_select=\"rerun\"",
+        "selection_mode=\"single-row\"",
+        "create_class_course_run",
+        "accept_new_options=True",
+    ]
+    for pattern in required_patterns:
+        if pattern not in workflow_text:
+            raise AssertionError(f"frontend workflows missing P11.2 pattern: {pattern}")
 
 
 def run_gate(database_url: str) -> dict[str, object]:
@@ -119,6 +129,35 @@ def run_gate(database_url: str) -> dict[str, object]:
         )
         assert pic_row["pic_employee_id"] is None
         assert pic_row["pic_label"] == "Phase Seven Team"
+        proposed_code = editor.propose_next_class_code().values["class_code"]
+        assert proposed_code == "EL001"
+        created_run = editor.create_class_course_run(
+            class_code=proposed_code,
+            display_name="Phase 7 Created Class",
+            course_id=ids["course_b"],
+            start_date=date(2026, 7, 5),
+            capacity=8,
+            status="active",
+            pic_label=" Phase   Seven   Team ",
+        )
+        created_class = one(
+            conn,
+            """
+            SELECT c.class_code,c.capacity,c.status,cr.run_number,cr.status AS run_status,cpa.pic_label
+            FROM course_runs cr
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN cohort_pic_assignments cpa ON cpa.cohort_id=c.cohort_id AND cpa.end_date IS NULL
+            WHERE cr.course_run_id=%s
+            """,
+            (created_run.entity_id,),
+        )
+        assert created_class["class_code"] == "EL001"
+        assert created_class["capacity"] == 8
+        assert created_class["status"] == "active"
+        assert created_class["run_number"] == 1
+        assert created_class["run_status"] == "active"
+        assert created_class["pic_label"] == "Phase Seven Team"
+        assert "Phase Seven Team" in editor.pic_label_suggestions("seven").values["labels"]
         membership = editor.add_membership(cohort, employee, date(2026, 7, 1)).entity_id
         membership_row = one(conn, "SELECT status FROM cohort_memberships WHERE cohort_membership_id=%s", (membership,))
         assert membership_row["status"] == "active"

@@ -169,6 +169,63 @@ class BusinessService:
             return CommandResult("pic_label", None, {"labels": [row[0] for row in cur.fetchall()]})
         return self._run({"admin", "editor", "viewer"}, op)
 
+    def create_class_course_run(
+        self,
+        *,
+        class_code: str,
+        display_name: str,
+        course_id: int,
+        start_date: date,
+        capacity: int,
+        status: str = "active",
+        pic_employee_id: int | None = None,
+        pic_label: str | None = None,
+    ) -> CommandResult:
+        """Create a class, current PIC, and first course run in one transaction."""
+        def op(cur):
+            code = _required(class_code, "class_code").strip().upper()
+            name = _required(display_name, "display_name").strip()
+            if status not in {"planned", "active"}:
+                raise CommandError("invalid_input", "initial class status must be planned or active")
+            if capacity <= 0:
+                raise CommandError("invalid_input", "capacity must be positive")
+            normalized_label = _normalize_label(pic_label)
+            if not pic_employee_id and not normalized_label:
+                raise CommandError("invalid_input", "PIC employee or team label is required")
+            cur.execute(
+                "SELECT expected_units,attendance_threshold_ratio FROM courses WHERE course_id=%s AND is_active",
+                (course_id,),
+            )
+            course = cur.fetchone()
+            if not course:
+                raise CommandError("not_found", "course not found")
+            cur.execute(
+                "INSERT INTO cohorts(class_code,display_name,status,capacity) VALUES(%s,%s,%s,%s) RETURNING cohort_id",
+                (code, name, status, capacity),
+            )
+            cohort_id = cur.fetchone()[0]
+            cur.execute(
+                "INSERT INTO cohort_pic_assignments(cohort_id,pic_employee_id,pic_label,start_date) VALUES(%s,%s,%s,%s) RETURNING cohort_pic_assignment_id",
+                (cohort_id, pic_employee_id, normalized_label, start_date),
+            )
+            pic_assignment_id = cur.fetchone()[0]
+            self._advisory_lock(cur, f"course_run:{cohort_id}:{course_id}")
+            cur.execute("""INSERT INTO course_runs(
+                               cohort_id,course_id,run_number,status,expected_units_snapshot,
+                               attendance_threshold_ratio_snapshot,start_date
+                           ) VALUES(%s,%s,1,%s,%s,%s,%s) RETURNING course_run_id""",
+                        (cohort_id, course_id, status, course[0], course[1], start_date))
+            course_run_id = cur.fetchone()[0]
+            self._audit(cur, "cohort.create", "cohort", cohort_id, {"source": "class_course_run"})
+            self._audit(cur, "cohort.pic.assign", "cohort_pic_assignment", pic_assignment_id, {"cohort_id": cohort_id})
+            self._audit(cur, "course_run.create", "course_run", course_run_id, {"cohort_id": cohort_id, "run_number": 1})
+            return CommandResult(
+                "course_run",
+                course_run_id,
+                {"cohort_id": cohort_id, "pic_assignment_id": pic_assignment_id, "run_number": 1},
+            )
+        return self._run({"admin", "editor"}, op)
+
     def assign_pic(
         self,
         cohort_id: int,

@@ -71,7 +71,14 @@ def load_refs(pool) -> dict[str, list[dict]]:
             ORDER BY c.class_code, e.full_name
             LIMIT 500
         """),
-        "courses": fetch_all(pool, "SELECT course_id, course_code, course_name FROM courses WHERE is_active ORDER BY course_name"),
+        "courses": fetch_all(pool, "SELECT course_id, course_code, course_name, expected_units FROM courses WHERE is_active ORDER BY course_name"),
+        "pic_labels": fetch_all(pool, """
+            SELECT DISTINCT ON (lower(pic_label)) pic_label
+            FROM cohort_pic_assignments
+            WHERE pic_label IS NOT NULL
+            ORDER BY lower(pic_label), cohort_pic_assignment_id DESC
+            LIMIT 200
+        """),
         "course_runs": fetch_all(pool, """
             SELECT cr.course_run_id, c.class_code, co.course_code, co.course_name, cr.run_number, cr.status
             FROM course_runs cr
@@ -145,6 +152,17 @@ def safe_submit(pool, actor: AppUser, fn) -> bool:
     return True
 
 
+def service_values(pool, actor: AppUser, fn) -> dict | None:
+    try:
+        with pooled_connection(pool) as conn:
+            return fn(BusinessService(conn, actor.user_id)).values
+    except CommandError as error:
+        st.error(error.message)
+    except Exception:
+        st.error("Unable to load this operation.")
+    return None
+
+
 def selected_id(label: str, values: dict[str, int], *, key: str) -> int | None:
     if not values:
         st.info(f"No {label.lower()} available.")
@@ -195,14 +213,13 @@ def _capacity_context(pool, course_run_id: int | None) -> dict | None:
 def _transfer_start_proposal(pool, actor: AppUser, target_course_run_id: int | None) -> int | None:
     if not target_course_run_id:
         return None
-    conn_ctx, svc = service(pool, actor)
-    try:
-        return svc.propose_transfer_start_session(target_course_run_id).values["start_session_number"]
-    except CommandError as error:
-        st.error(error.message)
-        return None
-    finally:
-        conn_ctx.__exit__(None, None, None)
+    values = service_values(pool, actor, lambda svc: svc.propose_transfer_start_session(target_course_run_id))
+    return values["start_session_number"] if values else None
+
+
+def _proposed_class_code(pool, actor: AppUser) -> str:
+    values = service_values(pool, actor, lambda svc: svc.propose_next_class_code())
+    return values["class_code"] if values else ""
 
 
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
@@ -245,18 +262,17 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
 
     filtered = [row for row in rows if matches(row)]
     st.caption(f"{len(filtered)} learner(s) found")
-    st.dataframe(filtered, hide_index=True, column_config={
+    event = st.dataframe(filtered, hide_index=True, key="learner_results", on_select="rerun", selection_mode="single-row", column_config={
         "employee_id": None, "run_enrollment_id": None,
         "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
         "start_session_number": st.column_config.NumberColumn("Start session"),
     })
-
-    learner_options = {f"{row['emp_code']} | {row['full_name']}": row for row in filtered}
-    selected_label = st.selectbox("Open learner", [""] + list(learner_options), key="learner_detail")
-    selected = learner_options.get(selected_label)
+    selected = filtered[event.selection.rows[0]] if event.selection.rows else None
     if selected:
         render_learner_detail(pool, actor, refs, selected)
 
+    st.divider()
+    render_class_course_run_creator(pool, actor, refs)
     st.divider()
     render_learner_onboarding(pool, actor, refs)
 
@@ -311,6 +327,55 @@ def render_learner_detail(pool, actor: AppUser, refs: dict[str, list[dict]], lea
     active_enrollment_id = learner["run_enrollment_id"]
     if active_enrollment_id:
         render_learner_transfer(pool, actor, refs, active_enrollment_id)
+
+
+def render_class_course_run_creator(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.subheader("Create class and course run")
+    courses = options(refs["courses"], "course_id", "course_code", "course_name", "expected_units")
+    employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
+    pic_labels = [row["pic_label"] for row in refs.get("pic_labels", []) if row["pic_label"]]
+    if "class_create_code" not in st.session_state:
+        st.session_state["class_create_code"] = _proposed_class_code(pool, actor)
+
+    with st.form("class_course_run_create"):
+        class_code = st.text_input("Class code", key="class_create_code")
+        display_name = st.text_input("Display name")
+        course_label = st.selectbox("Course", [""] + list(courses), key="class_run_course")
+        start_date = st.date_input("Start date", value=date.today(), key="class_run_start")
+        capacity = st.number_input("Capacity", min_value=1, value=12, step=1)
+        status = st.segmented_control("Initial status", ["planned", "active"], default="active")
+        pic_mode = st.segmented_control("PIC type", ["Team label", "Employee"], default="Team label", key="class_run_pic_mode")
+        pic_employee_id = None
+        pic_label = None
+        if pic_mode == "Employee":
+            pic_employee_id = selected_id("PIC employee", employees, key="class_run_pic_employee")
+        else:
+            pic_label = st.selectbox(
+                "PIC team label",
+                [""] + pic_labels,
+                accept_new_options=True,
+                placeholder="Select or type a team label",
+                key="class_run_pic_label",
+            )
+        submitted = st.form_submit_button("Create class", type="primary", icon=":material/add_circle:")
+    if submitted:
+        course_id = courses.get(course_label)
+        if not course_id:
+            st.error("Select a course.")
+        elif pic_mode == "Team label" and not (pic_label or "").strip():
+            st.error("PIC team label is required.")
+        elif safe_submit(pool, actor, lambda svc: svc.create_class_course_run(
+            class_code=class_code,
+            display_name=display_name,
+            course_id=course_id,
+            start_date=start_date,
+            capacity=int(capacity),
+            status=status,
+            pic_employee_id=pic_employee_id,
+            pic_label=pic_label if pic_mode == "Team label" else None,
+        )):
+            st.session_state.pop("class_create_code", None)
+            st.rerun()
 
 
 def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:

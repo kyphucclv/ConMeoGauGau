@@ -8,6 +8,9 @@ Implementation evidence:
 
 - P11.1 learner transaction gate passed on 2026-07-14 through
   `python scripts\phase11_p11_1_integration.py`.
+- P11.2 learner workspace gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py` and
+  `python scripts\phase8_automated_uat.py`.
 - End-to-end UAT and rollout evidence is tracked in
   `docs/reviews/phase-11-uat-and-rollout.md`.
 
