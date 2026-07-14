@@ -132,9 +132,17 @@ denominator while preserving present replacement credit and immutable linkage.
 - `scripts/canonical_etl_v3.py` — canonical v3 transformation.
 - `config/phase10_remediation.json` — checksum-bound, owner-approved source
   overrides and unresolved confirmation inventory.
-- `services.py` — transactional business commands.
-- `streamlit_app.py` + `frontend_workflows.py` — HR-facing page and workflow UI.
+- `services/` — transactional business commands, one module per workflow
+  concern (`base`, `employee_onboarding`, `membership_transfer`,
+  `class_schedule`, `meetings_units`, `attendance_makeup`,
+  `evaluation_completion`, `admin_remediation`).
+- `streamlit_app.py` + `frontend_workflows/` — HR-facing page and task-area
+  workflow modules (`operations_entry`, `learner_directory`,
+  `learner_journeys`, `attendance`, `evaluation`, `monthly_review`,
+  `data_issues`, `class_admin`, `schedule_admin`, `shared`).
 - `frontend_queries.py` — task-oriented canonical read models used by the UI.
+- `tests/` — fast disposable-database business-rule regression suite.
+- `legacy/` — archived pre-canonical prototype; do not run.
 - `.streamlit/config.toml` — local Streamlit server defaults; keep
   `.streamlit/secrets.toml` local and ignored.
 - `run_app.cmd` / `run_app.ps1` — Windows launcher and health check for the
