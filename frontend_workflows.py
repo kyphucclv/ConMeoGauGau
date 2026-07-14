@@ -685,15 +685,16 @@ def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) 
 
 def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
-    with st.container(horizontal=True, vertical_alignment="bottom"):
-        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
-        course_run_id = runs.get(run_label)
-        run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
-        units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
-        unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
-        session_unit_id = units.get(unit_label)
+    st.session_state.setdefault("attendance_workspace_mode", "Record roster")
+    mode = st.segmented_control(
+        "Attendance workflow",
+        ["Record roster", "Create session", "Correct absence"],
+        key="attendance_workspace_mode",
+    )
 
-    with st.container(border=True):
+    if mode == "Create session":
+        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_create_run")
+        course_run_id = runs.get(run_label)
         st.subheader("Create session")
         with st.form("attendance_session_create", border=False):
             row = st.container(horizontal=True, vertical_alignment="bottom")
@@ -716,10 +717,31 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
                 course_run_id, datetime.combine(starts_on, starts_time), int(duration), int(sequence),
             )):
                 st.rerun()
+        return
+
+    if mode == "Correct absence":
+        render_attendance_makeup(pool, actor, refs)
+        return
+
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
+        course_run_id = runs.get(run_label)
+        run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
+        units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
+        unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
+        session_unit_id = units.get(unit_label)
+
+    with st.container(horizontal=True):
+        st.button("Create session", icon=":material/add_circle:", on_click=_set_attendance_workspace_mode, args=("Create session",))
+        st.button("Correct absence", icon=":material/healing:", on_click=_set_attendance_workspace_mode, args=("Correct absence",))
 
     roster = None
     if course_run_id and session_unit_id:
         roster = service_values(pool, actor, lambda svc: svc.attendance_roster(course_run_id, session_unit_id))
+    if course_run_id and not run_units:
+        st.info("No sessions exist for the selected run.")
+    elif not course_run_id or not session_unit_id:
+        st.info("Select a class run and session.")
     if roster is not None:
         summary = _attendance_session_summary(pool, course_run_id, session_unit_id)
         with st.container(horizontal=True):
@@ -753,6 +775,12 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
             if safe_submit(pool, actor, lambda svc: svc.save_attendance_roster(course_run_id, session_unit_id, records)):
                 st.rerun()
 
+
+def _set_attendance_workspace_mode(mode: str) -> None:
+    st.session_state["attendance_workspace_mode"] = mode
+
+
+def render_attendance_makeup(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     absences = fetch_all(pool, """
         SELECT a.attendance_id, e.emp_code, e.full_name, c.class_code, co.course_code,
                su.sequence_in_run, a.effective_status
@@ -770,7 +798,7 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
     absence_options = options(absences, "attendance_id", "class_code", "course_code", "sequence_in_run", "emp_code")
     units = options(refs["session_units"], "session_unit_id", "class_code", "course_code", "run_number", "sequence_in_run", "unit_type")
     with st.form("attendance_makeup"):
-        st.markdown("Correct absence with make-up")
+        st.subheader("Correct absence with make-up")
         attendance_id = selected_id("Absent attendance", absence_options, key="makeup_attendance")
         makeup_unit_id = selected_id("Make-up session unit", units, key="makeup_unit")
         reason = st.text_input("Correction reason")

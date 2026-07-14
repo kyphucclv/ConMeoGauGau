@@ -16,6 +16,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- P12.3 attendance roster ergonomics gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py`,
+  `python scripts\phase8_automated_uat.py`, and
+  `.\run_app.cmd -CheckOnly`.
 
 ## Objective
 
@@ -66,6 +70,15 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
 - Add quick action buttons from search results into add/create modes.
 - Remove heavy dividers and always-visible secondary forms from the learner
   search flow.
+
+## P12.3 scope
+
+- Split attendance into explicit modes: record roster, create session, and
+  correct absence.
+- Keep roster mode focused on class/session selection, session status metrics,
+  and the editable full roster.
+- Move session creation and make-up correction out of the default roster path.
+- Add quick action buttons from roster mode into create/correct modes.
 
 ## Acceptance notes
 
