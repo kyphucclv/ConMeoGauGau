@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 from datetime import date, datetime, timezone
@@ -27,8 +28,23 @@ from services import BusinessService, CommandError
 
 DEFAULT_MAINTENANCE_URL = "postgresql://postgres@localhost:5432/postgres"
 DEFAULT_TEST_DB = "english_class_p8_test"
-PG_DUMP = Path(r"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe")
-PG_RESTORE = Path(r"C:\Program Files\PostgreSQL\18\bin\pg_restore.exe")
+def _pg_tool(name: str) -> Path:
+    """Resolve a PostgreSQL client tool from PATH or the newest local install."""
+    found = shutil.which(name)
+    if found:
+        return Path(found)
+    candidates = sorted(
+        Path(r"C:\Program Files\PostgreSQL").glob(f"*/bin/{name}.exe"),
+        key=lambda p: p.parent.parent.name,
+        reverse=True,
+    )
+    if candidates:
+        return candidates[0]
+    return Path(r"C:\Program Files\PostgreSQL") / "18" / "bin" / f"{name}.exe"
+
+
+PG_DUMP = _pg_tool("pg_dump")
+PG_RESTORE = _pg_tool("pg_restore")
 
 
 def one(conn, sql: str, params: tuple = ()):
