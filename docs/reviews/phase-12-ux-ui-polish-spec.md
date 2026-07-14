@@ -20,6 +20,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- P12.4 data issues remediation layout gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py`,
+  `python scripts\phase8_automated_uat.py`, and
+  `.\run_app.cmd -CheckOnly`.
 
 ## Objective
 
@@ -79,6 +83,15 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
   and the editable full roster.
 - Move session creation and make-up correction out of the default roster path.
 - Add quick action buttons from roster mode into create/correct modes.
+
+## P12.4 scope
+
+- Split data issues into explicit modes: issue inbox, owner decisions, and
+  logged issues.
+- Keep the default inbox focused on filter, row selection, details, and workflow
+  launch actions.
+- Move owner-approved remediation forms into a separate admin decision mode.
+- Move manually logged quality issues into a separate ledger mode.
 
 ## Acceptance notes
 

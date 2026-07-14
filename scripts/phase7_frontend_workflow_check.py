@@ -127,6 +127,9 @@ def assert_static_ui_contract() -> None:
         "attendance_workspace_mode",
         "_set_attendance_workspace_mode",
         "render_attendance_makeup",
+        "data_issues_mode",
+        "render_operational_decision_actions",
+        "render_logged_quality_issues",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

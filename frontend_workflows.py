@@ -945,6 +945,19 @@ def render_data_issues_workspace(pool, actor: AppUser) -> None:
         st.metric("Warnings", warning_count, border=True)
         st.metric("Workflows", workflow_count, border=True)
 
+    st.session_state.setdefault("data_issues_mode", "Issue inbox")
+    mode = st.segmented_control(
+        "Data issue workflow",
+        ["Issue inbox", "Owner decisions", "Logged issues"],
+        key="data_issues_mode",
+    )
+    if mode == "Owner decisions":
+        render_operational_decision_actions(pool, actor, rows)
+        return
+    if mode == "Logged issues":
+        render_logged_quality_issues(pool, actor)
+        return
+
     if rows:
         with st.container(horizontal=True, vertical_alignment="bottom"):
             severity_filter = st.segmented_control(
@@ -996,6 +1009,25 @@ def render_data_issues_workspace(pool, actor: AppUser) -> None:
                           on_click=_open_operation_section, args=(workflow,))
     else:
         st.success("No operational data issues are currently detected.")
+
+
+def render_operational_decision_actions(pool, actor: AppUser, rows: list[dict]) -> None:
+    if actor.role != "admin":
+        st.info("Only admins can apply owner-approved remediation actions.")
+        return
+
+    actionable_count = sum(
+        1 for row in rows
+        if row["issue_code"] in {
+            "incomplete_employee_profile",
+            "incomplete_attendance_roster",
+            "missing_business_placement",
+            "session_datetime_conflict",
+        }
+    )
+    with st.container(horizontal=True):
+        st.metric("Actionable rows", actionable_count, border=True)
+        st.metric("Current inbox rows", len(rows), border=True)
 
     if actor.role == "admin" and any(row["issue_code"] == "incomplete_employee_profile" for row in rows):
         with st.form("unknown_org_backfill"):
@@ -1066,7 +1098,9 @@ def render_data_issues_workspace(pool, actor: AppUser) -> None:
             elif safe_submit(pool, actor, lambda svc: svc.cancel_meeting(meeting_id, cancellation_reason)):
                 st.rerun()
 
-    st.markdown("Imported or manually logged quality issues")
+
+def render_logged_quality_issues(pool, actor: AppUser) -> None:
+    st.subheader("Imported or manually logged quality issues")
     ledger_rows = fetch_all(pool, """
         SELECT issue_id,issue_code,entity_type,entity_key,source_sheet,source_row_number,details,created_at
         FROM data_quality_issues WHERE status='open' ORDER BY created_at DESC LIMIT 300
