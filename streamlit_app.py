@@ -12,7 +12,7 @@ from frontend_workflows import render_operations
 from reporting import REPORTS, metric_definitions, report_by_label, run_report
 
 
-st.set_page_config(page_title="English Class Admin", layout="wide")
+st.set_page_config(page_title="English class operations", page_icon=":material/school:", layout="wide")
 
 
 def configured_database_url() -> str:
@@ -28,6 +28,49 @@ def cached_pool(conn_str: str):
     return create_pool(conn_str)
 
 
+def operations_snapshot(pool) -> dict:
+    rows = fetch_all(
+        pool,
+        """
+        SELECT
+            (SELECT count(*) FROM employees WHERE employment_status='active') AS active_employees,
+            (SELECT count(*) FROM run_enrollments WHERE status='active') AS active_learners,
+            (SELECT count(*) FROM course_runs WHERE status IN ('planned','active')) AS open_course_runs,
+            (SELECT count(*) FROM v_operational_data_issues) AS operational_issues,
+            (SELECT count(*) FROM v_operational_data_issues WHERE severity='high') AS high_issues,
+            (SELECT count(*) FROM data_quality_issues WHERE status='open') AS open_quality_issues
+        """,
+    )
+    return rows[0] if rows else {
+        "active_employees": 0,
+        "active_learners": 0,
+        "open_course_runs": 0,
+        "operational_issues": 0,
+        "high_issues": 0,
+        "open_quality_issues": 0,
+    }
+
+
+def render_app_header(pool, user: AppUser) -> None:
+    with st.sidebar:
+        st.badge(user.role.title(), icon=":material/verified_user:", color="blue")
+        st.caption(user.full_name)
+        st.caption("Baseline: phase-11-ready")
+
+    with st.container(horizontal=True, vertical_alignment="center"):
+        st.title("English class operations")
+        st.badge("Phase 12", icon=":material/design_services:", color="green")
+
+    snapshot = operations_snapshot(pool)
+    with st.container(horizontal=True):
+        st.metric("Active employees", snapshot["active_employees"], border=True)
+        st.metric("Active learners", snapshot["active_learners"], border=True)
+        st.metric("Open course runs", snapshot["open_course_runs"], border=True)
+        st.metric("Operational issues", snapshot["operational_issues"], border=True)
+        st.metric("High severity", snapshot["high_issues"], border=True, delta_color="inverse")
+        st.metric("Open quality issues", snapshot["open_quality_issues"], border=True)
+
+
 def render_reports(pool) -> None:
     st.subheader("Reports")
     selected_label = st.selectbox("Report", [report.label for report in REPORTS])
@@ -40,14 +83,14 @@ def render_reports(pool) -> None:
 
     st.caption(f"{len(rows)} rows")
     if rows:
-        st.dataframe(rows)
+        st.dataframe(rows, hide_index=True)
     else:
         st.info("No rows found.")
 
     definitions = metric_definitions(pool, report.metric_keys)
     if definitions:
         with st.expander("Metric definitions"):
-            st.dataframe(definitions)
+            st.dataframe(definitions, hide_index=True)
 
 
 def render_audit(pool, actor: AppUser) -> None:
@@ -65,13 +108,12 @@ def render_audit(pool, actor: AppUser) -> None:
         """,
     )
     if rows:
-        st.dataframe(rows)
+        st.dataframe(rows, hide_index=True)
     else:
         st.info("No audit events found.")
 
 
 def render_app() -> None:
-    st.title("English Class Admin")
     conn_str = configured_database_url()
     if not conn_str:
         st.error("Database credentials are not configured.")
@@ -85,9 +127,12 @@ def render_app() -> None:
         st.stop()
 
     user = ensure_local_admin(pool)
-    st.sidebar.success(f"{user.full_name} ({user.role})")
+    render_app_header(pool, user)
 
-    operations_tab, reports_tab, audit_tab = st.tabs(["Operations", "Reports", "Audit"], on_change="rerun")
+    operations_tab, reports_tab, audit_tab = st.tabs(
+        [":material/work: Operations", ":material/table_chart: Reports", ":material/history: Audit"],
+        on_change="rerun",
+    )
     if operations_tab.open:
         with operations_tab:
             render_operations(pool, user)

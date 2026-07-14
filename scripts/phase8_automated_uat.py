@@ -413,8 +413,12 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
     app.run(timeout=10)
     assert not app.exception
-    assert any("English Class Admin" in item.value for item in app.title)
-    assert [tab.label for tab in app.tabs] == ["Operations", "Reports", "Audit"]
+    assert any("English class operations" in item.value for item in app.title)
+    assert [tab.label for tab in app.tabs] == [
+        ":material/work: Operations",
+        ":material/table_chart: Reports",
+        ":material/history: Audit",
+    ]
     assert all(button.label != "Sign in" for button in app.button)
     assert len(app.segmented_control) >= 1
 

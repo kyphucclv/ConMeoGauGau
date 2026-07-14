@@ -92,6 +92,17 @@ def assert_static_ui_contract() -> None:
                 raise AssertionError(f"{filename} contains forbidden UI pattern: {pattern}")
     if "BusinessService" not in (ROOT / "frontend_workflows.py").read_text(encoding="utf-8"):
         raise AssertionError("frontend workflows must call the service layer")
+    app_text = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
+    app_patterns = [
+        "page_icon=\":material/school:\"",
+        "operations_snapshot",
+        "render_app_header",
+        "phase-11-ready",
+        ":material/work: Operations",
+    ]
+    for pattern in app_patterns:
+        if pattern not in app_text:
+            raise AssertionError(f"streamlit app missing P12.1 shell pattern: {pattern}")
     workflow_text = (ROOT / "frontend_workflows.py").read_text(encoding="utf-8")
     required_patterns = [
         "on_select=\"rerun\"",
