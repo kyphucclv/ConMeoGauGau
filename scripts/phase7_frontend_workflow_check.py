@@ -121,6 +121,9 @@ def assert_static_ui_contract() -> None:
         "operational_issue_grid",
         "JsonColumn",
         "propose_onboarding_start_session",
+        "learner_workspace_mode",
+        "_set_learner_workspace_mode",
+        "Missing placement",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

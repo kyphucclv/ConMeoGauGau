@@ -12,6 +12,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- P12.2 learner workspace gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py`,
+  `python scripts\phase8_automated_uat.py`, and
+  `.\run_app.cmd -CheckOnly`.
 
 ## Objective
 
@@ -52,6 +56,16 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
   metadata.
 - Add Material Symbol icons to top-level navigation tabs.
 - Keep reports and audit tables index-free for cleaner scanning.
+
+## P12.2 scope
+
+- Split the learner workspace into explicit modes: find learner, add learner,
+  and create class.
+- Keep the find mode focused on search, filters, result counts, and selected
+  learner detail.
+- Add quick action buttons from search results into add/create modes.
+- Remove heavy dividers and always-visible secondary forms from the learner
+  search flow.
 
 ## Acceptance notes
 

@@ -267,7 +267,20 @@ def _attendance_session_summary(pool, course_run_id: int, session_unit_id: int) 
 
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     """Desktop-first learner search, onboarding, correction, and transfer workspace."""
-    st.markdown("Search learners, review their history, and complete onboarding in one transaction.")
+    st.session_state.setdefault("learner_workspace_mode", "Find learner")
+    mode = st.segmented_control(
+        "Learner workflow",
+        ["Find learner", "Add learner", "Create class"],
+        key="learner_workspace_mode",
+    )
+
+    if mode == "Add learner":
+        render_learner_onboarding(pool, actor, refs)
+        return
+    if mode == "Create class":
+        render_class_course_run_creator(pool, actor, refs)
+        return
+
     rows = _learner_rows(pool)
     bu_names = sorted({row["business_unit_name"] for row in rows if row["business_unit_name"]})
     role_names = sorted({row["job_role_name"] for row in rows if row["job_role_name"]})
@@ -304,7 +317,15 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
         )
 
     filtered = [row for row in rows if matches(row)]
-    st.caption(f"{len(filtered)} learner(s) found")
+    active_count = sum(1 for row in filtered if row["enrollment_status"] == "active")
+    missing_placement_count = sum(1 for row in filtered if not row["entrance_level"])
+    with st.container(horizontal=True):
+        st.metric("Results", len(filtered), border=True)
+        st.metric("Active", active_count, border=True)
+        st.metric("Missing placement", missing_placement_count, border=True)
+    with st.container(horizontal=True):
+        st.button("Add learner", icon=":material/person_add:", on_click=_set_learner_workspace_mode, args=("Add learner",))
+        st.button("Create class", icon=":material/add_circle:", on_click=_set_learner_workspace_mode, args=("Create class",))
     event = st.dataframe(filtered, hide_index=True, key="learner_results", on_select="rerun", selection_mode="single-row", column_config={
         "employee_id": None, "run_enrollment_id": None,
         "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
@@ -314,10 +335,9 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     if selected:
         render_learner_detail(pool, actor, refs, selected)
 
-    st.divider()
-    render_class_course_run_creator(pool, actor, refs)
-    st.divider()
-    render_learner_onboarding(pool, actor, refs)
+
+def _set_learner_workspace_mode(mode: str) -> None:
+    st.session_state["learner_workspace_mode"] = mode
 
 
 def render_learner_detail(pool, actor: AppUser, refs: dict[str, list[dict]], learner: dict) -> None:
