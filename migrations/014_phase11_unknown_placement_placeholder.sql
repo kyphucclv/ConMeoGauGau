@@ -4,7 +4,7 @@
 -- Rollback: restore the pre-remediation backup; do not delete placement history selectively.
 
 INSERT INTO levels(level_name, numeric_value, sequence_order)
-VALUES ('Unknown Entrance Level', 0.0, 32767)
+VALUES ('Unknown Entrance Level', 6.4, 32767)
 ON CONFLICT (level_name) DO NOTHING;
 
 COMMENT ON TABLE placements IS

@@ -4,11 +4,11 @@ Status: **Owner decisions approved for current high-severity legacy issues**
 
 ## Snapshot identity
 
-- Database: `english_class_p9_rehearsal`
+- Database: `english_class`
 - Source workbook: `okok_FIXED_v2.xlsx`
 - Source checksum: `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
-- Operational issue snapshot SHA-256: `046c4fe31c735409ae58442e3cc1c77ccc355eedc4ed1f18e1b34829231a79b6`
-- Generated at: `2026-07-14T11:55:31+07:00`
+- Operational issue snapshot SHA-256: `da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`
+- Generated at: `2026-07-14T12:22:03+07:00`
 - Total issues: **255**
 - High severity issues: **173**
 - Warning issues: **82**
@@ -54,5 +54,5 @@ follow-up items.
 Validation command:
 
 ```powershell
-python scripts\phase11_operational_issue_snapshot.py --validate-decisions
+$env:PHASE11_DB='english_class'; python scripts\phase11_operational_issue_snapshot.py --validate-decisions
 ```

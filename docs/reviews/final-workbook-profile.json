@@ -1,7 +1,7 @@
 {
   "source_name": "okok_FIXED_v2.xlsx",
-  "source_checksum": "d1447abfe9caa8010212f5086abb881154848004bed8806e0186b3741d2c0af3",
-  "file_size_bytes": 1566143,
+  "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
+  "file_size_bytes": 1564960,
   "sheets": [
     {
       "sheet_name": "DASHBOARD",
@@ -3977,13 +3977,13 @@
         {
           "field_name": "Emp Code (unique)_2",
           "column_index": 28,
-          "non_null_count": 7,
-          "null_count": 530,
-          "distinct_count": 7,
+          "non_null_count": 5,
+          "null_count": 532,
+          "distinct_count": 5,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "null": 530,
-            "text": 6,
+            "null": 532,
+            "text": 4,
             "error": 1
           },
           "top_values": [
@@ -3993,14 +3993,6 @@
             },
             {
               "value": "Group Role",
-              "count": 1
-            },
-            {
-              "value": "DEV, TA",
-              "count": 1
-            },
-            {
-              "value": "QC",
               "count": 1
             },
             {
@@ -4018,7 +4010,7 @@
           ],
           "malformed_examples": [
             {
-              "source_row_number": 7,
+              "source_row_number": 5,
               "value": "#NAME?"
             }
           ]
@@ -4026,18 +4018,18 @@
         {
           "field_name": "(Multiple Items)",
           "column_index": 29,
-          "non_null_count": 6,
-          "null_count": 531,
-          "distinct_count": 5,
+          "non_null_count": 4,
+          "null_count": 533,
+          "distinct_count": 3,
           "duplicate_non_null_count": 1,
           "inferred_types": {
-            "null": 531,
+            "null": 533,
             "text": 2,
-            "number": 4
+            "number": 2
           },
           "top_values": [
             {
-              "value": 1,
+              "value": 5,
               "count": 2
             },
             {
@@ -4046,14 +4038,6 @@
             },
             {
               "value": "LBU",
-              "count": 1
-            },
-            {
-              "value": 3,
-              "count": 1
-            },
-            {
-              "value": 5,
               "count": 1
             }
           ],
@@ -4572,37 +4556,17 @@
         {
           "field_name": "COUNTA of Emp Code (Active, uniques)",
           "column_index": 46,
-          "non_null_count": 8,
-          "null_count": 529,
-          "distinct_count": 8,
+          "non_null_count": 3,
+          "null_count": 534,
+          "distinct_count": 3,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 8,
-            "null": 529
+            "text": 3,
+            "null": 534
           },
           "top_values": [
             {
               "value": "Group Role",
-              "count": 1
-            },
-            {
-              "value": "BA, BC",
-              "count": 1
-            },
-            {
-              "value": "DEV, TA",
-              "count": 1
-            },
-            {
-              "value": "GSD",
-              "count": 1
-            },
-            {
-              "value": "QC",
-              "count": 1
-            },
-            {
-              "value": "UI/UX, Des",
               "count": 1
             },
             {
@@ -4619,197 +4583,79 @@
         {
           "field_name": "BU (unique)_3",
           "column_index": 47,
-          "non_null_count": 4,
-          "null_count": 533,
-          "distinct_count": 4,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "null": 533,
-            "number": 3
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": "CHORUS",
-              "count": 1
-            },
-            {
-              "value": 5,
-              "count": 1
-            },
-            {
-              "value": 1,
-              "count": 1
-            },
-            {
-              "value": 6,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {
           "field_name": "column_48",
           "column_index": 48,
-          "non_null_count": 7,
-          "null_count": 530,
-          "distinct_count": 5,
-          "duplicate_non_null_count": 2,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
+          "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "number": 6,
-            "null": 530
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": 1,
-              "count": 2
-            },
-            {
-              "value": 3,
-              "count": 2
-            },
-            {
-              "value": "LBU",
-              "count": 1
-            },
-            {
-              "value": 2,
-              "count": 1
-            },
-            {
-              "value": 10,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {
           "field_name": "column_49",
           "column_index": 49,
-          "non_null_count": 4,
-          "null_count": 533,
-          "distinct_count": 4,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "null": 533,
-            "number": 3
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": "MOC",
-              "count": 1
-            },
-            {
-              "value": 10,
-              "count": 1
-            },
-            {
-              "value": 3,
-              "count": 1
-            },
-            {
-              "value": 13,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {
           "field_name": "column_50",
           "column_index": 50,
-          "non_null_count": 4,
-          "null_count": 533,
-          "distinct_count": 4,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "null": 533,
-            "number": 3
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": "ONC",
-              "count": 1
-            },
-            {
-              "value": 17,
-              "count": 1
-            },
-            {
-              "value": 4,
-              "count": 1
-            },
-            {
-              "value": 21,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {
           "field_name": "column_51",
           "column_index": 51,
-          "non_null_count": 4,
-          "null_count": 533,
-          "distinct_count": 4,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "null": 533,
-            "number": 3
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": "POC",
-              "count": 1
-            },
-            {
-              "value": 8,
-              "count": 1
-            },
-            {
-              "value": 5,
-              "count": 1
-            },
-            {
-              "value": 13,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {
           "field_name": "column_52",
           "column_index": 52,
-          "non_null_count": 4,
-          "null_count": 533,
-          "distinct_count": 4,
+          "non_null_count": 0,
+          "null_count": 537,
+          "distinct_count": 0,
           "duplicate_non_null_count": 0,
           "inferred_types": {
-            "text": 1,
-            "null": 533,
-            "number": 3
+            "null": 537
           },
-          "top_values": [
-            {
-              "value": "TBU",
-              "count": 1
-            },
-            {
-              "value": 2,
-              "count": 1
-            },
-            {
-              "value": 1,
-              "count": 1
-            },
-            {
-              "value": 3,
-              "count": 1
-            }
-          ],
+          "top_values": [],
           "malformed_examples": []
         },
         {

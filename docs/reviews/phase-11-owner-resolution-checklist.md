@@ -2,17 +2,17 @@
 
 Status: **Owner decisions approved for production rollout validation**
 
-Generated from fresh Phase 9 rehearsal on 2026-07-14.
+Generated from the production rollout validation snapshot on 2026-07-14.
 
 Source workbook: `okok_FIXED_v2.xlsx`
 
 Source checksum:
 `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
 
-Disposable database: `english_class_p9_rehearsal`
+Validated database: `english_class`
 
 Operational issue snapshot SHA-256:
-`046c4fe31c735409ae58442e3cc1c77ccc355eedc4ed1f18e1b34829231a79b6`
+`da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`
 
 Full machine-readable issue snapshot:
 `docs/reviews/phase-11-operational-issue-snapshot.json`
@@ -23,7 +23,13 @@ Owner decision template:
 Human-readable issue snapshot:
 `docs/reviews/phase-11-operational-issue-snapshot.md`
 
-Verification command:
+Production validation command:
+
+```powershell
+$env:PHASE11_DB='english_class'; python scripts\phase11_operational_issue_snapshot.py --validate-decisions
+```
+
+Rehearsal verification command:
 
 ```powershell
 python scripts\phase9_cutover_rehearsal.py
@@ -47,7 +53,7 @@ part of the production-shaped rehearsal.
 Owner decision validation command:
 
 ```powershell
-python scripts\phase11_operational_issue_snapshot.py --validate-decisions
+$env:PHASE11_DB='english_class'; python scripts\phase11_operational_issue_snapshot.py --validate-decisions
 ```
 
 Generate the smaller owner-editable decision template:
@@ -63,7 +69,7 @@ merge it back into the snapshot:
 python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
 ```
 
-## Rehearsal summary
+## Production rollout summary
 
 | Check | Result |
 |---|---:|
@@ -74,7 +80,7 @@ python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
 | Attendance rows | 6,281 |
 | Open ETL quality issues | 0 |
 | Operational data issues | 255 |
-| Backup restore rehearsal | Passed |
+| Backup restore check | Passed |
 | Restricted app smoke | Passed |
 | Automated UAT gate | Passed |
 
@@ -129,7 +135,7 @@ production database.
 | Incomplete attendance rosters | Approved legacy exception | Owner approval in chat | 2026-07-14 | Do not create invented `Present` or `Absent` facts; exclude the legacy gaps from rollout blocking. |
 | Missing business placements | Approved placeholder | Owner approval in chat | 2026-07-14 | HR will replace `Unknown Entrance Level` with confirmed placement later. |
 | Schedule conflicts | Resolved from source year | Owner approval in chat | 2026-07-14 | `EL024 / Communication 1` dates are remediated from 2025 to 2024; Foundation 2025 remains unchanged. |
-| Low attendance warnings | Pending | TBD | TBD | Confirm warning handling owner and review cadence. |
+| Low attendance warnings | Review operationally | Operations follow-up | 2026-07-14 | Warning-only items remain in monthly operations follow-up and do not block rollout validation. |
 | Production rollout validation | Approved | Owner approval in chat | 2026-07-14 | `--validate-decisions` passes for the current snapshot. |
 
 ## Execution notes
@@ -140,11 +146,12 @@ production database.
 - Unknown placement backfill must not overwrite an observed entrance level.
 - Schedule conflict remediation must remain scoped to the owner-confirmed
   `EL024 / Communication 1` 2024 source-year correction.
-- Re-run `python scripts\phase9_cutover_rehearsal.py` after decisions are
-  applied to confirm the high-severity count is zero or explicitly accepted.
-- Re-run `python scripts\phase11_operational_issue_snapshot.py
-  --validate-decisions` after owner decisions are entered in the JSON snapshot;
-  it must pass before rollout approval.
+- Re-run `python scripts\phase9_cutover_rehearsal.py` after decision-affecting
+  changes to confirm rehearsal counts remain stable.
+- Re-run `$env:PHASE11_DB='english_class'; python
+  scripts\phase11_operational_issue_snapshot.py --validate-decisions` after
+  owner decisions are entered in the JSON snapshot; it must pass before rollout
+  approval.
 - Owners may edit the smaller
   `docs/reviews/phase-11-owner-decision-template.json` instead of the full
   255-row snapshot, then use `--apply-decision-template` before validation.

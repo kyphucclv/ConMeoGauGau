@@ -115,8 +115,15 @@ def parse_datetime(value: Any) -> datetime | None:
 
 
 class CanonicalLoader:
-    def __init__(self, conn, fail_after_step: str | None = None, remediation: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        conn,
+        active_import_batch_id: int,
+        fail_after_step: str | None = None,
+        remediation: dict[str, Any] | None = None,
+    ):
         self.conn = conn
+        self.active_import_batch_id = active_import_batch_id
         self.issues_seen: set[tuple[str, str, str | None, int | None, int | None]] = set()
         self.stats: Counter[str] = Counter()
         self.fail_after_step = fail_after_step
@@ -183,10 +190,11 @@ class CanonicalLoader:
                        raw_payload->'values_by_header' AS values
                 FROM raw_workbook_rows
                 WHERE sheet_name = %s
+                  AND import_batch_id = %s
                   AND source_row_number > 1
                 ORDER BY source_row_number
                 """,
-                (sheet_name,),
+                (sheet_name, self.active_import_batch_id),
             )
             rows = [
                 RawRow(
@@ -1239,7 +1247,12 @@ def run_canonical_etl(database_url: str, fail_after_step: str | None = None, for
     try:
         with psycopg2.connect(database_url) as conn:
             batch_id = create_running_batch(conn, import_batch_id, source_checksum)
-            loader = CanonicalLoader(conn, fail_after_step=fail_after_step, remediation=remediation)
+            loader = CanonicalLoader(
+                conn,
+                active_import_batch_id=import_batch_id,
+                fail_after_step=fail_after_step,
+                remediation=remediation,
+            )
             stats = loader.run()
             if remediation_checksum:
                 stats["remediation.manifest_applied"] = 1

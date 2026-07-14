@@ -1,0 +1,245 @@
+﻿run_enrollment_id,emp_code,class_code,course_name,old_status,new_status,old_start_session_number,new_start_session_number
+1,227155,EL001,Communication 1,active,completed,1,1
+2,173230,EL001,Communication 1,active,completed,1,1
+3,143079,EL001,Communication 1,active,completed,1,1
+4,227122,EL001,Communication 1,active,completed,1,1
+5,237050,EL001,Communication 1,active,completed,1,1
+6,227148,EL001,Communication 1,active,completed,1,1
+7,227155,EL001,Communication 2,active,completed,1,1
+8,173230,EL001,Communication 2,active,completed,1,1
+9,143079,EL001,Communication 2,active,completed,1,1
+10,227122,EL001,Communication 2,active,completed,1,1
+11,237050,EL001,Communication 2,active,completed,1,1
+12,227148,EL001,Communication 2,active,completed,1,1
+24,247405,EL003,Communication 1,active,completed,1,1
+25,247265,EL003,Communication 1,active,completed,1,1
+27,247415,EL003,Communication 1,active,completed,1,1
+29,247298,EL003,Communication 1,active,completed,1,1
+30,193529,EL004,Communication 1,active,completed,1,1
+31,193479,EL004,Communication 1,active,completed,1,1
+32,213811,EL004,Communication 1,active,completed,1,1
+33,183431,EL004,Communication 1,active,completed,1,1
+34,193499,EL004,Communication 1,active,completed,1,1
+35,227141,EL004,Communication 1,active,completed,1,1
+36,183427,EL004,Communication 1,active,completed,1,1
+37,237130,EL004,Communication 1,active,completed,1,1
+38,237097,EL004,Communication 1,active,completed,1,1
+45,183427,EL004,Communication 2,active,completed,1,1
+48,193447,EL005,Communication 1,active,completed,1,1
+49,227160,EL005,Communication 1,active,completed,1,1
+50,247187,EL005,Communication 1,active,completed,1,1
+52,227092,EL005,Communication 1,active,completed,1,1
+55,237043,EL006,Communication 1,active,completed,1,1
+57,247198,EL007,Communication 1,active,completed,1,1
+58,247190,EL007,Communication 1,active,completed,1,1
+59,203759,EL007,Communication 1,active,completed,1,1
+60,247191,EL007,Communication 1,active,completed,1,1
+63,247389,EL007,Communication 2,active,completed,1,1
+64,227183,EL007,Communication 2,active,completed,1,1
+65,247390,EL007,Communication 2,active,completed,1,1
+69,213891,EL007,Communication 2,active,completed,1,1
+70,193526,EL008,Communication 1,active,completed,1,1
+71,237117,EL008,Communication 1,active,completed,1,1
+72,203780,EL008,Communication 1,active,completed,1,1
+73,193523,EL008,Communication 1,active,completed,1,1
+74,237161,EL008,Communication 1,active,completed,1,1
+80,237207,EL009,Communication 1,active,completed,1,1
+81,173272,EL009,Communication 1,active,completed,1,1
+82,237206,EL009,Communication 1,active,completed,1,1
+83,203790,EL009,Communication 1,active,completed,1,1
+84,237158,EL009,Communication 1,active,completed,1,1
+85,247043,EL009,Communication 1,active,completed,1,1
+87,237008,EL009,Communication 2,active,completed,1,1
+96,247184,EL010,Communication 1,active,completed,1,1
+97,247161,EL010,Communication 1,active,completed,1,1
+98,247080,EL010,Communication 1,active,completed,1,1
+100,247207,EL010,Communication 2,active,completed,1,1
+101,247037,EL010,Communication 2,active,completed,1,1
+105,247078,EL010,Communication 2,active,completed,1,1
+106,247106,EL010,Communication 2,active,completed,1,1
+107,247038,EL010,Communication 2,active,completed,1,1
+120,183422,EL013,Communication 1,active,completed,1,1
+121,213893,EL013,Communication 1,active,completed,1,1
+122,227244,EL013,Communication 1,active,completed,1,1
+123,213936,EL013,Communication 1,active,completed,1,1
+124,193516,EL013,Communication 1,active,completed,1,1
+125,247234,EL013,Communication 1,active,completed,1,1
+126,183422,EL013,Communication 2,active,completed,1,1
+127,213893,EL013,Communication 2,active,completed,1,1
+128,227244,EL013,Communication 2,active,completed,1,1
+130,193516,EL013,Communication 2,active,completed,1,1
+131,247234,EL013,Communication 2,active,completed,1,1
+141,193633,EL014,Communication 1,active,completed,1,1
+143,213856,EL015,Communication 1,active,completed,1,1
+144,227130,EL015,Communication 1,active,completed,1,1
+145,247185,EL015,Communication 1,active,completed,1,1
+146,227177,EL015,Communication 1,active,completed,1,1
+148,247384,EL015,Communication 1,active,completed,1,1
+149,227177,EL015,Communication 2,active,completed,1,1
+151,247185,EL015,Communication 2,active,completed,1,1
+163,242001,EL017,Communication 1,active,completed,1,1
+167,183432,EL018,Communication 1,active,completed,2,2
+168,227023,EL018,Communication 1,active,completed,1,1
+170,183400,EL018,Communication 1,active,completed,1,1
+173,247357,EL018,Communication 2,active,completed,1,1
+174,227024,EL018,Communication 2,active,completed,1,1
+176,227032,EL018,Communication 2,active,completed,1,1
+183,213974,EL020,Communication 1,active,completed,1,1
+184,247389,EL020,Communication 1,active,completed,1,1
+185,227183,EL020,Communication 1,active,completed,2,2
+186,247390,EL020,Communication 1,active,completed,1,1
+190,213891,EL020,Communication 1,active,completed,1,1
+203,183340,EL022,Communication 1,active,completed,1,1
+204,193534,EL022,Communication 1,active,completed,1,1
+205,227047,EL022,Communication 1,active,completed,1,1
+206,133051,EL022,Communication 1,active,completed,1,1
+207,227080,EL022,Communication 1,active,completed,1,1
+208,227048,EL022,Communication 1,active,completed,1,1
+209,227064,EL022,Communication 1,active,completed,1,1
+210,203693,EL022,Communication 1,active,completed,1,1
+211,183340,EL022,Communication 2,active,completed,1,1
+212,193534,EL022,Communication 2,active,completed,1,1
+213,227047,EL022,Communication 2,active,completed,1,1
+214,133051,EL022,Communication 2,active,completed,1,1
+216,227048,EL022,Communication 2,active,completed,1,1
+227,163188,EL023,Communication 1,active,completed,1,1
+228,237157,EL023,Communication 1,active,completed,1,1
+229,227035,EL023,Communication 1,active,completed,1,1
+230,247203,EL023,Communication 1,active,completed,1,1
+231,237196,EL023,Communication 1,active,completed,1,1
+232,213901,EL024,Foundation,active,completed,1,1
+233,213835,EL024,Foundation,active,completed,1,1
+234,227081,EL024,Foundation,active,completed,1,1
+235,247332,EL024,Foundation,active,completed,1,1
+236,193613,EL024,Foundation,active,completed,1,1
+237,247097,EL024,Foundation,active,completed,1,1
+238,213901,EL024,Communication 1,active,completed,1,1
+239,213835,EL024,Communication 1,active,completed,1,1
+240,227081,EL024,Communication 1,active,completed,1,1
+241,247332,EL024,Communication 1,active,completed,1,1
+242,193613,EL024,Communication 1,active,completed,1,1
+243,247097,EL024,Communication 1,active,completed,1,1
+244,247086,EL024,Communication 1,active,completed,1,1
+252,213876,EL025,Communication 1,active,completed,1,1
+253,203765,EL025,Communication 1,active,completed,1,1
+254,247225,EL025,Communication 1,active,completed,1,1
+255,247378,EL025,Communication 1,active,completed,1,1
+256,213947,EL025,Communication 1,active,completed,1,1
+263,227144,EL026,Communication 1,active,completed,1,1
+264,247359,EL026,Communication 1,active,completed,1,1
+265,237061,EL026,Communication 1,active,completed,1,1
+267,227069,EL026,Communication 1,active,completed,1,1
+268,237246,EL026,Communication 1,active,completed,1,1
+269,237245,EL026,Communication 1,active,completed,1,1
+270,227188,EL026,Communication 1,active,completed,1,1
+278,227214,EL027,Communication 1,active,completed,1,1
+279,237226,EL027,Communication 1,active,completed,1,1
+281,193584,EL027,Communication 1,active,completed,1,1
+282,213929,EL027,Communication 1,active,completed,1,1
+283,227058,EL027,Communication 1,active,completed,1,1
+284,247083,EL027,Communication 1,active,completed,1,1
+285,247178,EL027,Communication 1,active,completed,1,1
+286,143084,EL027,Communication 1,active,completed,1,1
+287,227214,EL027,Communication 2,active,completed,1,1
+288,237226,EL027,Communication 2,active,completed,1,1
+289,173272,EL027,Communication 2,active,completed,1,1
+290,193584,EL027,Communication 2,active,completed,1,1
+291,203790,EL027,Communication 2,active,completed,1,1
+292,247083,EL027,Communication 2,active,completed,1,1
+293,247178,EL027,Communication 2,active,completed,1,1
+295,143084,EL027,Communication 2,active,completed,1,1
+322,247098,EL031,Communication 1,active,completed,1,1
+323,237156,EL031,Communication 1,active,completed,1,1
+324,247119,EL031,Communication 1,active,completed,1,1
+325,203764,EL031,Communication 1,active,completed,1,1
+326,213808,EL032,Communication 1,active,completed,1,1
+327,193536,EL032,Communication 1,active,completed,1,1
+328,213975,EL032,Communication 1,active,completed,1,1
+329,213889,EL032,Communication 1,active,completed,1,1
+334,213889,EL032,Communication 2,active,completed,1,1
+335,163188,EL032,Communication 2,active,completed,1,1
+339,193588,EL033,Communication 1,active,completed,1,1
+340,213815,EL033,Communication 1,active,completed,1,1
+341,113024,EL033,Communication 1,active,completed,1,1
+342,213914,EL033,Communication 1,active,completed,1,1
+343,213861,EL033,Communication 1,active,completed,1,1
+344,213851,EL033,Communication 1,active,completed,1,1
+345,247223,EL033,Communication 1,active,completed,1,1
+346,193588,EL033,Communication 2,active,completed,1,1
+347,193445,EL033,Communication 2,active,completed,1,1
+351,213968,EL033,Communication 2,active,completed,1,1
+355,237147,EL034,Business English,active,completed,1,1
+356,213859,EL034,Business English,active,completed,1,1
+357,193632,EL034,Business English,active,completed,1,1
+358,247263,EL034,Business English,active,completed,1,1
+359,247088,EL034,Business English,active,completed,1,1
+360,247262,EL034,Business English,active,completed,1,1
+361,227097,EL034,Business English,active,completed,1,1
+362,237147,EL034,Communication 1,active,completed,1,1
+364,213859,EL034,Communication 1,active,completed,1,1
+365,193632,EL034,Communication 1,active,completed,1,1
+368,247263,EL034,Communication 1,active,completed,1,1
+369,247088,EL034,Communication 1,active,completed,1,1
+370,247262,EL034,Communication 1,active,completed,1,1
+371,227097,EL034,Communication 1,active,completed,1,1
+379,237183,EL035,Business English,active,completed,1,1
+380,203746,EL035,Business English,active,completed,1,1
+384,247119,EL035,Business English,active,completed,1,1
+385,203764,EL035,Business English,active,completed,1,1
+386,237183,EL035,Communication 1,active,completed,1,1
+387,203746,EL035,Communication 1,active,completed,1,1
+388,213863,EL035,Communication 1,active,completed,1,1
+389,213898,EL035,Communication 1,active,completed,1,1
+390,213946,EL035,Communication 1,active,completed,1,1
+391,227104,EL035,Communication 1,active,completed,1,1
+401,247172,EL037,Foundation,active,completed,1,1
+402,213881,EL037,Foundation,active,completed,1,1
+403,213854,EL037,Foundation,active,completed,1,1
+404,213805,EL037,Foundation,active,completed,1,1
+405,173232,EL037,Foundation,active,completed,1,1
+406,203701,EL037,Foundation,active,completed,1,1
+407,213935,EL037,Foundation,active,completed,1,1
+408,227063,EL037,Foundation,active,completed,1,1
+409,213916,EL037,Foundation,active,completed,1,1
+410,247172,EL037,Communication 1,active,completed,2,2
+413,173232,EL037,Communication 1,active,completed,2,2
+414,203701,EL037,Communication 1,active,completed,2,2
+417,213916,EL037,Communication 1,active,completed,2,2
+422,247313,EL038,Communication 1,active,completed,1,1
+423,237110,EL038,Communication 1,active,completed,1,1
+424,213870,EL038,Communication 1,active,completed,1,1
+425,237160,EL038,Communication 1,active,completed,1,1
+432,227035,EL039,Communication 1,active,completed,5,5
+438,173268,EL040,Extension of Foundation,active,completed,1,1
+439,193496,EL040,Extension of Foundation,active,completed,1,1
+440,193490,EL040,Extension of Foundation,active,completed,1,1
+442,183322,EL040,Foundation,active,completed,1,1
+443,173246,EL040,Foundation,active,completed,1,1
+445,247064,EL040,Foundation,active,completed,1,1
+446,227091,EL040,Foundation,active,completed,1,1
+455,193607,EL041,Communication 1,active,completed,1,1
+457,247102,EL042,Communication 1,active,completed,1,1
+458,247063,EL042,Communication 1,active,completed,1,1
+459,227218,EL042,Communication 1,active,completed,1,1
+460,227035,EL042,Communication 1,active,completed,1,1
+461,247062,EL042,Communication 1,active,completed,1,1
+462,247147,EL042,Communication 1,active,completed,1,1
+471,213844,EL043,Foundation,active,completed,4,4
+474,247082,EL043,Foundation,active,completed,4,4
+475,183330,EL043,Foundation,active,completed,1,1
+507,237103,EL048,Communication 1,active,completed,3,3
+538,193511,EL050,Foundation,active,completed,2,2
+539,193523,EL008,Business English,active,completed,2,2
+540,193526,EL008,Business English,active,completed,2,2
+541,193633,EL050,Foundation,active,completed,2,2
+542,203780,EL008,Business English,active,completed,2,2
+543,213817,EL046,Communication 1,active,completed,2,2
+544,213929,EL044,Communication 1,active,completed,1,1
+545,213975,EL037,Communication 2,active,completed,10,10
+546,227177,EL050,Foundation,active,completed,2,2
+547,237117,EL008,Business English,active,completed,2,2
+548,237161,EL008,Business English,active,completed,4,4
+549,247185,EL050,Foundation,active,completed,2,2
+550,257132,EL050,Foundation,active,completed,2,2
+551,257133,EL050,Foundation,active,completed,2,2
+552,267040,EL051,Communication 1,active,completed,2,2

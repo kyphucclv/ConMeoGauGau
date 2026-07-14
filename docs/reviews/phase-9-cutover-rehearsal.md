@@ -166,7 +166,7 @@ Inspected output:
 - Phase 11 high-severity operational issues: `173`;
 - Phase 11 warning operational issues: `82`;
 - Phase 11 snapshot:
-  `046c4fe31c735409ae58442e3cc1c77ccc355eedc4ed1f18e1b34829231a79b6`.
+  `da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`.
 
 `python scripts\phase11_operational_issue_snapshot.py --validate-decisions`
 passes with accepted decisions for `124` legacy attendance exceptions, `49`
