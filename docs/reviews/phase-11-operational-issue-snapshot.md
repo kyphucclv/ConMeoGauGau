@@ -7,8 +7,8 @@ Status: **Owner decisions approved for current high-severity legacy issues**
 - Database: `english_class_p9_rehearsal`
 - Source workbook: `okok_FIXED_v2.xlsx`
 - Source checksum: `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
-- Operational issue snapshot SHA-256: `ed7ccc3f61bb7e3f50e289945c303938dd3ef4a6f870871fc547603ccd594a76`
-- Generated at: `2026-07-14T19:28:22+07:00`
+- Operational issue snapshot SHA-256: `fa9b69a212d99ee7c6c2e33fce96ae18ec13ce45ea5416a531c99fa181d823d0`
+- Generated at: `2026-07-14T19:47:50+07:00`
 - Total issues: **255**
 - High severity issues: **173**
 - Warning issues: **82**

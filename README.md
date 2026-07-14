@@ -56,6 +56,35 @@ and the canonical schema before starting Streamlit at
 The app requires a named application username and password so every operational
 change and audit event is attributed to the HR user who performed it.
 
+## Verification and backups
+
+Fast business-rule regression suite (seconds, disposable `english_class_pytest`
+database, no workbook load):
+
+```powershell
+python -m pytest tests/
+```
+
+Full verification battery (fast suite + dictionary check + phase 8/9/10/11
+gates) in one command:
+
+```powershell
+.\scripts\run-all-gates.ps1            # everything
+.\scripts\run-all-gates.ps1 -SkipHeavy # fast suite + dictionary check only
+```
+
+Daily database backup runs as the `EnglishClassDbBackup` scheduled task at
+12:00 (catches up when the machine was off). It writes verified dumps to
+`backups\` and `C:\Backups\english_class` with 30-day retention. Manual run:
+
+```powershell
+.\backup.ps1
+```
+
+Database URLs are read from the user-scoped `APP_DATABASE_URL` and
+`MIGRATION_DATABASE_URL` environment variables (preferred over
+`.streamlit/secrets.toml`, which should stay absent from synced folders).
+
 Phase 9 rehearsal command:
 
 ```powershell
