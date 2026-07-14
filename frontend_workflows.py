@@ -1,0 +1,950 @@
+"""Streamlit admin workflows backed by Phase 4 services."""
+
+from __future__ import annotations
+
+from datetime import date, datetime, time
+
+import streamlit as st
+
+from auth import AppUser
+from db import fetch_all, pooled_connection
+from reporting import monthly_review_data, monthly_review_summary, monthly_review_xlsx, proposed_monthly_actions
+from services import BusinessService, CommandError
+
+
+def render_operations(pool, actor: AppUser) -> None:
+    st.subheader("Operations")
+    if actor.role not in {"admin", "editor"}:
+        st.info("Viewer role can review reports but cannot change records.")
+        return
+
+    section = st.segmented_control(
+        "Workflow",
+        [
+            "Learners",
+            "Employees",
+            "Cohorts",
+            "Course runs",
+            "Schedule",
+            "Attendance",
+            "Evaluation",
+            "Review",
+            "Data issues",
+        ],
+        default="Learners",
+        key="operations_section",
+    )
+
+    refs = load_refs(pool)
+    if section == "Learners":
+        render_learner_workspace(pool, actor, refs)
+    elif section == "Employees":
+        render_employee_workflow(pool, actor, refs)
+    elif section == "Cohorts":
+        render_cohort_workflow(pool, actor, refs)
+    elif section == "Course runs":
+        render_course_run_workflow(pool, actor, refs)
+    elif section == "Schedule":
+        render_schedule_workflow(pool, actor, refs)
+    elif section == "Attendance":
+        render_attendance_workflow(pool, actor, refs)
+    elif section == "Evaluation":
+        render_evaluation_workflow(pool, actor, refs)
+    elif section == "Review":
+        render_review_workflow(pool, actor)
+    elif section == "Data issues":
+        render_data_issues_workspace(pool, actor)
+
+
+def load_refs(pool) -> dict[str, list[dict]]:
+    return {
+        "business_units": fetch_all(pool, "SELECT business_unit_id, business_unit_name FROM business_units WHERE is_active ORDER BY business_unit_name"),
+        "job_roles": fetch_all(pool, "SELECT job_role_id, job_role_name FROM job_roles WHERE is_active ORDER BY job_role_name"),
+        "employees": fetch_all(pool, "SELECT employee_id, emp_code, full_name FROM employees ORDER BY full_name LIMIT 500"),
+        "cohorts": fetch_all(pool, "SELECT cohort_id, class_code, display_name, status FROM cohorts ORDER BY class_code LIMIT 500"),
+        "active_memberships": fetch_all(pool, """
+            SELECT cm.cohort_membership_id, cm.employee_id, e.emp_code, e.full_name, c.class_code
+            FROM cohort_memberships cm
+            JOIN employees e ON e.employee_id=cm.employee_id
+            JOIN cohorts c ON c.cohort_id=cm.cohort_id
+            WHERE cm.status='active'
+            ORDER BY c.class_code, e.full_name
+            LIMIT 500
+        """),
+        "courses": fetch_all(pool, "SELECT course_id, course_code, course_name FROM courses WHERE is_active ORDER BY course_name"),
+        "course_runs": fetch_all(pool, """
+            SELECT cr.course_run_id, c.class_code, co.course_code, co.course_name, cr.run_number, cr.status
+            FROM course_runs cr
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses co ON co.course_id=cr.course_id
+            ORDER BY c.class_code, co.course_name, cr.run_number
+            LIMIT 500
+        """),
+        "enrollments": fetch_all(pool, """
+            SELECT re.run_enrollment_id, e.emp_code, e.full_name, c.class_code, co.course_code,
+                   co.course_name, cr.run_number, re.status, re.start_session_number
+            FROM run_enrollments re
+            JOIN employees e ON e.employee_id=re.employee_id
+            JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses co ON co.course_id=cr.course_id
+            ORDER BY c.class_code, co.course_name, cr.run_number, e.full_name
+            LIMIT 500
+        """),
+        "meetings": fetch_all(pool, """
+            SELECT m.meeting_id, c.class_code, co.course_code, cr.run_number, m.starts_at, m.status
+            FROM meetings m
+            JOIN course_runs cr ON cr.course_run_id=m.course_run_id
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses co ON co.course_id=cr.course_id
+            ORDER BY m.starts_at DESC
+            LIMIT 500
+        """),
+        "session_units": fetch_all(pool, """
+            SELECT su.session_unit_id, su.course_run_id, c.class_code, co.course_code, cr.run_number,
+                   su.sequence_in_run, su.unit_type, m.starts_at, m.status AS meeting_status
+            FROM session_units su
+            JOIN meetings m ON m.meeting_id=su.meeting_id
+            JOIN course_runs cr ON cr.course_run_id=su.course_run_id
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses co ON co.course_id=cr.course_id
+            ORDER BY c.class_code, co.course_code, cr.run_number, su.sequence_in_run
+            LIMIT 700
+        """),
+        "levels": fetch_all(pool, "SELECT level_id, level_name FROM levels WHERE is_active ORDER BY sequence_order"),
+    }
+
+
+def service(pool, actor: AppUser):
+    conn_ctx = pooled_connection(pool)
+    conn = conn_ctx.__enter__()
+    return conn_ctx, BusinessService(conn, actor.user_id)
+
+
+def options(rows, id_col: str, *label_cols: str) -> dict[str, int]:
+    result = {}
+    for row in rows:
+        label = " | ".join(str(row[col]) for col in label_cols if row[col] is not None)
+        result[label] = row[id_col]
+    return result
+
+
+def safe_submit(pool, actor: AppUser, fn) -> bool:
+    conn_ctx, svc = service(pool, actor)
+    try:
+        fn(svc)
+    except CommandError as error:
+        st.error(error.message)
+        return False
+    except Exception:
+        st.error("Unable to complete this operation.")
+        return False
+    finally:
+        conn_ctx.__exit__(None, None, None)
+    st.success("Saved.")
+    return True
+
+
+def selected_id(label: str, values: dict[str, int], *, key: str) -> int | None:
+    if not values:
+        st.info(f"No {label.lower()} available.")
+        return None
+    selected = st.selectbox(label, list(values.keys()), key=key)
+    return values[selected]
+
+
+def _learner_rows(pool) -> list[dict]:
+    """One display row per employee; current assignment is intentionally derived."""
+    return fetch_all(pool, """
+        SELECT e.employee_id, e.emp_code, e.full_name, e.employment_status,
+               bu.business_unit_name, jr.job_role_name,
+               c.class_code, co.course_name, co.course_code, re.run_enrollment_id,
+               re.status AS enrollment_status, re.start_session_number,
+               l.level_name AS entrance_level, attendance.attendance_ratio,
+               COALESCE(cpa.pic_label, pic.full_name) AS pic
+        FROM employees e
+        LEFT JOIN employee_org_history eoh ON eoh.employee_id=e.employee_id AND eoh.is_current
+        LEFT JOIN business_units bu ON bu.business_unit_id=eoh.business_unit_id
+        LEFT JOIN job_roles jr ON jr.job_role_id=eoh.job_role_id
+        LEFT JOIN run_enrollments re ON re.employee_id=e.employee_id AND re.status='active'
+        LEFT JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+        LEFT JOIN cohorts c ON c.cohort_id=cr.cohort_id
+        LEFT JOIN courses co ON co.course_id=cr.course_id
+        LEFT JOIN cohort_pic_assignments cpa ON cpa.cohort_id=c.cohort_id AND cpa.end_date IS NULL
+        LEFT JOIN employees pic ON pic.employee_id=cpa.pic_employee_id
+        LEFT JOIN placements p ON p.employee_id=e.employee_id AND p.placement_kind='business'
+        LEFT JOIN levels l ON l.level_id=p.level_id
+        LEFT JOIN v_run_enrollment_attendance attendance ON attendance.run_enrollment_id=re.run_enrollment_id
+        ORDER BY e.full_name, e.emp_code
+        LIMIT 500
+    """)
+
+
+def _capacity_context(pool, course_run_id: int | None) -> dict | None:
+    if not course_run_id:
+        return None
+    rows = fetch_all(pool, """
+        SELECT c.class_code, c.capacity, count(cm.cohort_membership_id) FILTER (WHERE cm.status='active') AS active_learners
+        FROM course_runs cr JOIN cohorts c ON c.cohort_id=cr.cohort_id
+        LEFT JOIN cohort_memberships cm ON cm.cohort_id=c.cohort_id
+        WHERE cr.course_run_id=%s GROUP BY c.class_code,c.capacity
+    """, (course_run_id,))
+    return rows[0] if rows else None
+
+
+def _transfer_start_proposal(pool, actor: AppUser, target_course_run_id: int | None) -> int | None:
+    if not target_course_run_id:
+        return None
+    conn_ctx, svc = service(pool, actor)
+    try:
+        return svc.propose_transfer_start_session(target_course_run_id).values["start_session_number"]
+    except CommandError as error:
+        st.error(error.message)
+        return None
+    finally:
+        conn_ctx.__exit__(None, None, None)
+
+
+def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    """Desktop-first learner search, onboarding, correction, and transfer workspace."""
+    st.markdown("Search learners, review their history, and complete onboarding in one transaction.")
+    rows = _learner_rows(pool)
+    bu_names = sorted({row["business_unit_name"] for row in rows if row["business_unit_name"]})
+    role_names = sorted({row["job_role_name"] for row in rows if row["job_role_name"]})
+    class_codes = sorted({row["class_code"] for row in rows if row["class_code"]})
+    course_names = sorted({row["course_name"] for row in rows if row["course_name"]})
+    pic_names = sorted({row["pic"] for row in rows if row["pic"]})
+
+    with st.form("learner_filters", border=False):
+        search = st.text_input("Search by employee code or name", value=st.session_state.get("learner_search", ""))
+        filter_row = st.container(horizontal=True)
+        with filter_row:
+            class_filter = st.selectbox("Class", ["All"] + class_codes)
+            course_filter = st.selectbox("Course", ["All"] + course_names)
+            pic_filter = st.selectbox("PIC", ["All"] + pic_names)
+            active_filter = st.segmented_control("Enrollment", ["All", "Active", "Inactive"], default="All")
+        org_filter_row = st.container(horizontal=True)
+        with org_filter_row:
+            bu_filter = st.selectbox("Business unit", ["All"] + bu_names)
+            role_filter = st.selectbox("Role", ["All"] + role_names)
+            submitted = st.form_submit_button("Apply filters", icon=":material/search:")
+    if submitted:
+        st.session_state["learner_search"] = search
+
+    def matches(row: dict) -> bool:
+        text = search.strip().lower()
+        return (
+            (not text or text in row["emp_code"].lower() or text in row["full_name"].lower())
+            and (class_filter == "All" or row["class_code"] == class_filter)
+            and (course_filter == "All" or row["course_name"] == course_filter)
+            and (pic_filter == "All" or row["pic"] == pic_filter)
+            and (bu_filter == "All" or row["business_unit_name"] == bu_filter)
+            and (role_filter == "All" or row["job_role_name"] == role_filter)
+            and (active_filter == "All" or (active_filter == "Active") == (row["enrollment_status"] == "active"))
+        )
+
+    filtered = [row for row in rows if matches(row)]
+    st.caption(f"{len(filtered)} learner(s) found")
+    st.dataframe(filtered, hide_index=True, column_config={
+        "employee_id": None, "run_enrollment_id": None,
+        "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+        "start_session_number": st.column_config.NumberColumn("Start session"),
+    })
+
+    learner_options = {f"{row['emp_code']} | {row['full_name']}": row for row in filtered}
+    selected_label = st.selectbox("Open learner", [""] + list(learner_options), key="learner_detail")
+    selected = learner_options.get(selected_label)
+    if selected:
+        render_learner_detail(pool, actor, refs, selected)
+
+    st.divider()
+    render_learner_onboarding(pool, actor, refs)
+
+
+def render_learner_detail(pool, actor: AppUser, refs: dict[str, list[dict]], learner: dict) -> None:
+    st.subheader(f"{learner['full_name']} · {learner['emp_code']}")
+    metrics = st.columns(4)
+    metrics[0].metric("Current class", learner["class_code"] or "Not enrolled")
+    metrics[1].metric("Course", learner["course_name"] or "—")
+    metrics[2].metric("Entrance level", learner["entrance_level"] or "Not set")
+    metrics[3].metric("Attendance", f"{learner['attendance_ratio']:.0%}" if learner["attendance_ratio"] is not None else "No sessions")
+
+    bu = options(refs["business_units"], "business_unit_id", "business_unit_name")
+    roles = options(refs["job_roles"], "job_role_id", "job_role_name")
+    current_bu = next((label for label, item_id in bu.items() if item_id and label == learner["business_unit_name"]), "")
+    current_role = next((label for label, item_id in roles.items() if item_id and label == learner["job_role_name"]), "")
+    with st.form(f"learner_edit_{learner['employee_id']}"):
+        st.markdown("Employee identity and current organization")
+        st.text_input("Employee code", value=learner["emp_code"], disabled=True)
+        full_name = st.text_input("Full name", value=learner["full_name"])
+        status = st.selectbox("Employment status", ["active", "inactive", "unknown"], index=["active", "inactive", "unknown"].index(learner["employment_status"]))
+        business_unit = st.selectbox("Business unit", [""] + list(bu), index=([""] + list(bu)).index(current_bu) if current_bu else 0)
+        job_role = st.selectbox("Job role", [""] + list(roles), index=([""] + list(roles)).index(current_role) if current_role else 0)
+        submitted = st.form_submit_button("Save employee changes", icon=":material/save:")
+    if submitted:
+        if safe_submit(pool, actor, lambda svc: svc.create_or_update_employee(
+            learner["emp_code"], full_name, employment_status=status,
+            business_unit_id=bu.get(business_unit), job_role_id=roles.get(job_role), valid_from=date.today(),
+        )):
+            st.rerun()
+
+    history = fetch_all(pool, """
+        SELECT cr.start_date, c.class_code, co.course_name, re.status, re.start_session_number,
+               rea.attendance_ratio, lev.final_level_id, ev.passed
+        FROM run_enrollments re JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+        JOIN cohorts c ON c.cohort_id=cr.cohort_id JOIN courses co ON co.course_id=cr.course_id
+        LEFT JOIN v_run_enrollment_attendance rea ON rea.run_enrollment_id=re.run_enrollment_id
+        LEFT JOIN v_latest_evaluation_versions ev ON ev.run_enrollment_id=re.run_enrollment_id
+        LEFT JOIN evaluation_versions lev ON lev.evaluation_version_id=ev.evaluation_version_id
+        WHERE re.employee_id=%s ORDER BY re.created_at DESC
+    """, (learner["employee_id"],))
+    st.markdown("Course history")
+    st.dataframe(history, hide_index=True, column_config={"attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent")})
+
+    audit = fetch_all(pool, """SELECT created_at, actor_username, action, details FROM audit_events
+                               WHERE (entity_type='employee' AND entity_key=%s)
+                                  OR details->>'employee_id'=%s
+                               ORDER BY created_at DESC LIMIT 100""", (str(learner["employee_id"]), str(learner["employee_id"])))
+    with st.expander("Audit history"):
+        st.dataframe(audit, hide_index=True)
+
+    active_enrollment_id = learner["run_enrollment_id"]
+    if active_enrollment_id:
+        render_learner_transfer(pool, actor, refs, active_enrollment_id)
+
+
+def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.subheader("Add learner")
+    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
+    bu = options(refs["business_units"], "business_unit_id", "business_unit_name")
+    roles = options(refs["job_roles"], "job_role_id", "job_role_name")
+    levels = options(refs["levels"], "level_id", "level_name")
+    directory = {"Create a new employee": None}
+    directory.update({f"{row['emp_code']} | {row['full_name']}": row for row in _learner_rows(pool)})
+    known_label = st.selectbox("Employee directory lookup", list(directory), key="onboard_employee_lookup")
+    known_employee = directory[known_label]
+    run_label = st.selectbox("Class and course run", [""] + list(runs), key="onboard_run")
+    course_run_id = runs.get(run_label)
+    capacity = _capacity_context(pool, course_run_id)
+    if capacity:
+        limit = str(capacity["capacity"]) if capacity["capacity"] is not None else "Not set"
+        st.info(f"{capacity['class_code']}: {capacity['active_learners']} active learner(s) / capacity {limit}")
+    default_bu = known_employee["business_unit_name"] if known_employee else ""
+    default_role = known_employee["job_role_name"] if known_employee else ""
+    bu_labels = [""] + list(bu)
+    role_labels = [""] + list(roles)
+    with st.form("learner_onboarding"):
+        emp_code = st.text_input("Employee code", value=known_employee["emp_code"] if known_employee else "", disabled=bool(known_employee))
+        full_name = st.text_input("Full name", value=known_employee["full_name"] if known_employee else "")
+        business_unit = st.selectbox("Business unit", bu_labels, index=bu_labels.index(default_bu) if default_bu in bu_labels else 0)
+        job_role = st.selectbox("Job role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
+        entrance_level = st.selectbox("Entrance level", [""] + list(levels))
+        joined_on = st.date_input("Joined on", value=date.today())
+        start_session = st.number_input("First applicable session", min_value=1, value=1, step=1)
+        allow_override = st.checkbox("Approve capacity override")
+        override_reason = st.text_input("Override reason", disabled=not allow_override)
+        submitted = st.form_submit_button("Add learner", type="primary", icon=":material/person_add:")
+    if submitted:
+        if not course_run_id:
+            st.error("Select a class and course run.")
+        elif not business_unit or not job_role or not entrance_level:
+            st.error("Business unit, role, and entrance level are required.")
+        elif safe_submit(pool, actor, lambda svc: svc.onboard_learner(
+            emp_code=emp_code, full_name=full_name, business_unit_id=bu[business_unit], job_role_id=roles[job_role],
+            entrance_level_id=levels[entrance_level], course_run_id=course_run_id, joined_on=joined_on,
+            start_session_number=int(start_session), capacity_override_reason=override_reason if allow_override else None,
+        )):
+            st.rerun()
+
+
+def render_learner_transfer(pool, actor: AppUser, refs: dict[str, list[dict]], enrollment_id: int) -> None:
+    st.markdown("Transfer learner")
+    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
+    target_label = st.selectbox("Target class and course run", [""] + list(runs), key=f"transfer_target_{enrollment_id}")
+    target_run_id = runs.get(target_label)
+    proposal = _transfer_start_proposal(pool, actor, target_run_id)
+    if proposal is not None:
+        st.info(f"Attendance will start at target logical session {proposal}.")
+    with st.form(f"learner_transfer_{enrollment_id}"):
+        transfer_date = st.date_input("Transfer date", value=date.today())
+        confirm = st.checkbox("I confirm the proposed target start session")
+        submitted = st.form_submit_button("Transfer learner", icon=":material/swap_horiz:")
+    if submitted:
+        if not target_run_id or proposal is None:
+            st.error("Select a target course run.")
+        elif not confirm:
+            st.error("Confirm the proposed start session before transferring.")
+        elif safe_submit(pool, actor, lambda svc: svc.transfer_learner(
+            enrollment_id, target_run_id, transfer_date, confirmed_start_session_number=proposal,
+        )):
+            st.rerun()
+
+
+def render_employee_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    search = st.text_input("Search employees", key="employee_search")
+    rows = fetch_all(
+        pool,
+        """
+        SELECT emp_code, full_name, employment_status, business_unit_name, job_role_name,
+               class_code, course_name, enrollment_status
+        FROM v_current_employee_state
+        WHERE %s = '' OR emp_code ILIKE %s OR full_name ILIKE %s
+        ORDER BY full_name
+        LIMIT 100
+        """,
+        (search.strip(), f"%{search.strip()}%", f"%{search.strip()}%"),
+    )
+    st.dataframe(rows)
+
+    bu = options(refs["business_units"], "business_unit_id", "business_unit_name")
+    roles = options(refs["job_roles"], "job_role_id", "job_role_name")
+    with st.form("employee_upsert"):
+        st.markdown("Create or update employee")
+        emp_code = st.text_input("Emp code")
+        full_name = st.text_input("Full name")
+        english_name = st.text_input("English name")
+        email = st.text_input("Email")
+        status = st.selectbox("Employment status", ["active", "inactive", "unknown"])
+        bu_label = st.selectbox("Business unit", [""] + list(bu.keys()))
+        role_label = st.selectbox("Job role", [""] + list(roles.keys()))
+        valid_from = st.date_input("Observed from", value=date.today())
+        submitted = st.form_submit_button("Save employee", icon=":material/person:")
+    if submitted:
+        def op(svc):
+            svc.create_or_update_employee(
+                emp_code,
+                full_name,
+                english_name=english_name.strip() or None,
+                email=email.strip() or None,
+                employment_status=status,
+                business_unit_id=bu.get(bu_label),
+                job_role_id=roles.get(role_label),
+                valid_from=valid_from,
+            )
+        if safe_submit(pool, actor, op):
+            st.rerun()
+
+
+def render_cohort_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.dataframe(fetch_all(pool, """
+        SELECT c.class_code, c.display_name, c.status,
+               COALESCE(cpa.pic_label, pe.full_name) AS current_pic,
+               c.created_at
+        FROM cohorts c
+        LEFT JOIN cohort_pic_assignments cpa
+          ON cpa.cohort_id = c.cohort_id AND cpa.end_date IS NULL
+        LEFT JOIN employees pe ON pe.employee_id = cpa.pic_employee_id
+        ORDER BY c.class_code
+        LIMIT 200
+    """))
+    cohorts = options(refs["cohorts"], "cohort_id", "class_code", "display_name")
+    employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
+    memberships = options(refs["active_memberships"], "cohort_membership_id", "class_code", "emp_code", "full_name")
+
+    with st.form("cohort_create"):
+        st.markdown("Create cohort")
+        class_code = st.text_input("Class code")
+        display_name = st.text_input("Display name")
+        status = st.selectbox("Status", ["planned", "active", "completed", "archived"])
+        submitted = st.form_submit_button("Create cohort", icon=":material/groups:")
+    if submitted and safe_submit(pool, actor, lambda svc: svc.create_cohort(class_code, display_name, status=status)):
+        st.rerun()
+
+    pic_mode = st.segmented_control("PIC type", ["Team label", "Employee"], default="Team label")
+    with st.form(f"cohort_pic_{pic_mode}"):
+        st.markdown("Assign PIC")
+        cohort_id = selected_id("Cohort", cohorts, key="pic_cohort")
+        pic_employee_id = None
+        pic_label = None
+        if pic_mode == "Employee":
+            pic_employee_id = selected_id("PIC employee", employees, key="pic_employee")
+        else:
+            pic_label = st.text_input("Team label")
+        start_date = st.date_input("PIC start date", value=date.today())
+        submitted = st.form_submit_button("Assign PIC", icon=":material/supervisor_account:")
+    if submitted and cohort_id:
+        if safe_submit(
+            pool,
+            actor,
+            lambda svc: svc.assign_pic(cohort_id, pic_employee_id, start_date, pic_label=pic_label),
+        ):
+            st.rerun()
+
+    with st.form("membership_add"):
+        st.markdown("Add cohort membership")
+        cohort_id = selected_id("Cohort", cohorts, key="membership_cohort")
+        employee_id = selected_id("Employee", employees, key="membership_employee")
+        start_date = st.date_input("Membership start date", value=date.today())
+        submitted = st.form_submit_button("Add membership", icon=":material/group_add:")
+    if submitted and cohort_id and employee_id:
+        if safe_submit(pool, actor, lambda svc: svc.add_membership(cohort_id, employee_id, start_date)):
+            st.rerun()
+
+    with st.form("membership_transfer"):
+        st.markdown("Transfer membership")
+        membership_id = selected_id("Active membership", memberships, key="transfer_membership")
+        target_cohort_id = selected_id("Target cohort", cohorts, key="transfer_target_cohort")
+        transfer_date = st.date_input("Transfer date", value=date.today())
+        submitted = st.form_submit_button("Transfer membership", icon=":material/swap_horiz:")
+    if submitted and membership_id and target_cohort_id:
+        if safe_submit(pool, actor, lambda svc: svc.transfer_membership(membership_id, target_cohort_id, transfer_date)):
+            st.rerun()
+
+
+def render_course_run_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.dataframe(fetch_all(pool, "SELECT * FROM v_cohort_course_run_dashboard ORDER BY class_code, course_name, run_number LIMIT 200"))
+    cohorts = options(refs["cohorts"], "cohort_id", "class_code", "display_name")
+    courses = options(refs["courses"], "course_id", "course_code", "course_name")
+    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "run_number", "status")
+    employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
+    memberships = options(refs["active_memberships"], "cohort_membership_id", "class_code", "emp_code", "full_name")
+
+    with st.form("course_run_create"):
+        st.markdown("Create course run")
+        cohort_id = selected_id("Cohort", cohorts, key="run_cohort")
+        course_id = selected_id("Course", courses, key="run_course")
+        start_date = st.date_input("Run start date", value=date.today())
+        submitted = st.form_submit_button("Create run", icon=":material/play_lesson:")
+    if submitted and cohort_id and course_id:
+        if safe_submit(pool, actor, lambda svc: svc.create_course_run(cohort_id, course_id, start_date=start_date)):
+            st.rerun()
+
+    with st.form("course_run_status"):
+        st.markdown("Change course-run status")
+        run_id = selected_id("Course run", runs, key="status_run")
+        status = st.selectbox("New status", ["planned", "active", "completed", "cancelled", "archived"])
+        end_date = st.date_input("End date", value=date.today())
+        apply_end_date = st.checkbox("Apply end date")
+        submitted = st.form_submit_button("Update status", icon=":material/published_with_changes:")
+    if submitted and run_id:
+        if safe_submit(pool, actor, lambda svc: svc.change_course_run_status(run_id, status, end_date=end_date if apply_end_date else None)):
+            st.rerun()
+
+    with st.form("enroll"):
+        st.markdown("Enroll learner")
+        run_id = selected_id("Course run", runs, key="enroll_run")
+        employee_id = selected_id("Employee", employees, key="enroll_employee")
+        membership_label = st.selectbox("Cohort membership", [""] + list(memberships.keys()), key="enroll_membership")
+        start_session = st.number_input("Start session number", min_value=1, value=1, step=1)
+        submitted = st.form_submit_button("Enroll", icon=":material/person_add:")
+    if submitted and run_id and employee_id:
+        membership_id = memberships.get(membership_label)
+        if safe_submit(pool, actor, lambda svc: svc.enroll(run_id, employee_id, membership_id, int(start_session))):
+            st.rerun()
+
+    enrollments = options(refs["enrollments"], "run_enrollment_id", "class_code", "course_code", "run_number", "emp_code", "status")
+    with st.form("enrollment_transfer"):
+        st.markdown("Transfer enrollment")
+        enrollment_id = selected_id("Enrollment", enrollments, key="transfer_enrollment")
+        target_run_id = selected_id("Target course run", runs, key="transfer_target_run")
+        transfer_date = st.date_input("Enrollment transfer date", value=date.today())
+        start_session = st.number_input("Target start session number", min_value=1, value=1, step=1, key="transfer_start_session")
+        submitted = st.form_submit_button("Transfer enrollment", icon=":material/move_up:")
+    if submitted and enrollment_id and target_run_id:
+        if safe_submit(pool, actor, lambda svc: svc.transfer_enrollment(enrollment_id, target_run_id, transfer_date, int(start_session))):
+            st.rerun()
+
+
+def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.dataframe(fetch_all(pool, """
+        SELECT c.class_code, co.course_code, cr.run_number, m.starts_at, m.duration_minutes,
+               m.status, su.sequence_in_run, su.unit_type
+        FROM meetings m
+        JOIN course_runs cr ON cr.course_run_id=m.course_run_id
+        JOIN cohorts c ON c.cohort_id=cr.cohort_id
+        JOIN courses co ON co.course_id=cr.course_id
+        LEFT JOIN session_units su ON su.meeting_id=m.meeting_id
+        ORDER BY m.starts_at DESC, su.sequence_in_run
+        LIMIT 250
+    """))
+    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "run_number", "status")
+    meetings = options(refs["meetings"], "meeting_id", "class_code", "course_code", "run_number", "starts_at", "status")
+
+    with st.form("meeting_create"):
+        st.markdown("Create or update meeting")
+        run_id = selected_id("Course run", runs, key="meeting_run")
+        meeting_label = st.selectbox("Existing meeting to update", [""] + list(meetings.keys()))
+        starts_on = st.date_input("Meeting date", value=date.today())
+        starts_time = st.time_input("Start time", value=time(9, 0))
+        duration = st.number_input("Duration minutes", min_value=1, value=120, step=15)
+        status = st.selectbox("Meeting status", ["planned", "completed", "cancelled"])
+        reason = st.text_input("Cancellation reason")
+        submitted = st.form_submit_button("Save meeting", icon=":material/event:")
+    if submitted and run_id:
+        starts_at = datetime.combine(starts_on, starts_time)
+        meeting_id = meetings.get(meeting_label)
+        if safe_submit(pool, actor, lambda svc: svc.save_meeting(run_id, starts_at, int(duration), meeting_id=meeting_id, status=status, cancellation_reason=reason.strip() or None)):
+            st.rerun()
+
+    with st.form("session_units"):
+        st.markdown("Add one or two credited units")
+        run_id = selected_id("Course run", runs, key="unit_run")
+        meeting_id = selected_id("Meeting", meetings, key="unit_meeting")
+        first_sequence = st.number_input("First sequence in run", min_value=1, value=1, step=1)
+        units_to_add = st.segmented_control("Units to add", [1, 2], default=1)
+        unit_type = st.selectbox("Unit type", ["normal", "final_test", "makeup", "admin"])
+        submitted = st.form_submit_button("Add units", icon=":material/add_circle:")
+    if submitted and run_id and meeting_id:
+        def op(svc):
+            svc.add_session_unit(run_id, meeting_id, int(first_sequence), unit_number_in_meeting=1, unit_type=unit_type)
+            if units_to_add == 2:
+                svc.add_session_unit(run_id, meeting_id, int(first_sequence) + 1, unit_number_in_meeting=2, unit_type=unit_type)
+        if safe_submit(pool, actor, op):
+            st.rerun()
+
+
+def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.markdown("Select a class/run and session. Every applicable learner starts as Present until HR marks an absence.")
+    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
+    run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
+    course_run_id = runs.get(run_label)
+    run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
+    units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
+    unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
+    session_unit_id = units.get(unit_label)
+
+    with st.expander("Create next planned session"):
+        with st.form("attendance_session_create"):
+            starts_on = st.date_input("Session date", value=date.today(), key="attendance_session_date")
+            starts_time = st.time_input("Session time", value=time(9, 0), key="attendance_session_time")
+            duration = st.number_input("Duration minutes", min_value=1, value=60, step=15, key="attendance_session_duration")
+            sequence = st.number_input("Logical session number", min_value=1, value=1, step=1, key="attendance_session_sequence")
+            submitted = st.form_submit_button("Create session", icon=":material/add_circle:")
+        if submitted:
+            if not course_run_id:
+                st.error("Select a class and course run first.")
+            elif safe_submit(pool, actor, lambda svc: svc.create_attendance_session(
+                course_run_id, datetime.combine(starts_on, starts_time), int(duration), int(sequence),
+            )):
+                st.rerun()
+
+    roster = None
+    if course_run_id and session_unit_id:
+        conn_ctx, svc = service(pool, actor)
+        try:
+            roster = svc.attendance_roster(course_run_id, session_unit_id).values
+        except CommandError as error:
+            st.error(error.message)
+        finally:
+            conn_ctx.__exit__(None, None, None)
+    if roster is not None:
+        st.caption(f"Logical session {roster['sequence_in_run']} · {len(roster['rows'])} applicable learner(s)")
+        editor_rows = [
+            {"run_enrollment_id": row["run_enrollment_id"], "employee": f"{row['emp_code']} | {row['full_name']}",
+             "start_session_number": row["start_session_number"], "effective_status": row["effective_status"]}
+            for row in roster["rows"]
+        ]
+        with st.form(f"attendance_roster_{session_unit_id}"):
+            edited = st.data_editor(
+                editor_rows,
+                hide_index=True,
+                disabled=["run_enrollment_id", "employee", "start_session_number"],
+                column_config={
+                    "run_enrollment_id": None,
+                    "employee": st.column_config.TextColumn("Learner", pinned=True),
+                    "start_session_number": st.column_config.NumberColumn("Starts at"),
+                    "effective_status": st.column_config.SelectboxColumn("Attendance", options=["Present", "Absent"], required=True),
+                },
+                key=f"attendance_editor_{session_unit_id}",
+            )
+            submitted = st.form_submit_button("Save full roster", type="primary", icon=":material/checklist:")
+        if submitted:
+            records = edited.to_dict("records") if hasattr(edited, "to_dict") else edited
+            if safe_submit(pool, actor, lambda svc: svc.save_attendance_roster(course_run_id, session_unit_id, records)):
+                st.rerun()
+
+    absences = fetch_all(pool, """
+        SELECT a.attendance_id, e.emp_code, e.full_name, c.class_code, co.course_code,
+               su.sequence_in_run, a.effective_status
+        FROM attendance a
+        JOIN run_enrollments re ON re.run_enrollment_id=a.run_enrollment_id
+        JOIN employees e ON e.employee_id=re.employee_id
+        JOIN session_units su ON su.session_unit_id=a.session_unit_id
+        JOIN course_runs cr ON cr.course_run_id=su.course_run_id
+        JOIN cohorts c ON c.cohort_id=cr.cohort_id
+        JOIN courses co ON co.course_id=cr.course_id
+        WHERE a.effective_status='Absent'
+        ORDER BY a.updated_at DESC
+        LIMIT 300
+    """)
+    absence_options = options(absences, "attendance_id", "class_code", "course_code", "sequence_in_run", "emp_code")
+    units = options(refs["session_units"], "session_unit_id", "class_code", "course_code", "run_number", "sequence_in_run", "unit_type")
+    with st.form("attendance_makeup"):
+        st.markdown("Correct absence with make-up")
+        attendance_id = selected_id("Absent attendance", absence_options, key="makeup_attendance")
+        makeup_unit_id = selected_id("Make-up session unit", units, key="makeup_unit")
+        reason = st.text_input("Correction reason")
+        submitted = st.form_submit_button("Apply make-up", icon=":material/healing:")
+    if submitted and attendance_id and makeup_unit_id:
+        if safe_submit(pool, actor, lambda svc: svc.correct_attendance_makeup(attendance_id, makeup_unit_id, reason)):
+            st.rerun()
+
+
+def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+    st.dataframe(fetch_all(pool, """
+        SELECT e.emp_code, e.full_name, c.class_code, co.course_code, cr.run_number,
+               rea.attendance_ratio, rea.effective_exam_eligible, lev.version_number,
+               l.level_name AS final_level, lev.passed, next_course.course_code AS next_course
+        FROM run_enrollments re
+        JOIN employees e ON e.employee_id=re.employee_id
+        JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+        JOIN cohorts c ON c.cohort_id=cr.cohort_id
+        JOIN courses co ON co.course_id=cr.course_id
+        LEFT JOIN v_run_enrollment_attendance rea ON rea.run_enrollment_id=re.run_enrollment_id
+        LEFT JOIN v_latest_evaluation_versions lev ON lev.run_enrollment_id=re.run_enrollment_id
+        LEFT JOIN levels l ON l.level_id=lev.final_level_id
+        LEFT JOIN courses next_course ON next_course.course_id=lev.next_course_id
+        ORDER BY c.class_code, co.course_code, cr.run_number, e.full_name
+        LIMIT 250
+    """))
+    enrollments = options(refs["enrollments"], "run_enrollment_id", "class_code", "course_code", "run_number", "emp_code", "status")
+    levels = options(refs["levels"], "level_id", "level_name")
+    courses = options(refs["courses"], "course_id", "course_code", "course_name")
+
+    with st.form("eligibility_override"):
+        st.markdown("Override exam eligibility")
+        enrollment_id = selected_id("Enrollment", enrollments, key="eligibility_enrollment")
+        eligible = st.checkbox("Eligible for exam", value=True)
+        reason = st.text_input("Override reason")
+        submitted = st.form_submit_button("Save override", icon=":material/rule:")
+    if submitted and enrollment_id:
+        if actor.role != "admin":
+            st.error("Only admins can override eligibility.")
+        elif safe_submit(pool, actor, lambda svc: svc.override_exam_eligibility(enrollment_id, eligible, reason)):
+            st.rerun()
+
+    with st.form("evaluation_record"):
+        st.markdown("Record or correct final evaluation")
+        enrollment_id = selected_id("Enrollment", enrollments, key="evaluation_enrollment")
+        level_label = st.selectbox("Final level", [""] + list(levels.keys()))
+        exam_eligible = st.checkbox("Exam eligible", value=True)
+        passed = st.checkbox("Passed", value=True)
+        next_course_label = st.selectbox("Next course", [""] + list(courses.keys()))
+        notes = st.text_area("Teacher notes")
+        submitted = st.form_submit_button("Save evaluation", icon=":material/rate_review:")
+    if submitted and enrollment_id:
+        if safe_submit(pool, actor, lambda svc: svc.record_evaluation(
+            enrollment_id,
+            final_level_id=levels.get(level_label),
+            exam_eligible=exam_eligible,
+            passed=passed,
+            next_course_id=courses.get(next_course_label),
+            teacher_notes=notes.strip() or None,
+        )):
+            st.rerun()
+
+    with st.form("completion"):
+        st.markdown("Suggest or confirm completion")
+        enrollment_id = selected_id("Enrollment", enrollments, key="completion_enrollment")
+        action = st.segmented_control("Action", ["Suggest", "Confirm", "Reject"], default="Suggest")
+        rejection_reason = st.text_input("Rejection reason")
+        submitted = st.form_submit_button("Apply completion action", icon=":material/task_alt:")
+    if submitted and enrollment_id:
+        def op(svc):
+            if action == "Suggest":
+                svc.suggest_completion(enrollment_id)
+            elif action == "Confirm":
+                svc.confirm_completion(enrollment_id, True)
+            else:
+                svc.confirm_completion(enrollment_id, False, rejection_reason)
+        if action in {"Confirm", "Reject"} and actor.role != "admin":
+            st.error("Only admins can confirm or reject completion.")
+        elif safe_submit(pool, actor, op):
+            st.rerun()
+
+
+def render_review_workflow(pool, actor: AppUser) -> None:
+    view = st.segmented_control("Review", ["Progress", "Monthly review", "Monthly frequency", "Data quality"], default="Progress")
+    if view == "Progress":
+        st.dataframe(fetch_all(pool, "SELECT * FROM v_progress_trajectory ORDER BY emp_code, event_at NULLS FIRST LIMIT 300"))
+        st.dataframe(fetch_all(pool, "SELECT * FROM v_employee_progress_summary ORDER BY full_name LIMIT 300"))
+    elif view == "Monthly review":
+        render_monthly_review(pool, actor)
+    elif view == "Monthly frequency":
+        st.dataframe(fetch_all(pool, "SELECT * FROM v_monthly_session_units ORDER BY session_month DESC, course_run_id LIMIT 300"))
+    else:
+        rows = fetch_all(pool, """
+            SELECT issue_id, issue_code, entity_type, entity_key, source_sheet,
+                   source_row_number, details, created_at
+            FROM data_quality_issues
+            WHERE status='open'
+            ORDER BY created_at DESC
+            LIMIT 300
+        """)
+        st.dataframe(rows)
+        issue_options = options(rows, "issue_id", "issue_code", "entity_type", "entity_key", "source_sheet", "source_row_number")
+        with st.form("quality_resolve"):
+            issue_id = selected_id("Open quality issue", issue_options, key="quality_issue")
+            status = st.selectbox("Resolution", ["resolved", "ignored"])
+            note = st.text_input("Resolution note")
+            submitted = st.form_submit_button("Resolve issue", icon=":material/fact_check:")
+        if submitted and issue_id:
+            if safe_submit(pool, actor, lambda svc: svc.resolve_quality_issue(issue_id, status, note)):
+                st.rerun()
+
+
+def render_data_issues_workspace(pool, actor: AppUser) -> None:
+    st.subheader("Data issues")
+    st.caption("Operational checks are derived from canonical data. Correct the source record; this inbox then updates automatically.")
+    rows = fetch_all(pool, """SELECT severity,issue_code,entity_type,entity_key,title,workflow,details
+                              FROM v_operational_data_issues
+                              ORDER BY CASE severity WHEN 'high' THEN 0 ELSE 1 END, issue_code, entity_key LIMIT 500""")
+    if rows:
+        st.dataframe(rows, hide_index=True)
+        workflows = sorted({row["workflow"] for row in rows})
+        with st.container(horizontal=True):
+            for workflow in workflows:
+                st.button(f"Open {workflow}", icon=":material/open_in_new:", key=f"issue_workflow_{workflow}",
+                          on_click=_open_operation_section, args=(workflow,))
+        st.info("Use the matching Operations workflow to correct the source record. Derived issues are not manually closed.")
+    else:
+        st.success("No operational data issues are currently detected.")
+
+    if actor.role == "admin" and any(row["issue_code"] == "incomplete_employee_profile" for row in rows):
+        with st.form("unknown_org_backfill"):
+            approved = st.checkbox("Apply approved Unknown BU and Unknown Role placeholders only where current organization is missing")
+            submitted = st.form_submit_button("Backfill missing organization profiles", icon=":material/manage_history:")
+        if submitted:
+            if not approved:
+                st.error("Confirm the approved placeholder policy before continuing.")
+            elif safe_submit(pool, actor, lambda svc: svc.backfill_unknown_org_profiles()):
+                st.rerun()
+
+    attendance_exceptions = [row for row in rows if row["issue_code"] == "incomplete_attendance_roster"]
+    if actor.role == "admin" and attendance_exceptions:
+        exception_options = {
+            f"Session {row['entity_key']} · run {row['details']['course_run_id']} · unit {row['details']['sequence_in_run']} · {row['details']['missing_enrollment_count']} missing": int(row["entity_key"])
+            for row in attendance_exceptions
+        }
+        st.markdown("Legacy attendance exceptions")
+        st.caption("Use only when the historical attendance source is unavailable. This approval creates no Present or Absent records.")
+        with st.form("legacy_attendance_exception"):
+            chosen_label = st.selectbox("Delivered session", list(exception_options))
+            exception_reason = st.text_area("Approval reason", placeholder="State why the original attendance source cannot be recovered.")
+            approved = st.checkbox("I approve this legacy exception without inferring learner attendance")
+            submitted = st.form_submit_button("Approve legacy attendance exception", icon=":material/gavel:")
+        if submitted:
+            if not approved:
+                st.error("Confirm that this exception does not create attendance facts.")
+            elif safe_submit(pool, actor, lambda svc: svc.approve_legacy_attendance_exception(exception_options[chosen_label], exception_reason)):
+                st.rerun()
+        with st.form("bulk_legacy_attendance_exceptions"):
+            bulk_reason = st.text_area("Shared approval reason", placeholder="State why the historical attendance source is unavailable for these sessions.")
+            approved_all = st.checkbox(f"I approve legacy exceptions for all {len(attendance_exceptions)} currently listed sessions without inferring attendance")
+            submitted_all = st.form_submit_button("Approve all listed legacy attendance exceptions", icon=":material/gavel:")
+        if submitted_all:
+            if not approved_all:
+                st.error("Confirm the full scope before approving all listed sessions.")
+            elif safe_submit(pool, actor, lambda svc: svc.approve_all_legacy_attendance_exceptions(bulk_reason)):
+                st.rerun()
+
+    if actor.role == "admin" and any(row["issue_code"] == "missing_business_placement" for row in rows):
+        with st.form("unknown_placement_backfill"):
+            approved = st.checkbox("Apply Unknown Entrance Level only where a learner has no business placement")
+            submitted = st.form_submit_button("Backfill missing business placements", icon=":material/manage_history:")
+        if submitted:
+            if not approved:
+                st.error("Confirm the approved Unknown Entrance Level policy before continuing.")
+            elif safe_submit(pool, actor, lambda svc: svc.backfill_unknown_business_placements()):
+                st.rerun()
+
+    schedule_conflicts = [row for row in rows if row["issue_code"] == "session_datetime_conflict"]
+    if schedule_conflicts:
+        conflict_options = {
+            f"Class {row['entity_key']} · {row['details']['starts_at']} · meetings {', '.join(map(str, row['details']['meeting_ids']))}": row
+            for row in schedule_conflicts
+        }
+        st.markdown("Schedule conflict resolution")
+        st.caption("Confirm the valid occurrence with the owner, then cancel only the duplicate meeting. Cancellation is audited and requires a reason.")
+        with st.form("schedule_conflict_cancel"):
+            conflict_label = st.selectbox("Concurrent session", list(conflict_options))
+            conflict = conflict_options[conflict_label]
+            meeting_id = st.selectbox("Duplicate meeting to cancel", [int(item) for item in conflict["details"]["meeting_ids"]])
+            cancellation_reason = st.text_area("Cancellation reason", placeholder="State which occurrence is valid and why this one is a duplicate.")
+            confirmed = st.checkbox("I confirmed this meeting is the duplicate occurrence")
+            submitted = st.form_submit_button("Cancel duplicate meeting", icon=":material/event_busy:")
+        if submitted:
+            if not confirmed:
+                st.error("Confirm the selected meeting is the duplicate occurrence.")
+            elif safe_submit(pool, actor, lambda svc: svc.cancel_meeting(meeting_id, cancellation_reason)):
+                st.rerun()
+
+    st.markdown("Imported or manually logged quality issues")
+    ledger_rows = fetch_all(pool, """
+        SELECT issue_id,issue_code,entity_type,entity_key,source_sheet,source_row_number,details,created_at
+        FROM data_quality_issues WHERE status='open' ORDER BY created_at DESC LIMIT 300
+    """)
+    st.dataframe(ledger_rows, hide_index=True)
+    issue_options = options(ledger_rows, "issue_id", "issue_code", "entity_type", "entity_key", "source_sheet", "source_row_number")
+    with st.form("operational_issue_resolve"):
+        issue_id = selected_id("Logged issue", issue_options, key="operational_issue_id")
+        status = st.selectbox("Resolution", ["resolved", "ignored"])
+        note = st.text_input("Resolution note")
+        submitted = st.form_submit_button("Resolve logged issue", icon=":material/fact_check:")
+    if submitted and issue_id:
+        if safe_submit(pool, actor, lambda svc: svc.resolve_quality_issue(issue_id, status, note)):
+            st.rerun()
+
+
+def _open_operation_section(section: str) -> None:
+    st.session_state["operations_section"] = section
+
+
+def render_monthly_review(pool, actor: AppUser) -> None:
+    selected = st.date_input("Review month", value=date.today().replace(day=1), key="monthly_review_month")
+    review_month = selected.replace(day=1)
+    data = monthly_review_data(pool, review_month)
+    summary = monthly_review_summary(data)
+    with st.container(horizontal=True):
+        st.metric("Active participants", summary["active"], border=True)
+        st.metric("Repeated participants", summary["repeated"], border=True)
+        st.metric("Planned / delivered sessions", f"{summary['planned']} / {summary['delivered']}", f"Variance {summary['variance']:+d}", border=True)
+        st.metric("Overall attendance", f"{summary['attendance_ratio']:.0%}" if summary["attendance_ratio"] is not None else "No attendance", border=True)
+        st.metric("Below attendance threshold", summary["low_count"], border=True)
+        st.metric("Improved latest test", f"{summary['improved_count']} / {summary['tested_count']}", border=True)
+
+    with st.container(border=True):
+        st.subheader("Program status")
+        st.bar_chart(data["program"], x="class_code", y=["planned_sessions", "delivered_sessions"], horizontal=False)
+        st.dataframe(data["program"], hide_index=True)
+    with st.container(border=True):
+        st.subheader("Participation")
+        st.dataframe(data["participation"], hide_index=True, column_config={
+            "attendance_threshold": st.column_config.NumberColumn("Threshold", format="percent"),
+            "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+        })
+    with st.container(border=True):
+        st.subheader("Learning progress")
+        st.bar_chart(data["level_distribution"], x="course_name", y="learner_count", color="latest_level")
+        st.dataframe(data["level_distribution"], hide_index=True)
+        st.dataframe(data["progress"], hide_index=True)
+        st.caption(f"Courses created in month: {summary['new_course_count']}")
+        st.dataframe(data["new_courses"], hide_index=True)
+
+    proposed = proposed_monthly_actions(summary)
+    saved = data["action_summary"]
+    defaults = saved or proposed
+    st.subheader("Action summary")
+    st.caption("The proposed text is not an owner conclusion. It is saved only when HR explicitly selects Save.")
+    with st.form("monthly_action_summary"):
+        highlights = st.text_area("Highlights", value=defaults["highlights"])
+        risks = st.text_area("Risks", value=defaults["risks"])
+        priorities = st.text_area("Next-month priorities", value=defaults["next_month_priorities"])
+        save_clicked = st.form_submit_button("Save action summary", icon=":material/save:")
+        export_clicked = st.form_submit_button("Prepare Excel export", icon=":material/download:")
+    if save_clicked:
+        if safe_submit(pool, actor, lambda svc: svc.save_monthly_action_summary(
+            review_month, highlights=highlights, risks=risks, next_month_priorities=priorities,
+        )):
+            st.rerun()
+    if export_clicked:
+        st.session_state["monthly_review_export"] = monthly_review_xlsx(
+            review_month, data,
+            {"highlights": highlights, "risks": risks, "next_month_priorities": priorities},
+        )
+        st.session_state["monthly_review_export_name"] = f"english-class-monthly-review-{review_month.isoformat()}.xlsx"
+    if st.session_state.get("monthly_review_export"):
+        st.download_button("Download Excel review", data=st.session_state["monthly_review_export"],
+                           file_name=st.session_state["monthly_review_export_name"],
+                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                           icon=":material/download:")

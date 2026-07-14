@@ -1,8 +1,17 @@
-# English Class Management — PostgreSQL migration
+# English Class Management — Canonical v3
 
-> **Data model redesign in progress:** read `DATA_DICTIONARY.md` and
-> `TARGET_ARCHITECTURE.md`. Do not apply the draft files in `migrations/` to a
-> production database yet.
+Canonical v3 is deployed to the local production database and verified through
+Phase 10. The checksum-matched cutover completed with zero open quality issues,
+including restricted-role app smoke and backup/restore validation.
+
+The current frontend includes the verified Phase 11 HR operations workflow
+specified in `docs/reviews/phase-11-operations-workspace-spec.md`. Production
+rollout validation is approved for the current workbook checksum and operational
+issue snapshot after owner decisions for high-severity legacy data issues.
+
+Do not run legacy `schema.sql`, `views.sql`, `admin_schema.sql`, or `etl.py` for
+the canonical app.  Use the versioned migrations, staging loader, canonical ETL,
+and `streamlit_app.py`.
 
 ## Developer handoff
 
@@ -12,31 +21,89 @@ Read these documents in order before changing code or data:
 2. `TARGET_ARCHITECTURE.md` - entity grain and business invariants.
 3. `PROJECT_RULES.md` - mandatory engineering and data-safety rules.
 4. `IMPLEMENTATION_PLAN.md` - phased tasks, dependencies, tests, and gates.
-5. `DEVELOPER_REVIEW_CHECKLIST.md` - evidence required for every phase/PR.
+5. `docs/reviews/phase-11-operations-workspace-spec.md` - approved HR workflow
+   and UX acceptance criteria.
+6. `DEVELOPER_REVIEW_CHECKLIST.md` - evidence required for every phase/PR.
 
-The current schema, ETL, views, app, setup guide, and draft migrations describe
-an earlier model. They are reference material only until the implementation
-plan replaces and re-verifies them.
+## Verified canonical path
 
-## Legacy prototype baseline
+The current verified path is:
 
-The original prototype migrated `okok_FIXED_v2.xlsx` and reproduced several
-spreadsheet dashboard totals. Later field-level review found that its
-"zero silent data loss" claim was not a sufficient validation: source rows
-include missing dates/courses and structurally ambiguous attendance. Treat the
-old counts and views as comparison data, not v3 acceptance criteria.
+1. Create a PostgreSQL database.
+2. Create restricted database roles and transfer canonical ownership with
+   `database_roles.sql`.
+3. Run `python migrate.py "<migration-role-database-url>"`.
+4. Stage the workbook:
+   `python scripts/stage_workbook.py okok_FIXED_v2.xlsx --database-url "<migration-role-database-url>" --profile-output docs/reviews/final-workbook-profile.json`
+5. Run canonical ETL:
+   `python scripts/canonical_etl_v3.py "<migration-role-database-url>"`.
+6. Configure `DATABASE_URL` or `.streamlit/secrets.toml`.
+7. Start the app:
+   `python -m streamlit run streamlit_app.py`
+
+Phase 9 rehearsal command:
+
+```powershell
+python scripts\phase9_cutover_rehearsal.py
+```
+
+The rehearsal also regenerates the Phase 11 operational issue snapshot.
+
+Generate and validate the owner-facing quality sign-off snapshot:
+
+```powershell
+python scripts\phase10_quality_signoff.py
+python scripts\phase10_quality_signoff.py --validate-decisions
+```
+
+The latest checksum-matched verification passes with zero open quality issues.
+
+Generate and validate the Phase 11 operational issue snapshot:
+
+```powershell
+python scripts\phase11_operational_issue_snapshot.py
+python scripts\phase11_operational_issue_snapshot.py --write-decision-template
+python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
+python scripts\phase11_operational_issue_snapshot.py --validate-decisions
+```
+
+The validation command is expected to fail until the owner decisions in
+`docs/reviews/phase-11-owner-decision-template.json` are completed and applied,
+or the high-severity issues are resolved.
+
+Latest rehearsal evidence is recorded in
+`docs/reviews/phase-9-cutover-rehearsal.md`.
 
 ## Files
 
-- `schema.sql` — table definitions, primary/foreign keys, constraints, indexes.
-- `views.sql` — reporting views that replace the spreadsheet's computed sheets.
-- `admin_schema.sql` — application users and audit log tables for the admin app.
-- `migrations/` + `migrate.py` — versioned, one-time upgrades for existing databases.
-- `quality_checks.sql` — repeatable queries for known integrity gaps.
-- `database_roles.sql` — restricted PostgreSQL role used by the web app.
-- `backup.ps1` — timestamped PostgreSQL backup before upgrades.
-- `etl.py` — one-time loader: reads the xlsx and populates the tables.
-- `README.md` — this file.
+- `migrations/` + `migrate.py` — canonical schema, staging, ETL batch, service,
+  and reporting migrations.
+- `scripts/stage_workbook.py` — auditable raw workbook staging.
+- `scripts/canonical_etl_v3.py` — canonical v3 transformation.
+- `config/phase10_remediation.json` — checksum-bound, owner-approved source
+  overrides and unresolved confirmation inventory.
+- `services.py` — transactional business commands.
+- `streamlit_app.py` + `frontend_workflows.py` — canonical admin UI.
+- `database_roles.sql` — restricted migration/app/read-only role grants.
+- `scripts/phase*_*.py` — disposable integration, UAT, and cutover rehearsal gates.
+- `scripts/phase10_quality_signoff.py` — reproducible quality issue snapshot and
+  owner-decision validation gate.
+- `scripts/phase11_operational_issue_snapshot.py` — reproducible operational
+  issue snapshot and Phase 11 owner-decision validation gate.
+- `docs/reviews/phase-11-operations-workspace-spec.md` — owner-approved learner,
+  attendance, monthly review, and data-issues workflow contract.
+- `docs/reviews/` — phase evidence and review decisions.
+
+## Cutover safety
+
+Production cutover completed on 2026-07-13. The pre-cutover legacy database and
+verified backups are retained for rollback; use the Phase 9 runbook for restore
+and verification steps.
+
+## Archived legacy notes
+
+The sections below describe the original prototype and are kept only as
+historical context.
 
 ## Legacy sheet mapping (superseded)
 
@@ -159,7 +226,7 @@ remain only as fallback data from the spreadsheet.
 This architecture is retained only to explain the prototype. The target model
 is defined in `TARGET_ARCHITECTURE.md`.
 
-## Legacy commands - do not run during redesign
+## Legacy commands - archived, do not run for canonical v3
 
 ```bash
 psql "$DATABASE_URL" -f schema.sql
@@ -170,5 +237,5 @@ python3 etl.py okok_FIXED_v2.xlsx "$DATABASE_URL"
 python3 migrate.py "$DATABASE_URL"
 ```
 
-For a database that already contains the imported data, create a backup and
-run only `python migrate.py "$DATABASE_URL"`. Do not re-run the one-time ETL.
+For canonical v3, use the verified path at the top of this README and the
+Phase 9 cutover runbook.

@@ -1,6 +1,6 @@
 # Target Data Architecture
 
-Status: **Approved business design - implementation pending**
+Status: **Canonical backend implemented; Phase 11 operations UX approved**
 
 ## Core relationship
 
@@ -47,6 +47,13 @@ employees
 10. Course completion is suggested by the system and confirmed by an admin.
 11. Historic BU/role reporting uses enrollment snapshots.
 12. Current level, highest level, and progress trajectory are separate metrics.
+13. An employee cannot have two active course-run enrollments at the same time.
+14. Class capacity may be exceeded only by an audited HR override with a reason.
+15. PIC ownership may be represented by a team label; it does not require an
+    employee account.
+16. Employee identity and organization history are the only editable sources
+    for current name, BU, and role. Enrollment snapshots are system-created and
+    immutable.
 
 ## Status ownership
 
@@ -89,10 +96,30 @@ latest result answers current ability; the maximum result answers peak ability.
 
 ## Schedule model
 
-PICs currently register schedules outside the system. After approval, an admin
-enters meetings. A normal meeting may carry one or two session units. Final-test
-duration is stored in minutes and does not automatically inflate teaching
-session frequency.
+HR may create a class before its detailed schedule is known. Once registration
+is complete, HR enters and may revise meetings in the application. A direct
+date/time correction keeps the meeting identity and attendance while audit
+history retains the old and new values. A normal meeting may carry one or two
+session units. Final-test duration is stored in minutes and does not
+automatically inflate teaching session frequency.
+
+## Operational source of truth
+
+The application records each business event once:
+
+- employee identity is edited through `employees`;
+- current and historical BU/role are edited through
+  `employee_org_history`;
+- placement and enrollment are created in the same learner-onboarding
+  transaction;
+- enrollment BU/role snapshots are generated from organization history and are
+  not separately editable;
+- attendance is entered directly against an applicable enrollment roster;
+- schedule and attendance corrections are audited rather than copied into
+  parallel input/log tables.
+
+The approved task-oriented UI contract is in
+`docs/reviews/phase-11-operations-workspace-spec.md`.
 
 ## Legacy migration policy
 
@@ -110,14 +137,12 @@ class/session/date combinations that do not describe one consistent schedule.
 
 - True employee learning coverage is deferred until a complete HR roster is
   available as the denominator.
-- PIC self-service schedule submission is deferred; admin entry is the first
-  supported workflow.
+- PIC self-service schedule submission is deferred; HR entry is the supported
+  Phase 11 workflow.
 - Advanced attendance states are deferred; effective status remains binary.
 
-## Implementation gate
+## Implementation state
 
-The existing `001_foundation_v2.sql` and `002_derived_student_state.sql` were
-created before this discovery and do not implement this contract. Do not apply
-them to production. Replace the draft migration chain only after confirming it
-has not already been applied to the target database.
-
+Canonical schema v3, staging, ETL, services, reporting, security, UAT, and local
+production cutover are complete through Phase 10. Phase 11 adds the accepted
+spreadsheet-replacement workflows without replacing the canonical model.

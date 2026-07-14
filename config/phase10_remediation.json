@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "source_name": "okok_FIXED_v2.xlsx",
+  "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
+  "decision_date": "2026-07-13",
+  "decision_owner": "Project owner",
+  "level_aliases": {
+    "not placement": "Not Placement"
+  },
+  "date_year_overrides": [
+    {
+      "sheet_name": "ATTENDANCE_LOG",
+      "class_code": "EL024",
+      "course_name": "Communication 1",
+      "field": "Date",
+      "from_year": 2025,
+      "to_year": 2024,
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Owner confirmed EL024 Communication 1 belongs to 2024, not 2025; keep Foundation 2025 unchanged."
+    }
+  ],
+  "row_overrides": {
+    "ATTENDANCE_LOG:4118": {
+      "Date": "2026-06-23T13:00:00"
+    },
+    "ATTENDANCE_LOG:4127": {
+      "Date": "2026-04-21T13:00:00"
+    },
+    "ATTENDANCE_LOG:4133": {
+      "Date": "2026-06-23T13:00:00"
+    },
+    "sheet2:532": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:533": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:534": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:535": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:536": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:537": {
+      "Course Name": "Foundation"
+    },
+    "sheet2:538": {
+      "Course Name": "Foundation"
+    }
+  },
+  "placement_duplicate_actions": {
+    "Placement:336": "diagnostic",
+    "Placement:353": "replace_business",
+    "Placement:354": "exclude"
+  },
+  "derive_enrollments_from_attendance": true,
+  "infer_transfer_max_gap_days": 30,
+  "inference_notes": {
+    "ATTENDANCE_LOG:4127": "Session 7 inferred as 2026-04-21 13:00 from the weekly Tuesday cadence between sessions 6 and 8; owner authorized a pattern-based fill.",
+    "session_occurrences": "Repeated logical session orders on different dates are valid learner-group or makeup occurrences, not course-run resets.",
+    "transfers": "Infer only same-course, mid-run transitions with no overlap and a gap of at most 30 days."
+  },
+  "pending_source_confirmation": {
+    "items": []
+  }
+}

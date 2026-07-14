@@ -1,6 +1,6 @@
 # Detailed Implementation Plan
 
-Status: **In execution - Phase 3 approved, Phase 4 next**
+Status: **Canonical v3 deployed through Phase 10; Phase 11 operations implementation verified; production rollout gated by legacy data issue resolution**
 
 This plan implements `DATA_DICTIONARY.md` and `TARGET_ARCHITECTURE.md`. All
 tasks are governed by `PROJECT_RULES.md` and must include evidence from
@@ -21,22 +21,63 @@ tasks are governed by `PROJECT_RULES.md` and must include evidence from
 - Phase 0 is approved in `docs/reviews/phase-0-baseline.md`.
 - Phase 1 is approved in `docs/reviews/phase-1-canonical-schema.md`.
 - Phase 2 is approved in `docs/reviews/phase-2-raw-staging-profile.md`.
-- Phase 3 has an initial executable ETL pass in
-  `docs/reviews/phase-3-canonical-etl-initial.md`, but the review gate remains
-  open pending stricter source-row reconciliation and transfer/run inference.
-- Phase 3 source-row outcome coverage now passes for the core workbook sheets
-  through `migrations/003_etl_source_row_outcomes.sql`; the gate remains open
-  for failure-state handling.
-- Phase 3 course-run inference audit is captured in
-  `docs/reviews/phase-3-course-run-inference-audit.json`; unresolved repeated
-  run candidates are quarantined as `run_boundary_unresolved`.
-- Phase 3 transfer/mid-run audit is captured in
-  `docs/reviews/phase-3-transfer-midrun-audit.json`; mid-run starts are loaded
-  through `start_session_number`, and unresolved transfers are quarantined as
-  `transfer_membership_unresolved`.
+- Phase 3 canonical ETL, source-row outcome coverage, conservative run/transfer
+  inference, idempotency, and failure-state handling are approved. Evidence is
+  retained in the Phase 3 review and audit artifacts.
+- Phase 3 course-run and transfer evidence is captured in the corresponding
+  audit JSON files. Owner-approved Phase 10 remediation retains repeated
+  delivered occurrences and infers eight conservative transfers using
+  `start_session_number`.
 - Phase 3 canonical ETL batch handling is implemented through
   `migrations/004_canonical_etl_batches.sql`; forced failure tests confirm
   rollback of canonical writes and failed-batch recording.
+- Phase 4 command/service implementation is in `services.py`; completion
+  suggestion persistence is added by `migrations/005_phase4_completion.sql`.
+- Phase 4 PostgreSQL integration gate passes through
+  `scripts/phase4_integration_check.py` on disposable database
+  `english_class_p4_test`, including rollback and concurrent run-number
+  evidence.
+- Phase 5 canonical reporting views are implemented in
+  `migrations/006_reporting_views.sql`; KPI validation passes through
+  `scripts/phase5_reporting_check.py` on disposable database
+  `english_class_p5_test`.
+- Phase 6 app architecture and security hardening are implemented through
+  `streamlit_app.py`, `db.py`, `auth.py`, `reporting.py`, and
+  `database_roles.sql`; permission validation passes through
+  `scripts/phase6_security_check.py` on disposable database
+  `english_class_p6_test`.
+- Phase 7 admin workflows are implemented through `frontend_workflows.py` and
+  the Operations tab in `streamlit_app.py`; monthly admin workflow validation
+  passes through `scripts/phase7_frontend_workflow_check.py` on disposable
+  database `english_class_p7_test`.
+- Phase 8 automated verification and UAT are implemented through
+  `scripts/phase8_automated_uat.py`; the gate validates migrations, service
+  constraints, reporting semantics, Streamlit smoke paths, UAT scenarios, and a
+  disposable backup/restore rehearsal.
+- Phase 9 cutover rehearsal is implemented through
+  `scripts/phase9_cutover_rehearsal.py`; rehearsal passed on disposable
+  database `english_class_p9_rehearsal`, and the production runbook is in
+  `docs/runbooks/phase-9-cutover-runbook.md`. The post-review hardening gate
+  also passes: disposable-target protection, migration ownership, restricted
+  app-role smoke, session revalidation, and quality-queue deduplication are
+  verified. Production cutover completed on 2026-07-13 with the legacy database
+  and verified backups retained for rollback.
+- Phase 10 quality sign-off evidence is generated through
+  `scripts/phase10_quality_signoff.py`. Owner-approved pattern remediation now
+  loads all 6,281 attendance rows, supports PIC team labels, retains 956 logical
+  sessions across 1,016 delivered occurrences, and infers eight conservative
+  transfer links. The full post-remediation Phase 9 rehearsal and Phase 10
+  validator both pass with zero open issues. The owner authorized production
+  cutover and the setup lock was removed after final validation.
+- Phase 11 owner discovery confirms that the existing frontend is a technical
+  administration shell, not the accepted Excel-replacement workflow. The
+  approved Learners, Attendance, Monthly review, and Data issues specification
+  is in `docs/reviews/phase-11-operations-workspace-spec.md`.
+- Phase 11 implementation evidence is captured in
+  `docs/reviews/phase-11-uat-and-rollout.md`. The P11.1 integration gate passes
+  through `scripts/phase11_p11_1_integration.py`; rollout remains gated by
+  owner resolution or written acceptance of high-severity legacy data issues in
+  the operational inbox.
 - The target database had no `schema_migrations` table during Phase 0 audit, so
   the selected branch is a clean canonical v3 initial migration.
 - `migrations/001_canonical_schema_v3.sql` replaced the un-applied draft
@@ -447,7 +488,9 @@ Review gate:
 
 ## Phase 7 - Admin frontend workflows
 
-Goal: implement workflows only after services and rules are stable.
+Goal: provide an initial technical administration shell after services and
+rules are stable. This phase validates command reachability and permissions; it
+is not the final spreadsheet-replacement UX.
 
 Build in this order:
 
@@ -482,7 +525,9 @@ Review gate:
 
 ## Phase 8 - Automated verification and UAT
 
-Goal: prove the system is correct enough to replace the spreadsheet workflow.
+Goal: prove the canonical backend, initial administration shell, security, and
+recovery path are correct enough for controlled cutover. Owner acceptance of
+the spreadsheet-replacement UX is handled separately in Phase 11.
 
 Required automated suites:
 
@@ -542,6 +587,115 @@ Acceptance criteria:
 - App uses canonical v3 tables only.
 - Setup/run instructions were executed successfully on a clean environment.
 - Monitoring, backup ownership, and issue ownership are assigned.
+
+## Phase 10 - Owner quality decisions and remediation
+
+Goal: convert unresolved workbook ambiguity into explicit, checksum-bound owner
+decisions and produce a zero-surprise production candidate.
+
+Completed work:
+
+- generate an owner-facing quality checklist and reproducible issue snapshot;
+- record owner decisions for missing dates, PIC labels, placement, repeated
+  session occurrences, and delegated pattern decisions;
+- apply checksum-bound remediation without mutating the source workbook;
+- rerun full Phase 9 staging, ETL, app smoke, backup, and restore;
+- validate zero open quality issues and retain the signed snapshot hash.
+
+Acceptance evidence:
+
+- `docs/reviews/phase-10-owner-workbook-checklist.md`;
+- `docs/reviews/phase-10-quality-signoff.md`;
+- `docs/reviews/phase-10-quality-signoff.json`.
+
+## Phase 11 - HR operations workspace
+
+Goal: replace the three-sheet, script-assisted HR workflow with a direct,
+task-oriented desktop application while retaining the canonical backend.
+
+Owner-approved contract:
+
+- `docs/reviews/phase-11-operations-workspace-spec.md`.
+
+### P11.1 Learner transaction and constraints
+
+Implement and test:
+
+- inline employee lookup/create with employee code, name, BU, and role;
+- one editable source for employee identity and organization history;
+- atomic employee, placement, membership, and enrollment onboarding;
+- one-active-course-per-employee enforcement;
+- class capacity plus reasoned HR override;
+- free-text PIC labels with normalized autocomplete;
+- sequential class-code proposal;
+- transfer with automatic target start-session proposal;
+- immutable event-time BU/role snapshots generated by the service.
+
+Acceptance criteria:
+
+- adding a learner requires one save and creates no partial records on failure;
+- the learner immediately appears in the applicable attendance roster;
+- employee code conflicts, active-course conflicts, and capacity overrides are
+  actionable and audited;
+- service integration tests inspect all related rows after commit and rollback.
+
+### P11.2 Learner workspace
+
+Build a desktop-first searchable grid and learner detail workspace supporting
+employee code/name search, class/course/PIC/BU/role filters, inline onboarding,
+placement, transfer, current assignment, attendance summary, history, and
+audit inspection.
+
+Acceptance criteria:
+
+- the real new-learner and transfer workflows are completed without navigating
+  to a database-oriented maintenance form;
+- common edits are keyboard-efficient and validation identifies the exact
+  field to correct;
+- Streamlit tests cover found employee, inline employee creation, conflict,
+  override, rollback, and transfer paths.
+
+### P11.3 Attendance workspace
+
+Implement class/run/session selection and one editable roster grid. Applicable
+learners default to `Present`; HR marks absences and saves the roster once.
+Support direct audited schedule correction and historical attendance edits.
+
+Acceptance criteria:
+
+- no attendance-input sheet or follow-up script is required;
+- only applicable roster members can be saved;
+- duplicate sessions and incomplete roster writes are rejected transactionally;
+- rates refresh from canonical attendance immediately after commit.
+
+### P11.4 Monthly review
+
+Implement one-month selection with Program status, Participation, Learning
+progress, and editable Action sections. Keep planned and delivered sessions as
+separate metrics and provide Excel export.
+
+Acceptance criteria:
+
+- KPI definitions match the Phase 11 owner contract;
+- repeated participant and two-latest-test improvement fixtures are reviewed;
+- every chart reconciles to an inspectable detail table;
+- rule-based highlights/risks are editable and never silently persisted as
+  owner conclusions.
+
+### P11.5 Data issues, UAT, and rollout
+
+Build an actionable issue inbox linking directly to employee, enrollment,
+schedule, attendance, and override corrections. Replay the two-HR monthly
+workflow on production-shaped fixtures, then migrate and roll out through the
+existing backup/reconciliation process.
+
+Acceptance criteria:
+
+- owner signs off new learner, attendance, transfer, correction, and monthly
+  report scenarios;
+- no critical/high defects remain;
+- production migration has rollback evidence;
+- current production remains available until Phase 11 rollout is approved.
 
 ## Cross-phase review requirement
 

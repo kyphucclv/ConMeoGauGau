@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
+    "issue_snapshot_sha256": "046c4fe31c735409ae58442e3cc1c77ccc355eedc4ed1f18e1b34829231a79b6",
+    "generated_from": "docs\\reviews\\phase-11-operational-issue-snapshot.json"
+  },
+  "instructions": [
+    "Fill owner_decision, decision_owner, decision_note, and decided_at.",
+    "Use decided_at as YYYY-MM-DD.",
+    "High-severity resolve_source/cancel_duplicate_meeting decisions mean the issue must be corrected and disappear before validation can pass.",
+    "Schedule conflicts must be corrected; they cannot be accepted while still present."
+  ],
+  "allowed_decisions": [
+    "accept_legacy_lineage_limitation",
+    "approve_legacy_attendance_exception",
+    "approve_unknown_org_placeholder",
+    "approve_unknown_placement_placeholder",
+    "cancel_duplicate_meeting",
+    "pending",
+    "reject_rollout",
+    "resolve_source",
+    "review_operationally"
+  ],
+  "decisions": [
+    {
+      "issue_code": "incomplete_attendance_roster",
+      "severity": "high",
+      "expected_count": 124,
+      "owner_decision": "approve_legacy_attendance_exception",
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking.",
+      "decided_at": "2026-07-14"
+    },
+    {
+      "issue_code": "missing_business_placement",
+      "severity": "high",
+      "expected_count": 49,
+      "owner_decision": "approve_unknown_placement_placeholder",
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later.",
+      "decided_at": "2026-07-14"
+    },
+    {
+      "issue_code": "low_attendance_follow_up",
+      "severity": "warning",
+      "expected_count": 82,
+      "owner_decision": "review_operationally",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    }
+  ]
+}

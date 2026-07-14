@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import traceback
@@ -10,6 +11,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
+from pathlib import Path
 from typing import Any
 
 import psycopg2
@@ -17,6 +19,8 @@ import psycopg2.extras
 
 
 FORMULA_PREFIX = "="
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_REMEDIATION_PATH = ROOT / "config" / "phase10_remediation.json"
 
 
 @dataclass(frozen=True)
@@ -110,36 +114,13 @@ def parse_datetime(value: Any) -> datetime | None:
     return None
 
 
-def detect_session_resets(rows: list[tuple[datetime, int]]) -> list[dict[str, Any]]:
-    reset_candidates: list[dict[str, Any]] = []
-    previous_date = None
-    previous_session = None
-    for starts_at, session_order in sorted(set(rows)):
-        if (
-            previous_date is not None
-            and starts_at > previous_date
-            and session_order < previous_session
-        ):
-            reset_candidates.append(
-                {
-                    "date": starts_at.isoformat(),
-                    "session_order": session_order,
-                    "previous_date": previous_date.isoformat(),
-                    "previous_session_order": previous_session,
-                }
-            )
-        if previous_date is None or starts_at > previous_date or session_order > previous_session:
-            previous_date = starts_at
-            previous_session = session_order
-    return reset_candidates
-
-
 class CanonicalLoader:
-    def __init__(self, conn, fail_after_step: str | None = None):
+    def __init__(self, conn, fail_after_step: str | None = None, remediation: dict[str, Any] | None = None):
         self.conn = conn
         self.issues_seen: set[tuple[str, str, str | None, int | None, int | None]] = set()
         self.stats: Counter[str] = Counter()
         self.fail_after_step = fail_after_step
+        self.remediation = remediation or {}
 
     def maybe_fail(self, step: str) -> None:
         if self.fail_after_step == step:
@@ -207,16 +188,61 @@ class CanonicalLoader:
                 """,
                 (sheet_name,),
             )
-            return [
+            rows = [
                 RawRow(
                     raw_row_id=row["raw_row_id"],
                     import_batch_id=row["import_batch_id"],
                     sheet_name=row["sheet_name"],
                     source_row_number=row["source_row_number"],
-                    values=row["values"],
+                    values=dict(row["values"]),
                 )
                 for row in cur.fetchall()
             ]
+        overrides = self.remediation.get("row_overrides", {})
+        return [
+            RawRow(
+                raw_row_id=row.raw_row_id,
+                import_batch_id=row.import_batch_id,
+                sheet_name=row.sheet_name,
+                source_row_number=row.source_row_number,
+                values=self.apply_row_remediation(
+                    row.sheet_name,
+                    row.source_row_number,
+                    {**row.values, **overrides.get(f"{row.sheet_name}:{row.source_row_number}", {})},
+                ),
+            )
+            for row in rows
+        ]
+
+    def apply_row_remediation(self, sheet_name: str, source_row_number: int, values: dict[str, Any]) -> dict[str, Any]:
+        remediated = dict(values)
+        for rule in self.remediation.get("date_year_overrides", []):
+            if rule.get("sheet_name") != sheet_name:
+                continue
+            if clean_code(remediated.get("Class Code")) != rule.get("class_code"):
+                continue
+            if clean_text(remediated.get("Course Name")) != rule.get("course_name"):
+                continue
+            field = rule.get("field", "Date")
+            observed_at = parse_datetime(remediated.get(field))
+            if not observed_at or observed_at.year != int(rule.get("from_year", 0)):
+                continue
+            remediated[field] = observed_at.replace(year=int(rule["to_year"])).isoformat()
+            self.stats["remediation.date_year_overrides"] += 1
+        return remediated
+
+    def remediation_action(self, action_group: str, row: RawRow) -> str | None:
+        actions = self.remediation.get(action_group, {})
+        return actions.get(f"{row.sheet_name}:{row.source_row_number}")
+
+    def normalize_level_name(self, name: str | None) -> str | None:
+        if not name:
+            return None
+        aliases = {
+            str(source).casefold(): str(target)
+            for source, target in self.remediation.get("level_aliases", {}).items()
+        }
+        return aliases.get(name.casefold(), name)
 
     def issue(self, row: RawRow, code: str, entity_type: str, entity_key: str | None, details: dict[str, Any]) -> None:
         key = (code, entity_type, entity_key, row.import_batch_id, row.raw_row_id)
@@ -396,10 +422,8 @@ class CanonicalLoader:
             employee_id = self.employee_id(emp_code)
             if not employee_id:
                 continue
-            bu_id = self.ensure_named_ref("business_units", "business_unit_name", clean_text(row.values.get("BU")))
-            role_id = self.ensure_named_ref("job_roles", "job_role_name", clean_text(row.values.get("Role")))
-            if not bu_id and not role_id:
-                continue
+            bu_id = self.ensure_named_ref("business_units", "business_unit_name", clean_text(row.values.get("BU")) or "Unknown BU")
+            role_id = self.ensure_named_ref("job_roles", "job_role_name", clean_text(row.values.get("Role")) or "Unknown Role")
             with self.conn.cursor() as cur:
                 cur.execute(
                     """
@@ -414,6 +438,14 @@ class CanonicalLoader:
             self.outcome(row, "loaded", "org_history_loaded", "employee_org_history", emp_code)
             seen.add(emp_code)
             self.stats["org_history.inserted"] += 1
+        unknown_bu_id = self.ensure_named_ref("business_units", "business_unit_name", "Unknown BU")
+        unknown_role_id = self.ensure_named_ref("job_roles", "job_role_name", "Unknown Role")
+        with self.conn.cursor() as cur:
+            cur.execute("""INSERT INTO employee_org_history(employee_id,business_unit_id,job_role_id,valid_from,observed_from)
+                           SELECT e.employee_id,%s,%s,DATE '1900-01-01','etl_unknown_placeholder'
+                           FROM employees e LEFT JOIN employee_org_history eoh ON eoh.employee_id=e.employee_id AND eoh.is_current
+                           WHERE eoh.employee_org_history_id IS NULL""", (unknown_bu_id, unknown_role_id))
+            self.stats["org_history.unknown_backfilled"] += cur.rowcount
 
     def level_id(self, name: str | None) -> int | None:
         if not name:
@@ -440,11 +472,22 @@ class CanonicalLoader:
             if not employee_id:
                 self.issue(row, "missing_emp_code", "placement", emp_code, {"reason": "employee could not be created"})
                 continue
+            placement_kind = "business"
             if emp_code in seen:
-                self.issue(row, "duplicate_business_placement", "placement", emp_code, {"emp_code": emp_code})
-                continue
-            seen.add(emp_code)
-            level_name = clean_text(row.values.get("1st session:"))
+                action = self.remediation_action("placement_duplicate_actions", row)
+                if action == "exclude":
+                    self.ignored(row, "accepted_duplicate_business_placement", {"emp_code": emp_code})
+                    continue
+                if action == "diagnostic":
+                    placement_kind = "diagnostic"
+                elif action == "replace_business":
+                    placement_kind = "business"
+                else:
+                    self.issue(row, "duplicate_business_placement", "placement", emp_code, {"emp_code": emp_code})
+                    continue
+            else:
+                seen.add(emp_code)
+            level_name = self.normalize_level_name(clean_text(row.values.get("1st session:")))
             level_id = self.level_id(level_name)
             if level_name and not level_id:
                 self.issue(row, "unknown_level", "placement", emp_code, {"level": level_name})
@@ -457,11 +500,19 @@ class CanonicalLoader:
                         grammar_feedback, vocabulary_feedback, pronunciation_feedback,
                         fluency_feedback, source_reference
                     )
-                    VALUES (%s, 'business', %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (employee_id, placement_kind) DO NOTHING
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (employee_id, placement_kind) DO UPDATE
+                    SET test_date = EXCLUDED.test_date,
+                        level_id = EXCLUDED.level_id,
+                        grammar_feedback = EXCLUDED.grammar_feedback,
+                        vocabulary_feedback = EXCLUDED.vocabulary_feedback,
+                        pronunciation_feedback = EXCLUDED.pronunciation_feedback,
+                        fluency_feedback = EXCLUDED.fluency_feedback,
+                        source_reference = EXCLUDED.source_reference
                     """,
                     (
                         employee_id,
+                        placement_kind,
                         test_date,
                         level_id,
                         clean_text(row.values.get("column_5")),
@@ -471,7 +522,14 @@ class CanonicalLoader:
                         psycopg2.extras.Json({"sheet": row.sheet_name, "row": row.source_row_number}),
                     ),
                 )
-            self.outcome(row, "loaded", "placement_loaded", "placements", emp_code)
+            self.outcome(
+                row,
+                "loaded",
+                "placement_loaded",
+                "placements",
+                f"{emp_code}:{placement_kind}",
+                {"placement_kind": placement_kind},
+            )
             self.stats["placements.inserted"] += 1
 
     def load_cohorts(self) -> None:
@@ -504,6 +562,7 @@ class CanonicalLoader:
         for row in self.rows("PIC"):
             class_code = clean_code(row.values.get("Class Code"))
             emp_code = clean_emp_code(row.values.get("EMP Code"))
+            pic_label = clean_text(row.values.get("PIC"))
             cohort_id = self.cohort_id(class_code)
             pic_employee_id = self.employee_id(emp_code) if emp_code else None
             if not class_code or not cohort_id:
@@ -512,19 +571,26 @@ class CanonicalLoader:
                     continue
                 self.issue(row, "missing_class_code", "cohort_pic_assignment", class_code, {"class_code": class_code})
                 continue
-            if not pic_employee_id:
+            if not pic_employee_id and not pic_label:
                 self.issue(row, "unmapped_pic_employee", "cohort_pic_assignment", class_code, {"emp_code": emp_code, "pic": clean_text(row.values.get("PIC"))})
                 continue
             with self.conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO cohort_pic_assignments (cohort_id, pic_employee_id, start_date)
-                    VALUES (%s, %s, DATE '1900-01-01')
+                    INSERT INTO cohort_pic_assignments (cohort_id, pic_employee_id, pic_label, start_date)
+                    VALUES (%s, %s, %s, DATE '1900-01-01')
                     ON CONFLICT (cohort_id) WHERE end_date IS NULL DO NOTHING
                     """,
-                    (cohort_id, pic_employee_id),
+                    (cohort_id, pic_employee_id, pic_label),
                 )
-            self.outcome(row, "loaded", "pic_assignment_loaded", "cohort_pic_assignments", class_code)
+            self.outcome(
+                row,
+                "loaded",
+                "pic_assignment_loaded",
+                "cohort_pic_assignments",
+                class_code,
+                {"assignment_type": "employee" if pic_employee_id else "label", "pic_label": pic_label},
+            )
             self.stats["pic_assignments.inserted"] += 1
 
     def load_course_runs(self) -> None:
@@ -603,18 +669,111 @@ class CanonicalLoader:
             first_sessions[key] = min(first_sessions.get(key, session_order), session_order)
         return first_sessions
 
-    def employee_class_map(self) -> dict[str, set[str]]:
-        classes_by_employee: dict[str, set[str]] = defaultdict(set)
+    def transfer_review_by_row(self) -> dict[int, dict[str, Any]]:
+        attendance: dict[tuple[str, str, str], dict[str, Any]] = {}
+        for row in self.rows("ATTENDANCE_LOG"):
+            emp_code = clean_emp_code(row.values.get("Emp Code"))
+            class_code = clean_code(row.values.get("Class Code"))
+            course_name = clean_text(row.values.get("Course Name"))
+            session_order = parse_int(row.values.get("Session Order"))
+            starts_at = parse_datetime(row.values.get("Date"))
+            if not emp_code or not class_code or not course_name:
+                continue
+            key = (emp_code, class_code, course_name)
+            summary = attendance.setdefault(key, {"first_date": None, "last_date": None, "first_session": None})
+            if starts_at:
+                summary["first_date"] = min(filter(None, (summary["first_date"], starts_at)))
+                summary["last_date"] = max(filter(None, (summary["last_date"], starts_at)))
+            if session_order:
+                summary["first_session"] = min(filter(None, (summary["first_session"], session_order)))
+
+        by_employee: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in self.rows("sheet2"):
             emp_code = clean_emp_code(row.values.get("Emp Code"))
             class_code = clean_code(row.values.get("Class Code"))
-            if emp_code and class_code:
-                classes_by_employee[emp_code].add(class_code)
-        return classes_by_employee
+            course_name = clean_text(row.values.get("Course Name"))
+            if not emp_code or not class_code or not course_name:
+                continue
+            summary = attendance.get((emp_code, class_code, course_name), {})
+            by_employee[emp_code].append(
+                {
+                    "row": row,
+                    "class_code": class_code,
+                    "course_name": course_name,
+                    "first_date": summary.get("first_date"),
+                    "last_date": summary.get("last_date"),
+                    "first_session": summary.get("first_session"),
+                    "start_date": parse_datetime(row.values.get("start date")),
+                }
+            )
+
+        review: dict[int, dict[str, Any]] = {}
+        for rows in by_employee.values():
+            ordered = sorted(
+                rows,
+                key=lambda item: (
+                    item["first_date"] or item["start_date"] or datetime.max,
+                    item["class_code"],
+                    item["course_name"],
+                ),
+            )
+            for previous, current in zip(ordered, ordered[1:]):
+                if previous["class_code"] == current["class_code"]:
+                    continue
+                same_course = previous["course_name"] == current["course_name"]
+                midrun = bool(current["first_session"] and current["first_session"] > 1)
+                if not same_course and not midrun:
+                    continue
+                gap_days = None
+                if previous["last_date"] and current["first_date"]:
+                    gap_days = (current["first_date"].date() - previous["last_date"].date()).days
+                max_gap = int(self.remediation.get("infer_transfer_max_gap_days", 0))
+                inferred_transfer = bool(
+                    same_course and midrun and gap_days is not None and 0 <= gap_days <= max_gap
+                )
+                review[current["row"].raw_row_id] = {
+                    "from_class": previous["class_code"],
+                    "from_course": previous["course_name"],
+                    "from_last_attendance": previous["last_date"].isoformat() if previous["last_date"] else None,
+                    "to_class": current["class_code"],
+                    "to_course": current["course_name"],
+                    "to_first_attendance": current["first_date"].isoformat() if current["first_date"] else None,
+                    "to_first_session": current["first_session"],
+                    "same_course": same_course,
+                    "midrun": midrun,
+                    "gap_days": gap_days,
+                    "inferred_transfer": inferred_transfer,
+                }
+        return review
 
     def load_memberships_and_enrollments(self) -> None:
         first_sessions = self.attendance_first_session_map()
-        classes_by_employee = self.employee_class_map()
+        transfer_review = self.transfer_review_by_row()
+        # The workbook has no explicit current-enrollment flag.  Preserve every
+        # historic enrollment, but make only the latest observed row per learner
+        # active.  This is required by the P11 source-of-truth invariant and is
+        # deterministic from attendance/start-date evidence rather than row order.
+        first_dates: dict[tuple[str, str, str], datetime] = {}
+        for attendance_row in self.rows("sheet1"):
+            key = (
+                clean_emp_code(attendance_row.values.get("Emp Code")),
+                clean_code(attendance_row.values.get("Class Code")),
+                clean_text(attendance_row.values.get("Course Name")),
+            )
+            observed_at = parse_datetime(attendance_row.values.get("Date"))
+            if all(key) and observed_at:
+                first_dates[key] = max(first_dates.get(key, observed_at), observed_at)
+        latest_by_employee: dict[str, tuple[datetime, int]] = {}
+        for enrollment_row in self.rows("sheet2"):
+            emp_code = clean_emp_code(enrollment_row.values.get("Emp Code"))
+            class_code = clean_code(enrollment_row.values.get("Class Code"))
+            course_name = clean_text(enrollment_row.values.get("Course Name"))
+            if not emp_code or not class_code or not course_name:
+                continue
+            observed_at = first_dates.get((emp_code, class_code, course_name)) or parse_datetime(enrollment_row.values.get("start date")) or datetime.min
+            candidate = (observed_at, enrollment_row.raw_row_id)
+            if emp_code not in latest_by_employee or candidate > latest_by_employee[emp_code]:
+                latest_by_employee[emp_code] = candidate
         for row in self.rows("sheet2"):
             emp_code = clean_emp_code(row.values.get("Emp Code"))
             class_code = clean_code(row.values.get("Class Code"))
@@ -636,22 +795,18 @@ class CanonicalLoader:
                 continue
             joined_at = parse_date(row.values.get("start date")) or date(1900, 1, 1)
             start_session_number = first_sessions.get((emp_code, class_code, course_name), 1)
-            if len(classes_by_employee.get(emp_code, set())) > 1:
-                self.issue(
-                    row,
-                    "transfer_membership_unresolved",
-                    "run_enrollment",
-                    f"{emp_code}:{class_code}:{course_name}",
-                    {"classes": sorted(classes_by_employee[emp_code])},
-                )
+            is_current = latest_by_employee.get(emp_code, (None, None))[1] == row.raw_row_id
+            membership_status = "active" if is_current else "completed"
+            enrollment_status = "active" if is_current else "completed"
             with self.conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO cohort_memberships (cohort_id, employee_id, start_date)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (employee_id) WHERE status = 'active' DO NOTHING
+                    INSERT INTO cohort_memberships (cohort_id, employee_id, start_date, status)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (employee_id, cohort_id, start_date) DO UPDATE
+                    SET status = CASE WHEN EXCLUDED.status = 'active' THEN 'active' ELSE cohort_memberships.status END
                     """,
-                    (cohort_id, employee_id, joined_at),
+                    (cohort_id, employee_id, joined_at, membership_status),
                 )
             self.outcome(row, "loaded", "cohort_membership_resolved", "cohort_memberships", f"{emp_code}:{class_code}")
             membership_id = self.membership_id(employee_id, cohort_id)
@@ -663,19 +818,105 @@ class CanonicalLoader:
                     INSERT INTO run_enrollments (
                         course_run_id, employee_id, cohort_membership_id,
                         business_unit_id_snapshot, job_role_id_snapshot,
-                        start_session_number
+                        start_session_number, status
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (course_run_id, employee_id) DO NOTHING
                     RETURNING run_enrollment_id
                     """,
-                    (course_run_id, employee_id, membership_id, bu_id, role_id, start_session_number),
+                    (course_run_id, employee_id, membership_id, bu_id, role_id, start_session_number, enrollment_status),
                 )
                 inserted = cur.fetchone()
             if inserted:
                 self.stats["run_enrollments.inserted"] += 1
             self.outcome(row, "loaded", "run_enrollment_loaded", "run_enrollments", f"{emp_code}:{class_code}:{course_name}")
+            transfer = transfer_review.get(row.raw_row_id)
+            if transfer:
+                if transfer["inferred_transfer"]:
+                    from_enrollment_id = self.run_enrollment_id(
+                        transfer["from_class"], transfer["from_course"], emp_code
+                    )
+                    to_enrollment_id = self.run_enrollment_id(class_code, course_name, emp_code)
+                    if from_enrollment_id and to_enrollment_id:
+                        with self.conn.cursor() as cur:
+                            cur.execute(
+                                "UPDATE run_enrollments SET transfer_from_enrollment_id = %s WHERE run_enrollment_id = %s",
+                                (from_enrollment_id, to_enrollment_id),
+                            )
+                        self.outcome(
+                            row,
+                            "loaded",
+                            "transfer_inferred_from_timeline",
+                            "run_enrollments",
+                            f"{emp_code}:{class_code}:{course_name}",
+                            transfer,
+                        )
+                        self.stats["transfers.inferred"] += 1
+                else:
+                    self.ignored(row, "transfer_not_inferred_from_timeline", transfer)
             self.load_evaluation(row, course_run_id, employee_id)
+
+    def load_attendance_derived_enrollments(self) -> None:
+        if not self.remediation.get("derive_enrollments_from_attendance"):
+            return
+        candidates: dict[tuple[str, str, str], list[RawRow]] = defaultdict(list)
+        first_session: dict[tuple[str, str, str], int] = {}
+        for row in self.rows("ATTENDANCE_LOG"):
+            emp_code = clean_emp_code(row.values.get("Emp Code"))
+            class_code = clean_code(row.values.get("Class Code"))
+            course_name = clean_text(row.values.get("Course Name"))
+            session_order = parse_int(row.values.get("Session Order"))
+            status = clean_text(row.values.get("Status"))
+            if not emp_code or not class_code or not course_name or not session_order or status not in {"Present", "Absent"}:
+                continue
+            key = (emp_code, class_code, course_name)
+            candidates[key].append(row)
+            first_session[key] = min(first_session.get(key, session_order), session_order)
+
+        for (emp_code, class_code, course_name), source_rows in sorted(candidates.items()):
+            if self.run_enrollment_id(class_code, course_name, emp_code):
+                continue
+            employee_id = self.employee_id(emp_code)
+            cohort_id = self.cohort_id(class_code)
+            course_run_id = self.course_run_id(class_code, course_name)
+            if not employee_id or not cohort_id or not course_run_id:
+                continue
+            membership_id = self.membership_id(employee_id, cohort_id)
+            # Attendance-only candidates have no enrollment source row from
+            # which to infer current status.  If another source-backed active
+            # enrollment exists, retain this as historic rather than violating
+            # the one-active-course invariant.
+            active_exists = self.scalar_id(
+                "SELECT run_enrollment_id FROM run_enrollments WHERE employee_id=%s AND status='active' LIMIT 1",
+                (employee_id,),
+            )
+            enrollment_status = "completed" if active_exists else "active"
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO run_enrollments (
+                        course_run_id, employee_id, cohort_membership_id, start_session_number, status
+                    )
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (course_run_id, employee_id) DO NOTHING
+                    RETURNING run_enrollment_id
+                    """,
+                    (course_run_id, employee_id, membership_id, first_session[(emp_code, class_code, course_name)], enrollment_status),
+                )
+                inserted = cur.fetchone()
+            if not inserted:
+                continue
+            self.stats["run_enrollments.attendance_derived"] += 1
+            self.stats["run_enrollments.inserted"] += 1
+            for row in source_rows:
+                self.outcome(
+                    row,
+                    "loaded",
+                    "attendance_derived_enrollment",
+                    "run_enrollments",
+                    f"{emp_code}:{class_code}:{course_name}",
+                    {"start_session_number": first_session[(emp_code, class_code, course_name)], "enrollment_status": enrollment_status},
+                )
 
     def run_enrollment_id(self, class_code: str | None, course_name: str | None, emp_code: str | None) -> int | None:
         if not class_code or not course_name or not emp_code:
@@ -741,28 +982,14 @@ class CanonicalLoader:
             if class_code and course_name and session_order and starts_at:
                 groups[(class_code, course_name, session_order)].add(starts_at)
 
-        conflicting = {key for key, dates in groups.items() if len(dates) > 1}
-        pair_session_rows: dict[tuple[str, str], list[tuple[datetime, int]]] = defaultdict(list)
-        for (class_code, course_name, session_order), dates in groups.items():
-            for starts_at in dates:
-                pair_session_rows[(class_code, course_name)].append((starts_at, session_order))
-        run_boundary_resets = {
-            pair: resets
-            for pair, rows in pair_session_rows.items()
-            if (resets := detect_session_resets(rows))
-        }
         meeting_unit_numbers: dict[tuple[int, datetime, int], int] = {}
         sessions_by_meeting: dict[tuple[int, datetime], list[int]] = defaultdict(list)
         for (class_code, course_name, session_order), dates in groups.items():
-            if (class_code, course_name, session_order) in conflicting or len(dates) != 1:
-                continue
-            if (class_code, course_name) in run_boundary_resets:
-                continue
             course_run_id = self.course_run_id(class_code, course_name)
             if not course_run_id:
                 continue
-            starts_at = next(iter(dates))
-            sessions_by_meeting[(course_run_id, starts_at)].append(session_order)
+            for starts_at in dates:
+                sessions_by_meeting[(course_run_id, starts_at)].append(session_order)
 
         overfull_meetings = {
             key for key, session_orders in sessions_by_meeting.items()
@@ -776,48 +1003,52 @@ class CanonicalLoader:
 
         session_unit_by_key: dict[tuple[str, str, int, datetime], int] = {}
         for (class_code, course_name, session_order), dates in groups.items():
-            if (class_code, course_name, session_order) in conflicting:
-                continue
-            if (class_code, course_name) in run_boundary_resets:
-                continue
-            starts_at = next(iter(dates))
             course_run_id = self.course_run_id(class_code, course_name)
             if not course_run_id:
                 continue
-            if (course_run_id, starts_at) in overfull_meetings:
-                continue
-            unit_number = meeting_unit_numbers.get((course_run_id, starts_at, session_order))
-            if not unit_number:
-                continue
-            existing_session_unit_id = self.scalar_id(
-                "SELECT session_unit_id FROM session_units WHERE course_run_id = %s AND sequence_in_run = %s",
-                (course_run_id, session_order),
-            )
-            if existing_session_unit_id:
-                session_unit_by_key[(class_code, course_name, session_order, starts_at)] = existing_session_unit_id
-                continue
-            with self.conn.cursor() as cur:
-                cur.execute(
+            for starts_at in dates:
+                if (course_run_id, starts_at) in overfull_meetings:
+                    continue
+                unit_number = meeting_unit_numbers.get((course_run_id, starts_at, session_order))
+                if not unit_number:
+                    continue
+                existing_session_unit_id = self.scalar_id(
                     """
-                    INSERT INTO meetings (course_run_id, starts_at, duration_minutes, status)
-                    VALUES (%s, %s, 60, 'completed')
-                    ON CONFLICT (course_run_id, starts_at) DO UPDATE SET starts_at = EXCLUDED.starts_at
-                    RETURNING meeting_id
+                    SELECT su.session_unit_id
+                    FROM session_units su
+                    JOIN meetings m ON m.meeting_id = su.meeting_id
+                    WHERE su.course_run_id = %s
+                      AND su.sequence_in_run = %s
+                      AND m.starts_at = %s
                     """,
-                    (course_run_id, starts_at),
+                    (course_run_id, session_order, starts_at),
                 )
-                meeting_id = cur.fetchone()[0]
-                cur.execute(
-                    """
-                    INSERT INTO session_units (course_run_id, meeting_id, sequence_in_run, unit_number_in_meeting)
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (course_run_id, sequence_in_run) DO UPDATE SET sequence_in_run = EXCLUDED.sequence_in_run
-                    RETURNING session_unit_id
-                    """,
-                    (course_run_id, meeting_id, session_order, unit_number),
-                )
-                session_unit_id = cur.fetchone()[0]
-            session_unit_by_key[(class_code, course_name, session_order, starts_at)] = session_unit_id
+                if existing_session_unit_id:
+                    session_unit_by_key[(class_code, course_name, session_order, starts_at)] = existing_session_unit_id
+                    continue
+                with self.conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO meetings (course_run_id, starts_at, duration_minutes, status)
+                        VALUES (%s, %s, 60, 'completed')
+                        ON CONFLICT (course_run_id, starts_at) DO UPDATE SET starts_at = EXCLUDED.starts_at
+                        RETURNING meeting_id
+                        """,
+                        (course_run_id, starts_at),
+                    )
+                    meeting_id = cur.fetchone()[0]
+                    cur.execute(
+                        """
+                        INSERT INTO session_units (course_run_id, meeting_id, sequence_in_run, unit_number_in_meeting)
+                        VALUES (%s, %s, %s, %s)
+                        ON CONFLICT (course_run_id, sequence_in_run, meeting_id)
+                        DO UPDATE SET unit_number_in_meeting = EXCLUDED.unit_number_in_meeting
+                        RETURNING session_unit_id
+                        """,
+                        (course_run_id, meeting_id, session_order, unit_number),
+                    )
+                    session_unit_id = cur.fetchone()[0]
+                session_unit_by_key[(class_code, course_name, session_order, starts_at)] = session_unit_id
 
         for row in attendance_rows:
             class_code = clean_code(row.values.get("Class Code"))
@@ -839,17 +1070,8 @@ class CanonicalLoader:
             if not class_code:
                 self.issue(row, "missing_class_code", "attendance", entity_key, {})
                 continue
-            if not session_order or (class_code, course_name, session_order) in conflicting:
+            if not session_order:
                 self.issue(row, "conflicting_session_structure", "attendance", entity_key, {"session_order": session_order})
-                continue
-            if (class_code, course_name) in run_boundary_resets:
-                self.issue(
-                    row,
-                    "run_boundary_unresolved",
-                    "attendance",
-                    entity_key,
-                    {"reset_examples": run_boundary_resets[(class_code, course_name)][:5]},
-                )
                 continue
             if status not in {"Present", "Absent"}:
                 self.issue(row, "invalid_attendance_status", "attendance", entity_key, {"status": status})
@@ -903,6 +1125,7 @@ class CanonicalLoader:
         self.mark_course_run_source_outcomes()
         self.maybe_fail("course_runs")
         self.load_memberships_and_enrollments()
+        self.load_attendance_derived_enrollments()
         self.maybe_fail("enrollments")
         self.load_schedule_and_attendance()
         self.maybe_fail("attendance")
@@ -924,6 +1147,19 @@ def get_staging_batch(conn) -> tuple[int, str]:
         if not row:
             raise RuntimeError("No completed staging import batch found. Run stage_workbook.py first.")
         return row[0], row[1]
+
+
+def load_remediation(source_checksum: str, path: Path = DEFAULT_REMEDIATION_PATH) -> tuple[dict[str, Any], str | None]:
+    if not path.exists():
+        return {}, None
+    raw = path.read_bytes()
+    remediation = json.loads(raw.decode("utf-8"))
+    configured_checksum = remediation.get("source_checksum")
+    if not configured_checksum:
+        raise RuntimeError("Remediation manifest must declare source_checksum")
+    if configured_checksum != source_checksum:
+        return {}, None
+    return remediation, hashlib.sha256(raw).hexdigest()
 
 
 def completed_batch_stats(conn, source_checksum: str) -> dict[str, Any] | None:
@@ -991,6 +1227,7 @@ def record_failed_batch(database_url: str, import_batch_id: int, source_checksum
 def run_canonical_etl(database_url: str, fail_after_step: str | None = None, force: bool = False) -> dict[str, Any]:
     with psycopg2.connect(database_url) as conn:
         import_batch_id, source_checksum = get_staging_batch(conn)
+        remediation, remediation_checksum = load_remediation(source_checksum)
         existing = completed_batch_stats(conn, source_checksum)
         if existing and not force and not fail_after_step:
             return {
@@ -1002,13 +1239,16 @@ def run_canonical_etl(database_url: str, fail_after_step: str | None = None, for
     try:
         with psycopg2.connect(database_url) as conn:
             batch_id = create_running_batch(conn, import_batch_id, source_checksum)
-            loader = CanonicalLoader(conn, fail_after_step=fail_after_step)
+            loader = CanonicalLoader(conn, fail_after_step=fail_after_step, remediation=remediation)
             stats = loader.run()
+            if remediation_checksum:
+                stats["remediation.manifest_applied"] = 1
             mark_batch_completed(conn, batch_id, stats)
             return {
                 "status": "completed",
                 "canonical_etl_batch_id": batch_id,
                 "stats": dict(sorted(stats.items())),
+                "remediation_checksum": remediation_checksum,
             }
     except BaseException as error:
         record_failed_batch(database_url, import_batch_id, source_checksum, error)

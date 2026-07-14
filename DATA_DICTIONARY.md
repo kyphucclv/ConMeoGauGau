@@ -1,6 +1,6 @@
 # English Class Data Dictionary
 
-Status: **Target contract - schema implementation pending**
+Status: **Canonical v3 implemented; Phase 11 additions identified**
 
 This document defines the business meaning and source of truth for each field.
 Fields marked `derived` must be calculated from source records and must not be
@@ -18,8 +18,9 @@ manually edited.
 
 ## employees
 
-One row per known employee. Learners and PICs both belong here; a PIC does not
-need to be a learner or a current cohort member.
+One row per known employee. Learners belong here. A PIC may reference an
+employee, but Phase 11 also permits a free-text team label without an employee
+record.
 
 | Field | Type | Class | Required | Meaning / rule |
 |---|---|---|---|---|
@@ -54,6 +55,7 @@ courses sequentially and can repeat a course.
 | `cohort_id` | bigint | audit | yes | Internal key. |
 | `class_code` | text | input/system | yes | Stable unique code, auto-generated but editable before use. |
 | `status` | enum | input | yes | `Forming`, `Active`, `Paused`, `Completed`, `Archived`. |
+| `capacity` | integer | input | Phase 11 | Expected maximum active learners; exceeding it requires an audited override. |
 | `created_at` | timestamptz | audit | yes | Cohort creation time. |
 
 Display names such as `EL001 - Anh Vu` are derived from `class_code` and the
@@ -62,15 +64,21 @@ current PIC. They are not stored as cohort identifiers.
 ## cohort_pic_assignments
 
 One row per PIC assignment period. The current PIC is the assignment without
-an end timestamp. A PIC may be outside the cohort.
+an end timestamp. A PIC may be an employee or a normalized free-text team
+label.
 
 | Field | Type | Class | Required | Meaning / rule |
 |---|---|---|---|---|
 | `pic_assignment_id` | bigint | audit | yes | Internal key. |
 | `cohort_id` | bigint FK | input | yes | Cohort being represented. |
-| `employee_id` | bigint FK | input | yes | PIC employee. |
+| `employee_id` | bigint FK | input | conditional | PIC employee; null when a team label is used. |
+| `pic_label` | text | input | conditional | PIC/team display label; required when `employee_id` is null. |
 | `assigned_at` | timestamptz | input/audit | yes | Assignment start. |
 | `ended_at` | timestamptz | input | no | Assignment end. |
+
+Exactly one of employee identity or a nonblank PIC label must be supplied.
+Labels are trimmed and compared case-insensitively for suggestions and duplicate
+prevention while preserving display casing.
 
 ## cohort_memberships
 
@@ -96,6 +104,7 @@ never overwrite old membership records.
 | `expected_session_units` | smallint | reference | yes | Expected credited one-hour units. |
 | `attendance_threshold_ratio` | numeric | reference | yes | Required attendance ratio; configurable without schema changes. |
 | `is_active` | boolean | reference | yes | Whether new runs can use the course. |
+| `created_at` | timestamptz | audit | Phase 11 | Course creation time used by the monthly new-course KPI. |
 
 ## course_runs
 
@@ -139,6 +148,11 @@ reports do not change when the employee later changes organization.
 Sessions before `start_session_number` have no attendance record and are
 `Not applicable`, not `Absent`.
 
+An employee may have at most one active run enrollment across all courses. BU
+and role snapshots are copied automatically from the current organization row
+when enrollment starts. HR edits organization data only in employee history;
+snapshots are not a parallel input.
+
 Enrollment statuses: `Active`, `Completed`, `Completed - no continuation`,
 `Transferred`, `Withdrawn`, `Not eligible for final test`, and
 `Waiting for next course`.
@@ -146,7 +160,7 @@ Enrollment statuses: `Active`, `Completed`, `Completed - no continuation`,
 ## meetings
 
 One row per scheduled/actual class meeting. Schedule changes update the current
-meeting; the general audit log records who changed it.
+meeting; the general audit log records actor, reason, and old/new values.
 
 | Field | Type | Class | Required | Meaning / rule |
 |---|---|---|---|---|
@@ -189,6 +203,10 @@ One row per enrollment and applicable session unit.
 
 A make-up changes the effective status to `Present`. The audit log preserves
 the previous `Absent` value and the reason for transparency.
+
+The Phase 11 attendance grid defaults every applicable roster row to `Present`;
+this is a UI default, not a database default. Only an explicit bulk save writes
+attendance rows.
 
 ## placements
 
@@ -271,4 +289,3 @@ These are views/queries, never editable columns:
 | `Is_Unique_Row` and pivot/helper columns | Remove from production data. |
 | `ATTENDANCE_LOG.Full Name`, `PIC` | Derive through relationships. |
 | `CLASS_DATES` | Replace with course runs and meetings. |
-

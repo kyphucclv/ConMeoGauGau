@@ -1,0 +1,129 @@
+"""P11.1 integration gate: learner onboarding, constraints, and transfer."""
+
+from __future__ import annotations
+
+import os
+import sys
+from datetime import date, datetime, timezone
+from pathlib import Path
+
+import psycopg2
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from migrate import apply_migrations
+from scripts.phase4_integration_check import _database_url, recreate_database
+from services import BusinessService, CommandError
+
+
+def expect_error(code, fn):
+    try:
+        fn()
+    except CommandError as exc:
+        assert exc.code == code, f"expected {code}; got {exc.code}"
+        return
+    raise AssertionError(f"expected CommandError {code}")
+
+
+def scalar(conn, sql, params=()):
+    with conn.cursor() as cur:
+        cur.execute(sql, params)
+        return cur.fetchone()[0]
+
+
+def seed(conn):
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO app_users(username,password_hash,full_name,role) VALUES('p11','x','P11 HR','editor') RETURNING user_id")
+            user_id = cur.fetchone()[0]
+            cur.execute("INSERT INTO business_units(business_unit_name) VALUES('P11 BU') RETURNING business_unit_id")
+            bu_id = cur.fetchone()[0]
+            cur.execute("INSERT INTO job_roles(job_role_name) VALUES('P11 Role') RETURNING job_role_id")
+            role_id = cur.fetchone()[0]
+            cur.execute("INSERT INTO levels(level_name,numeric_value,sequence_order) VALUES('P11 Entrance',1.0,1) RETURNING level_id")
+            level_id = cur.fetchone()[0]
+            cur.execute("INSERT INTO courses(course_code,course_name,expected_units,attendance_threshold_ratio) VALUES('P11', 'P11 Course', 4, .8) RETURNING course_id")
+            course_id = cur.fetchone()[0]
+    return user_id, bu_id, role_id, level_id, course_id
+
+
+def run(database_url):
+    conn = psycopg2.connect(database_url)
+    try:
+        user_id, bu_id, role_id, level_id, course_id = seed(conn)
+        svc = BusinessService(conn, user_id)
+        assert svc.propose_next_class_code().values['class_code'] == 'EL001'
+        source_cohort = svc.create_cohort('EL001', 'Source', status='active', capacity=1).entity_id
+        target_cohort = svc.create_cohort('EL002', 'Target', status='active', capacity=2).entity_id
+        source_run = svc.create_course_run(source_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
+        target_run = svc.create_course_run(target_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
+
+        learner = svc.onboard_learner(
+            emp_code='P11-001', full_name='First Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=source_run, joined_on=date(2026, 7, 1),
+        )
+        assert scalar(conn, 'SELECT count(*) FROM placements WHERE employee_id=%s', (learner.values['employee_id'],)) == 1
+        assert scalar(conn, 'SELECT count(*) FROM run_enrollments WHERE run_enrollment_id=%s', (learner.entity_id,)) == 1
+        assert scalar(conn, 'SELECT business_unit_id_snapshot FROM run_enrollments WHERE run_enrollment_id=%s', (learner.entity_id,)) == bu_id
+
+        # Full cohort fails as one transaction: no directory row or placement leaks.
+        expect_error('capacity_exceeded', lambda: svc.onboard_learner(
+            emp_code='P11-ROLLBACK', full_name='Rollback Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=source_run, joined_on=date(2026, 7, 2),
+        ))
+        assert scalar(conn, "SELECT count(*) FROM employees WHERE emp_code='P11-ROLLBACK'") == 0
+
+        override = svc.onboard_learner(
+            emp_code='P11-002', full_name='Override Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=source_run, joined_on=date(2026, 7, 2),
+            capacity_override_reason='Approved temporary seat',
+        )
+        assert scalar(conn, 'SELECT count(*) FROM cohort_capacity_overrides WHERE employee_id=%s', (override.values['employee_id'],)) == 1
+        expect_error('active_enrollment_conflict', lambda: svc.onboard_learner(
+            emp_code='P11-001', full_name='First Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=target_run, joined_on=date(2026, 7, 3),
+        ))
+
+        target_meeting = svc.save_meeting(target_run, datetime(2026, 7, 8, 9, tzinfo=timezone.utc), 60).entity_id
+        target_unit = svc.add_session_unit(target_run, target_meeting, 3).entity_id
+        assert svc.propose_transfer_start_session(target_run).values['start_session_number'] == 3
+        moved = svc.transfer_learner(learner.entity_id, target_run, date(2026, 7, 4), confirmed_start_session_number=3)
+        assert moved.values['start_session_number'] == 3
+        assert scalar(conn, "SELECT status FROM run_enrollments WHERE run_enrollment_id=%s", (learner.entity_id,)) == 'transferred'
+        assert scalar(conn, "SELECT status FROM run_enrollments WHERE run_enrollment_id=%s", (moved.entity_id,)) == 'active'
+
+        # The attendance roster exposes only applicable learners and defaults
+        # unsaved values to Present; a full-roster save is one transaction.
+        roster = svc.attendance_roster(target_run, target_unit)
+        assert len(roster.values['rows']) == 1
+        assert roster.values['rows'][0]['effective_status'] == 'Present'
+        svc.save_attendance_roster(target_run, roster.entity_id, [{
+            'run_enrollment_id': moved.entity_id, 'effective_status': 'Absent',
+        }])
+        assert scalar(conn, 'SELECT effective_status FROM attendance WHERE run_enrollment_id=%s', (moved.entity_id,)) == 'Absent'
+        expect_error('invalid_state', lambda: svc.save_attendance_roster(target_run, roster.entity_id, []))
+
+        # The database, not only the service, protects immutable event snapshots.
+        try:
+            with conn:
+                with conn.cursor() as cur:
+                    cur.execute('UPDATE run_enrollments SET business_unit_id_snapshot=NULL WHERE run_enrollment_id=%s', (moved.entity_id,))
+        except psycopg2.Error:
+            pass
+        else:
+            raise AssertionError('snapshot mutation should be rejected by database trigger')
+        assert svc.assign_pic(target_cohort, None, date(2026, 7, 1), pic_label='  Learning   Team  ').entity_id
+        assert svc.pic_label_suggestions('learning team').values['labels'] == ['Learning Team']
+        return {'learner_enrollment_id': learner.entity_id, 'transfer_enrollment_id': moved.entity_id}
+    finally:
+        conn.close()
+
+
+if __name__ == '__main__':
+    maintenance_url = os.getenv('P11_MAINTENANCE_URL', 'postgresql://postgres@localhost:5432/postgres')
+    database_url = _database_url('english_class_p11_test', maintenance_url)
+    recreate_database(maintenance_url, 'english_class_p11_test')
+    apply_migrations(database_url)
+    print(run(database_url))

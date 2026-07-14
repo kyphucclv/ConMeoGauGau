@@ -1,0 +1,5482 @@
+{
+  "metadata": {
+    "database_name": "english_class_p9_rehearsal",
+    "source_name": "okok_FIXED_v2.xlsx",
+    "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
+    "issue_snapshot_sha256": "046c4fe31c735409ae58442e3cc1c77ccc355eedc4ed1f18e1b34829231a79b6",
+    "generated_at": "2026-07-14T11:55:31+07:00"
+  },
+  "allowed_decisions": [
+    "accept_legacy_lineage_limitation",
+    "approve_legacy_attendance_exception",
+    "approve_unknown_org_placeholder",
+    "approve_unknown_placement_placeholder",
+    "cancel_duplicate_meeting",
+    "pending",
+    "reject_rollout",
+    "resolve_source",
+    "review_operationally"
+  ],
+  "bulk_decisions": [
+    {
+      "issue_code": "incomplete_attendance_roster",
+      "severity": "high",
+      "expected_count": 124,
+      "owner_decision": "approve_legacy_attendance_exception",
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking.",
+      "decided_at": "2026-07-14"
+    },
+    {
+      "issue_code": "missing_business_placement",
+      "severity": "high",
+      "expected_count": 49,
+      "owner_decision": "approve_unknown_placement_placeholder",
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later.",
+      "decided_at": "2026-07-14"
+    },
+    {
+      "issue_code": "low_attendance_follow_up",
+      "severity": "warning",
+      "expected_count": 82,
+      "owner_decision": "review_operationally",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    }
+  ],
+  "summary": [
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "workflow": "Attendance",
+      "count": 124,
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ]
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "workflow": "Learners",
+      "count": 49,
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ]
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "workflow": "Attendance",
+      "count": 82,
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "1014",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 84,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "1015",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 84,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "1016",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 84,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "102",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 8,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "128",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "130",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "133",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "135",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "136",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "139",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "140",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "149",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 15,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "150",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 16,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "168",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 14,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "238",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "239",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "240",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "241",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "242",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "243",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "244",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "245",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "246",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "247",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 20,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "286",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 23,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "287",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 23,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "289",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 23,
+        "sequence_in_run": 10,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "290",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "291",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "296",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "298",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "299",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "301",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "302",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 24,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 3
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "304",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 25,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "309",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 25,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "310",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 25,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "312",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 25,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "373",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "374",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "375",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "376",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "377",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "378",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 32,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "40",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 4,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "41",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 4,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 7
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "470",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 40,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "477",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 40,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "533",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 45,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "534",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 45,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "568",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "569",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "57",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 5,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "570",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "571",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "572",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "573",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "574",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "575",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 10,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "576",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 11,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "577",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 48,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "595",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 50,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "596",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 50,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "597",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 50,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "598",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 50,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "601",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "602",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "605",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "606",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "609",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "610",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 51,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "642",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 11,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "643",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "644",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 13,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "645",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 14,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "646",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 15,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "647",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 54,
+        "sequence_in_run": 16,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "659",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "660",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "662",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "665",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "666",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "732",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 60,
+        "sequence_in_run": 13,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "747",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "756",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 11,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "757",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "758",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 13,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "759",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 14,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "760",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 15,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "761",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 62,
+        "sequence_in_run": 16,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "765",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 63,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "822",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 68,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "823",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 68,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "890",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 74,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "904",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 8,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "905",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 9,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "906",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 10,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "907",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 11,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "908",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "909",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 13,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "910",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 14,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "911",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 75,
+        "sequence_in_run": 15,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "927",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 4
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "928",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "93",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 8,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "930",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "931",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "940",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 14,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "941",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 14,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "942",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 15,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "945",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 77,
+        "sequence_in_run": 16,
+        "missing_enrollment_count": 6
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "953",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 78,
+        "sequence_in_run": 7,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "958",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 78,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "959",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 78,
+        "sequence_in_run": 12,
+        "missing_enrollment_count": 5
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "96",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 8,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "977",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 80,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 2
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "978",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 80,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 8
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "982",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 80,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "987",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 80,
+        "sequence_in_run": 10,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "990",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 80,
+        "sequence_in_run": 13,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "993",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 81,
+        "sequence_in_run": 2,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "994",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 81,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "995",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 81,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "996",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 81,
+        "sequence_in_run": 5,
+        "missing_enrollment_count": 1
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "148",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203748",
+        "full_name": "LÂM MINH HOÀNG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "149",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257045",
+        "full_name": "NGUYỄN BẢO DUY"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "150",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "133067",
+        "full_name": "Phu Nguyen"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "151",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227055",
+        "full_name": "NGUYỄN HOÀNG PHÚC"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "152",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "213857",
+        "full_name": "NGUYỄN THÀNH NHÂN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "153",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "173231",
+        "full_name": "NGUYỄN THANH TÙNG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "154",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193550",
+        "full_name": "PHẠM TƯỜNG NHÂN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "155",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247423",
+        "full_name": "CHUNG QUANG PHƯƠNG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "156",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257134",
+        "full_name": "ĐINH QUỐC HUẤN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "157",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237239",
+        "full_name": "ĐỖ NGỌC THÀNH"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "158",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227116",
+        "full_name": "LÊ THẾ PHƯƠNG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "159",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247413",
+        "full_name": "NGUYỄN ĐỨC TIẾN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "160",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "183382",
+        "full_name": "NGUYỄN DUY PHÚ"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "161",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227103",
+        "full_name": "NGUYỄN HUỲNH SƠN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "162",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237201",
+        "full_name": "NGUYỄN MINH QUANG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "163",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193495",
+        "full_name": "THẠCH THÁI HUY"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "165",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237035",
+        "full_name": "Nguyễn Đặng Khương Duy (Dustin)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "166",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203664",
+        "full_name": "Nguyễn Hà Vi (V)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "167",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247065",
+        "full_name": "Phạm Ngọc Hưng (Zero)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "168",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "183379",
+        "full_name": "Tạ Phạm Minh Chương (Chivas)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "169",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227101",
+        "full_name": "Phuoc Ta"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "170",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193530",
+        "full_name": "Trần Hùng Cường (Ethan)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "183",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257036",
+        "full_name": "NGUYỄN PHÚC VINH"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "184",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227131",
+        "full_name": "Quyen Nguyen"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "185",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193620",
+        "full_name": "TRẦN THỊ HUỲNH NHƯ"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "202",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193470",
+        "full_name": "Thai Nguyen 2"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "203",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "153138",
+        "full_name": "Nguyễn Đình Mạnh"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "204",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193522",
+        "full_name": "Đinh Bộ Lĩnh"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "205",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237070",
+        "full_name": "Cao Ngọc Nguyên"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "206",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203757",
+        "full_name": "Trần Hoàng Tuấn"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "207",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "213911",
+        "full_name": "Hồ Phạm Sĩ Hùng"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "208",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203791",
+        "full_name": "Trương Quốc Quy"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "209",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237031",
+        "full_name": "Nguyễn Ngọc Thạch"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "210",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203713",
+        "full_name": "Bùi Quang Khôi"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "211",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "213874",
+        "full_name": "Nguyễn Hoàng Hải"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "212",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203725",
+        "full_name": "Đặng Thanh Túc"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "213",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "193607",
+        "full_name": "NGUYỄN TRẦN MINH NGHĨA"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "244",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227005",
+        "full_name": "Trang Ngo"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "245",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "213813",
+        "full_name": "Lê Trọng Ân"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "246",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "203786",
+        "full_name": "Trần Ánh Tuyết (Taylor)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "247",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257121",
+        "full_name": "Nguyễn Kim Khánh (Annie)"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "248",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257135",
+        "full_name": "Lê Tuyết Ngân"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "249",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "257059",
+        "full_name": "Nguyễn Ngọc Hào"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "250",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "237103",
+        "full_name": "NGUYỄN THỊ THÙY LINH"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "277",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247063",
+        "full_name": "GIANG KHIẾT ĐÌNH"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "278",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "227218",
+        "full_name": "NGUYỄN HOÀNG BẢO TRÂN"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "279",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247062",
+        "full_name": "NGUYỄN THẾ ANH"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "280",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247147",
+        "full_name": "PHẠM LÊ QUỲNH HƯƠNG"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "missing_business_placement",
+      "entity_type": "employee",
+      "entity_key": "281",
+      "title": "Learner has no business placement",
+      "workflow": "Learners",
+      "details": {
+        "emp_code": "247102",
+        "full_name": "Vinh Tran"
+      },
+      "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_unknown_placement_placeholder"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "118",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "129",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.375
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "135",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "154",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "155",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "157",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "16",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "162",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "165",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.3
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "166",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "189",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "19",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "191",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7143
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "192",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7143
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "198",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "199",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.625
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "20",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "219",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "220",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "221",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7778
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "222",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7778
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "225",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "226",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "247",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4167
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "251",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "260",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7333
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "271",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7273
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "297",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.2
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "302",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "303",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "305",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "308",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "313",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "318",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "332",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "333",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5333
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "338",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7333
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "348",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "367",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "378",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "381",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7143
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "382",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.2857
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "394",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5625
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "395",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "396",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "40",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.625
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "41",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6875
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "412",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "415",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "416",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7333
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "42",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "434",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "44",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "444",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6875
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "449",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.1
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "450",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "453",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.4
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "454",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.3
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "466",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.25
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "468",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "469",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "47",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "470",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6923
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "472",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7692
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "473",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6154
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "478",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "481",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "487",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7857
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "497",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "500",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6923
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "504",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7692
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "509",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "516",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "517",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.7333
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "518",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "519",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "530",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.5455
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "531",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.0
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "533",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.6667
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "66",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "91",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "warning",
+      "issue_code": "low_attendance_follow_up",
+      "entity_type": "run_enrollment",
+      "entity_key": "93",
+      "title": "Active learner is below the course attendance threshold",
+      "workflow": "Attendance",
+      "details": {
+        "threshold": 0.8,
+        "attendance_ratio": 0.75
+      },
+      "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
+      "owner_decision_options": [
+        "review_operationally"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    }
+  ]
+}
