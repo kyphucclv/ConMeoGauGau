@@ -66,6 +66,9 @@ def run(database_url):
             emp_code='P11-001', full_name='First Learner', business_unit_id=bu_id, job_role_id=role_id,
             entrance_level_id=level_id, course_run_id=source_run, joined_on=date(2026, 7, 1),
         )
+        assert learner.values['lifecycle'] == 'first_time'
+        assert learner.values['placement_action'] == 'created'
+        assert learner.values['membership_action'] == 'created'
         assert scalar(conn, 'SELECT count(*) FROM placements WHERE employee_id=%s', (learner.values['employee_id'],)) == 1
         assert scalar(conn, 'SELECT count(*) FROM run_enrollments WHERE run_enrollment_id=%s', (learner.entity_id,)) == 1
         assert scalar(conn, 'SELECT business_unit_id_snapshot FROM run_enrollments WHERE run_enrollment_id=%s', (learner.entity_id,)) == bu_id
@@ -105,7 +108,7 @@ def run(database_url):
             entrance_level_id=level_id, course_run_id=midrun_run, joined_on=date(2026, 7, 3),
             start_session_number=1,
         ))
-        svc.onboard_learner(
+        midrun_learner = svc.onboard_learner(
             emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
             entrance_level_id=level_id, course_run_id=midrun_run, joined_on=date(2026, 7, 3),
             start_session_number=3,
@@ -117,6 +120,32 @@ def run(database_url):
             tuple(str(unit_id) for unit_id in completed_units),
         ) == 0
 
+        # The same active class membership and entrance placement carry into
+        # the next course, while a later rejoin creates only a new membership.
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE run_enrollments SET status='completed' WHERE run_enrollment_id=%s", (midrun_learner.entity_id,))
+        continuation_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 7, 10)).entity_id
+        continuation = svc.onboard_learner(
+            emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=continuation_run, joined_on=date(2026, 7, 10),
+        )
+        assert continuation.values['lifecycle'] == 'continuation'
+        assert continuation.values['placement_id'] == midrun_learner.values['placement_id']
+        assert continuation.values['membership_id'] == midrun_learner.values['membership_id']
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE run_enrollments SET status='completed' WHERE run_enrollment_id=%s", (continuation.entity_id,))
+        svc.close_membership(continuation.values['membership_id'], date(2026, 7, 20))
+        rejoin_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 8, 1)).entity_id
+        rejoin = svc.onboard_learner(
+            emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=rejoin_run, joined_on=date(2026, 8, 1),
+        )
+        assert rejoin.values['lifecycle'] == 'rejoin'
+        assert rejoin.values['placement_id'] == midrun_learner.values['placement_id']
+        assert rejoin.values['membership_id'] != midrun_learner.values['membership_id']
+
         target_meeting = svc.save_meeting(target_run, datetime(2026, 7, 8, 9, tzinfo=timezone.utc), 60).entity_id
         target_unit = svc.add_session_unit(target_run, target_meeting, 3).entity_id
         assert svc.propose_transfer_start_session(target_run).values['start_session_number'] == 3
@@ -124,6 +153,31 @@ def run(database_url):
         assert moved.values['start_session_number'] == 3
         assert scalar(conn, "SELECT status FROM run_enrollments WHERE run_enrollment_id=%s", (learner.entity_id,)) == 'transferred'
         assert scalar(conn, "SELECT status FROM run_enrollments WHERE run_enrollment_id=%s", (moved.entity_id,)) == 'active'
+
+        # A completed historical session reconstructs applicability from the
+        # enrollment start and membership dates even after transfer. Missing
+        # history remains unknown until HR explicitly enters evidence.
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE meetings SET status='completed' WHERE meeting_id=%s", (source_meeting,))
+        historical = svc.attendance_roster(source_run, source_unit)
+        assert [row['run_enrollment_id'] for row in historical.values['rows']] == [learner.entity_id]
+        assert historical.values['rows'][0]['effective_status'] is None
+        first_save = svc.save_attendance_roster(source_run, source_unit, [{
+            'run_enrollment_id': learner.entity_id, 'effective_status': 'Present',
+        }])
+        assert first_save.values['created_count'] == 1
+        second_save = svc.save_attendance_roster(source_run, source_unit, [{
+            'run_enrollment_id': learner.entity_id, 'effective_status': 'Absent',
+        }])
+        assert second_save.values['updated_count'] == 1
+        attendance_audit = scalar(
+            conn,
+            "SELECT details FROM audit_events WHERE action='attendance.roster.save' AND entity_key=%s ORDER BY audit_event_id DESC LIMIT 1",
+            (str(source_unit),),
+        )
+        assert attendance_audit['changes'][0]['before']['effective_status'] == 'Present'
+        assert attendance_audit['changes'][0]['after']['effective_status'] == 'Absent'
 
         # The attendance roster exposes only applicable learners and defaults
         # unsaved values to Present; a full-roster save is one transaction.
@@ -134,6 +188,31 @@ def run(database_url):
             'run_enrollment_id': moved.entity_id, 'effective_status': 'Absent',
         }])
         assert scalar(conn, 'SELECT effective_status FROM attendance WHERE run_enrollment_id=%s', (moved.entity_id,)) == 'Absent'
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE run_enrollments SET status='completed' WHERE run_enrollment_id=%s", (moved.entity_id,))
+        completed_history = svc.attendance_roster(target_run, target_unit)
+        assert [row['run_enrollment_id'] for row in completed_history.values['rows']] == [moved.entity_id]
+
+        returning_employee = svc.create_or_update_employee(
+            'P11-RETURN', 'Returning Learner', employment_status='active',
+            business_unit_id=bu_id, job_role_id=role_id, valid_from=date(2026, 7, 9),
+        ).entity_id
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO placements(employee_id,placement_kind,test_date,level_id) VALUES(%s,'business',%s,%s)",
+                    (returning_employee, date(2026, 7, 9), level_id),
+                )
+        returning = svc.onboard_learner(
+            emp_code='P11-RETURN', full_name='Returning Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=target_run, joined_on=date(2026, 7, 9),
+            start_session_number=4,
+        )
+        assert returning.values['lifecycle'] == 'returning'
+        assert returning.values['placement_action'] == 'reused'
+        assert returning.values['membership_action'] == 'created'
+        assert scalar(conn, 'SELECT count(*) FROM placements WHERE employee_id=%s', (returning_employee,)) == 1
         expect_error('invalid_state', lambda: svc.save_attendance_roster(target_run, roster.entity_id, []))
         try:
             with conn:

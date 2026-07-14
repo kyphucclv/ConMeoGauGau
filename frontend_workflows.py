@@ -311,35 +311,6 @@ def _next_attendance_sequence(pool, actor: AppUser, course_run_id: int | None) -
     return int(values["sequence_in_run"]) if values else 1
 
 
-def _attendance_session_summary(pool, course_run_id: int, session_unit_id: int) -> dict:
-    rows = fetch_all(pool, """
-        SELECT su.sequence_in_run, m.status AS meeting_status,
-               count(re.run_enrollment_id) AS applicable_learners,
-               count(a.attendance_id) AS saved_rows,
-               count(a.attendance_id) FILTER (WHERE a.effective_status='Present') AS present_rows,
-               count(a.attendance_id) FILTER (WHERE a.effective_status='Absent') AS absent_rows
-        FROM session_units su
-        JOIN meetings m ON m.meeting_id=su.meeting_id
-        LEFT JOIN run_enrollments re
-          ON re.course_run_id=su.course_run_id
-         AND re.status='active'
-         AND re.start_session_number<=su.sequence_in_run
-        LEFT JOIN attendance a
-          ON a.session_unit_id=su.session_unit_id
-         AND a.run_enrollment_id=re.run_enrollment_id
-        WHERE su.course_run_id=%s AND su.session_unit_id=%s
-        GROUP BY su.sequence_in_run,m.status
-    """, (course_run_id, session_unit_id))
-    return rows[0] if rows else {
-        "sequence_in_run": None,
-        "meeting_status": None,
-        "applicable_learners": 0,
-        "saved_rows": 0,
-        "present_rows": 0,
-        "absent_rows": 0,
-    }
-
-
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     """Desktop-first learner search, onboarding, correction, and transfer workspace."""
     st.session_state.setdefault("learner_workspace_mode", "Find learner")
@@ -537,14 +508,24 @@ def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]])
         st.info(f"First applicable session starts at {start_session_proposal} for this run.")
     default_bu = known_employee["business_unit_name"] if known_employee else ""
     default_role = known_employee["job_role_name"] if known_employee else ""
+    default_level = known_employee["entrance_level"] if known_employee else ""
     bu_labels = [""] + list(bu)
     role_labels = [""] + list(roles)
+    level_labels = [""] + list(levels)
+    if known_employee and known_employee["enrollment_status"] == "active":
+        st.warning("This employee already has an active course. Use Transfer learner to move classes.")
+    elif default_level:
+        st.info(f"Existing entrance placement will be retained: {default_level}.")
     with st.form("learner_onboarding"):
         emp_code = st.text_input("Employee code", value=known_employee["emp_code"] if known_employee else "", disabled=bool(known_employee))
         full_name = st.text_input("Full name", value=known_employee["full_name"] if known_employee else "")
         business_unit = st.selectbox("Business unit", bu_labels, index=bu_labels.index(default_bu) if default_bu in bu_labels else 0)
         job_role = st.selectbox("Job role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
-        entrance_level = st.selectbox("Entrance level", [""] + list(levels))
+        entrance_level = st.selectbox(
+            "Entrance placement",
+            level_labels,
+            index=level_labels.index(default_level) if default_level in level_labels else 0,
+        )
         joined_on = st.date_input("Joined on", value=date.today())
         start_session = st.number_input(
             "First applicable session",
@@ -872,18 +853,25 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
     elif not course_run_id or not session_unit_id:
         st.info("Select a class run and session.")
     if roster is not None:
-        summary = _attendance_session_summary(pool, course_run_id, session_unit_id)
+        roster_rows = roster["rows"]
+        saved_rows = sum(row["attendance_id"] is not None for row in roster_rows)
+        present_rows = sum(row["effective_status"] == "Present" for row in roster_rows)
+        absent_rows = sum(row["effective_status"] == "Absent" for row in roster_rows)
+        missing_rows = sum(row["effective_status"] is None for row in roster_rows)
         with st.container(horizontal=True):
-            st.metric("Logical session", summary["sequence_in_run"], border=True)
-            st.metric("Meeting status", summary["meeting_status"], border=True)
-            st.metric("Applicable learners", summary["applicable_learners"], border=True)
-            st.metric("Saved rows", summary["saved_rows"], border=True)
-            st.metric("Present", summary["present_rows"], border=True)
-            st.metric("Absent", summary["absent_rows"], border=True)
+            st.metric("Session", roster["sequence_in_run"], border=True)
+            st.metric("Status", roster["meeting_status"], border=True)
+            st.metric("Learners", len(roster_rows), border=True)
+            st.metric("Saved", saved_rows, border=True)
+            st.metric("Present", present_rows, border=True)
+            st.metric("Absent", absent_rows, border=True)
+            if missing_rows:
+                st.metric("Needs entry", missing_rows, border=True)
+                st.warning("Historical gaps stay blank until attendance evidence is entered.")
         editor_rows = [
             {"run_enrollment_id": row["run_enrollment_id"], "employee": f"{row['emp_code']} | {row['full_name']}",
              "start_session_number": row["start_session_number"], "effective_status": row["effective_status"]}
-            for row in roster["rows"]
+            for row in roster_rows
         ]
         with st.form(f"attendance_roster_{session_unit_id}"):
             edited = st.data_editor(

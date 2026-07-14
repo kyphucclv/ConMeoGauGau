@@ -427,8 +427,8 @@ findings, not permission to change production data.
 | P13.0-K | medium | UI modules contain extensive read SQL and database terminology, coupling copy, screens, and schema | Move reads into task-specific query modules before major page restructuring |
 | P13.0-L | medium | `DATA_DICTIONARY.md` contains status/field language that has drifted from the applied canonical schema | Reconcile the dictionary against migrations before using it as UI terminology input |
 
-No P13.2 learner-page implementation begins until P13.0-A through P13.0-H are
-tested. P13.0-I now has an owner decision and must be implemented before the
+P13.0-A through P13.0-H must be tested before P13.2 learner-page implementation.
+P13.0-I now has an owner decision and must be implemented before the
 make-up workflow is released. P13.0-J through P13.0-L must be completed before
 Phase 13 sign-off.
 
@@ -449,6 +449,17 @@ Completed on 2026-07-14:
   can change its effective result.
 - **P13.0-H**: evaluation version 2 and later require the HR operator's explicit
   correction reason; the service no longer generates a generic reason.
+- **P13.0-E**: completed-session rosters now use enrollment start session and
+  membership dates. Existing attendance remains correctable after transfer or
+  completion, while planned rosters still include only active enrollments.
+- **P13.0-F**: full-roster saves now retain per-enrollment before/after status,
+  employee code, attendance identity, actor, timestamp, and optional note in the
+  same-transaction audit event. New default-Present rows are audited from a null
+  persisted state rather than treated as unchanged.
+- **P13.0-G**: onboarding now classifies first-time, returning, continuation,
+  and rejoin paths. It reuses an existing entrance placement and applicable
+  active class membership, rejects silent placement changes and cross-class
+  membership conflicts, and creates only the missing lifecycle records.
 
 Verification evidence:
 
@@ -461,8 +472,9 @@ Verification evidence:
 - `python scripts\phase11_operational_issue_snapshot.py --validate-decisions --database-url postgresql://postgres@localhost:5432/english_class`
 - `.\run_app.cmd -CheckOnly`
 
-P13.0-E through P13.0-G and P13.0-I through P13.0-L remain open. Phase 13
-learner-page implementation is still gated by P13.0-E through P13.0-G.
+P13.0-A through P13.0-H are complete. P13.0-I through P13.0-L remain open;
+P13.0-I still gates release of the make-up workflow, and P13.0-J through
+P13.0-L still gate Phase 13 sign-off.
 
 ## 13. Verification strategy
 

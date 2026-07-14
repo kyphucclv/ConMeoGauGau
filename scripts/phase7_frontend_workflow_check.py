@@ -115,7 +115,7 @@ def assert_static_ui_contract() -> None:
         "accept_new_options=True",
         "propose_next_attendance_session",
         "save_attendance_roster",
-        "_attendance_session_summary",
+        "Historical gaps stay blank",
         "_shift_review_month",
         "course_participation",
         "class_participation",

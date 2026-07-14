@@ -348,11 +348,7 @@ class BusinessService:
         start_session_number: int = 1,
         capacity_override_reason: str | None = None,
     ) -> CommandResult:
-        """Atomically create/update the learner directory and start their run.
-
-        Grain: this command creates one learner's business placement, continuous
-        cohort membership, and course-run enrollment as one all-or-nothing event.
-        """
+        """Atomically start first-time, returning, continuing, or rejoining learning."""
         def op(cur):
             _required(emp_code, "emp_code"); _required(full_name, "full_name")
             if employment_status not in {"active", "inactive", "unknown"}:
@@ -376,6 +372,7 @@ class BusinessService:
             # not create competing organization histories or active enrollments.
             cur.execute("SELECT employee_id FROM employees WHERE emp_code=%s FOR UPDATE", (emp_code.strip(),))
             row = cur.fetchone()
+            employee_created = row is None
             if row:
                 employee_id = row[0]
                 cur.execute("UPDATE employees SET full_name=%s, employment_status=%s WHERE employee_id=%s",
@@ -397,19 +394,54 @@ class BusinessService:
             if cur.fetchone():
                 raise CommandError("active_enrollment_conflict", "employee already has an active course enrollment")
 
+            cur.execute("""SELECT placement_id,level_id FROM placements
+                           WHERE employee_id=%s AND placement_kind='business' FOR UPDATE""", (employee_id,))
+            placement = cur.fetchone()
+            if placement and placement[1] != entrance_level_id:
+                raise CommandError(
+                    "placement_conflict",
+                    "employee already has a different entrance placement; use the placement correction workflow",
+                )
+            if placement:
+                placement_id = placement[0]
+                placement_action = "reused"
+            else:
+                cur.execute("""INSERT INTO placements(employee_id,placement_kind,test_date,level_id)
+                               VALUES(%s,'business',%s,%s) RETURNING placement_id""",
+                            (employee_id, joined_on, entrance_level_id))
+                placement_id = cur.fetchone()[0]
+                placement_action = "created"
+
+            cur.execute("""SELECT cohort_membership_id,cohort_id FROM cohort_memberships
+                           WHERE employee_id=%s AND status='active' FOR UPDATE""", (employee_id,))
+            active_membership = cur.fetchone()
+            cur.execute("SELECT EXISTS(SELECT 1 FROM cohort_memberships WHERE employee_id=%s)", (employee_id,))
+            had_membership = cur.fetchone()[0]
+            if active_membership and active_membership[1] != cohort_id:
+                raise CommandError(
+                    "active_membership_conflict",
+                    "employee belongs to another active class; use the transfer workflow",
+                )
+            if active_membership:
+                membership_id = active_membership[0]
+                membership_action = "reused"
+                lifecycle = "continuation"
+            else:
+                cur.execute("""INSERT INTO cohort_memberships(cohort_id,employee_id,start_date)
+                               VALUES(%s,%s,%s) RETURNING cohort_membership_id""", (cohort_id, employee_id, joined_on))
+                membership_id = cur.fetchone()[0]
+                membership_action = "created"
+                if had_membership:
+                    lifecycle = "rejoin"
+                elif placement_action == "reused" and not employee_created:
+                    lifecycle = "returning"
+                else:
+                    lifecycle = "first_time"
+
             cur.execute("SELECT count(*) FROM cohort_memberships WHERE cohort_id=%s AND status='active'", (cohort_id,))
-            active_count = cur.fetchone()[0]
-            resulting_count = active_count + 1
+            resulting_count = cur.fetchone()[0]
             if capacity is not None and resulting_count > capacity and not _normalize_label(capacity_override_reason):
                 raise CommandError("capacity_exceeded", "cohort is at capacity; an HR override reason is required")
-
-            cur.execute("""INSERT INTO placements(employee_id,placement_kind,test_date,level_id)
-                           VALUES(%s,'business',%s,%s) RETURNING placement_id""",
-                        (employee_id, joined_on, entrance_level_id))
-            placement_id = cur.fetchone()[0]
-            cur.execute("""INSERT INTO cohort_memberships(cohort_id,employee_id,start_date)
-                           VALUES(%s,%s,%s) RETURNING cohort_membership_id""", (cohort_id, employee_id, joined_on))
-            membership_id = cur.fetchone()[0]
             cur.execute("""INSERT INTO run_enrollments(
                                course_run_id,employee_id,cohort_membership_id,start_session_number,
                                business_unit_id_snapshot,job_role_id_snapshot
@@ -426,8 +458,17 @@ class BusinessService:
                 self._audit(cur, "cohort.capacity.override", "cohort_capacity_override", override_id,
                             {"cohort_id": cohort_id, "previous_capacity": capacity, "resulting_active_learner_count": resulting_count, "reason": reason})
             self._audit(cur, "learner.onboard", "run_enrollment", enrollment_id,
-                        {"employee_id": employee_id, "placement_id": placement_id, "membership_id": membership_id})
-            return CommandResult("run_enrollment", enrollment_id, {"employee_id": employee_id, "placement_id": placement_id, "membership_id": membership_id})
+                        {"employee_id": employee_id, "placement_id": placement_id, "membership_id": membership_id,
+                         "lifecycle": lifecycle, "placement_action": placement_action,
+                         "membership_action": membership_action})
+            return CommandResult("run_enrollment", enrollment_id, {
+                "employee_id": employee_id,
+                "placement_id": placement_id,
+                "membership_id": membership_id,
+                "lifecycle": lifecycle,
+                "placement_action": placement_action,
+                "membership_action": membership_action,
+            })
         return self._run({"admin", "editor"}, op)
 
     def propose_onboarding_start_session(self, target_course_run_id: int) -> CommandResult:
@@ -782,29 +823,20 @@ class BusinessService:
         return self._run({"admin", "editor"}, op)
 
     def attendance_roster(self, course_run_id: int, session_unit_id: int) -> CommandResult:
-        """Return the applicable active roster; unsaved rows intentionally default Present."""
+        """Return the event-time roster without inventing historical attendance."""
         def op(cur):
-            cur.execute("""SELECT su.sequence_in_run, m.status
-                           FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
-                           WHERE su.session_unit_id=%s AND su.course_run_id=%s""", (session_unit_id, course_run_id))
-            unit = cur.fetchone()
-            if not unit: raise CommandError("not_found", "session unit does not belong to the selected course run")
-            if unit[1] == "cancelled": raise CommandError("invalid_state", "cancelled sessions do not have an attendance roster")
-            cur.execute("""SELECT re.run_enrollment_id,e.emp_code,e.full_name,re.start_session_number,
-                                  COALESCE(a.effective_status,'Present') AS effective_status,
-                                  a.attendance_id
-                           FROM run_enrollments re JOIN employees e ON e.employee_id=re.employee_id
-                           LEFT JOIN attendance a ON a.run_enrollment_id=re.run_enrollment_id AND a.session_unit_id=%s
-                           WHERE re.course_run_id=%s AND re.status='active' AND re.start_session_number<=%s
-                           ORDER BY e.full_name,e.emp_code""", (session_unit_id, course_run_id, unit[0]))
-            rows = [dict(zip(["run_enrollment_id", "emp_code", "full_name", "start_session_number", "effective_status", "attendance_id"], row)) for row in cur.fetchall()]
-            return CommandResult("attendance_roster", session_unit_id, {"sequence_in_run": unit[0], "rows": rows})
+            unit, rows = self._attendance_roster_in_tx(cur, course_run_id, session_unit_id)
+            return CommandResult("attendance_roster", session_unit_id, {
+                "sequence_in_run": unit[0], "meeting_status": unit[1], "starts_at": unit[3], "rows": rows,
+            })
         return self._run({"admin", "editor", "viewer"}, op)
 
     def save_attendance_roster(self, course_run_id: int, session_unit_id: int, records: Iterable[dict[str, Any]]) -> CommandResult:
         """Write exactly one selected session's full applicable roster in one transaction."""
         records = list(records)
         def op(cur):
+            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
+            if not cur.fetchone(): raise CommandError("not_found", "course run not found")
             cur.execute("""SELECT su.sequence_in_run,m.status,m.meeting_id
                            FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
                            WHERE su.session_unit_id=%s AND su.course_run_id=%s
@@ -812,29 +844,90 @@ class BusinessService:
             unit = cur.fetchone()
             if not unit: raise CommandError("not_found", "session unit does not belong to the selected course run")
             if unit[1] == "cancelled": raise CommandError("invalid_state", "cancelled sessions cannot receive attendance")
-            cur.execute("""SELECT run_enrollment_id FROM run_enrollments
-                           WHERE course_run_id=%s AND status='active' AND start_session_number<=%s FOR UPDATE""",
-                        (course_run_id, unit[0]))
-            roster_ids = {row[0] for row in cur.fetchall()}
+            _, roster_rows = self._attendance_roster_in_tx(cur, course_run_id, session_unit_id, lock_enrollments=True)
+            roster_ids = {row["run_enrollment_id"] for row in roster_rows}
             submitted_ids = [item.get("run_enrollment_id") for item in records]
             if len(submitted_ids) != len(set(submitted_ids)) or set(submitted_ids) != roster_ids:
                 raise CommandError("invalid_state", "attendance save must include each applicable learner exactly once")
+            before_by_enrollment = {row["run_enrollment_id"]: row for row in roster_rows}
+            changes = []
+            created_count = 0
+            updated_count = 0
             for item in records:
                 status = item.get("effective_status")
                 if status not in {"Present", "Absent"}:
                     raise CommandError("invalid_input", "attendance status must be Present or Absent")
+                before = before_by_enrollment[item["run_enrollment_id"]]
                 cur.execute("""INSERT INTO attendance(run_enrollment_id,session_unit_id,effective_status,original_status,details)
                                VALUES(%s,%s,%s,%s,%s)
                                ON CONFLICT(run_enrollment_id,session_unit_id) DO UPDATE SET effective_status=EXCLUDED.effective_status,updated_at=NOW()
                                RETURNING attendance_id""",
                             (item["run_enrollment_id"], session_unit_id, status, item.get("original_status", status),
                              psycopg2.extras.Json(_json_safe(item.get("details", {})))))
+                attendance_id = cur.fetchone()[0]
+                if before["recorded_status"] != status:
+                    changes.append({
+                        "attendance_id": attendance_id,
+                        "run_enrollment_id": item["run_enrollment_id"],
+                        "emp_code": before["emp_code"],
+                        "before": {"effective_status": before["recorded_status"]},
+                        "after": {"effective_status": status},
+                        "note": item.get("details", {}).get("note") if isinstance(item.get("details"), dict) else None,
+                    })
+                    if before["attendance_id"] is None:
+                        created_count += 1
+                    else:
+                        updated_count += 1
             if unit[1] == "planned":
                 cur.execute("UPDATE meetings SET status='completed' WHERE meeting_id=%s", (unit[2],))
             self._audit(cur, "attendance.roster.save", "session_unit", session_unit_id,
-                        {"course_run_id": course_run_id, "roster_count": len(records), "meeting_status": "completed"})
-            return CommandResult("attendance", None, {"count": len(records), "session_unit_id": session_unit_id})
+                        {"course_run_id": course_run_id, "roster_count": len(records),
+                         "meeting_status_before": unit[1], "meeting_status_after": "completed",
+                         "created_count": created_count, "updated_count": updated_count,
+                         "unchanged_count": len(records) - len(changes), "changes": changes})
+            return CommandResult("attendance", None, {
+                "count": len(records), "session_unit_id": session_unit_id,
+                "created_count": created_count, "updated_count": updated_count,
+                "unchanged_count": len(records) - len(changes),
+            })
         return self._run({"admin", "editor"}, op)
+
+    @staticmethod
+    def _attendance_roster_in_tx(cur, course_run_id: int, session_unit_id: int, *, lock_enrollments: bool = False):
+        cur.execute("""SELECT su.sequence_in_run,m.status,m.meeting_id,m.starts_at
+                       FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
+                       WHERE su.session_unit_id=%s AND su.course_run_id=%s""", (session_unit_id, course_run_id))
+        unit = cur.fetchone()
+        if not unit:
+            raise CommandError("not_found", "session unit does not belong to the selected course run")
+        if unit[1] == "cancelled":
+            raise CommandError("invalid_state", "cancelled sessions do not have an attendance roster")
+        lock_clause = " FOR UPDATE OF re" if lock_enrollments else ""
+        cur.execute("""SELECT re.run_enrollment_id,e.emp_code,e.full_name,re.start_session_number,
+                              CASE WHEN a.attendance_id IS NOT NULL THEN a.effective_status
+                                   WHEN %s='planned' THEN 'Present' END AS effective_status,
+                              a.attendance_id
+                       FROM run_enrollments re
+                       JOIN employees e ON e.employee_id=re.employee_id
+                       LEFT JOIN cohort_memberships cm ON cm.cohort_membership_id=re.cohort_membership_id
+                       LEFT JOIN attendance a
+                         ON a.run_enrollment_id=re.run_enrollment_id AND a.session_unit_id=%s
+                       WHERE re.course_run_id=%s
+                         AND re.start_session_number<=%s
+                         AND (
+                           a.attendance_id IS NOT NULL
+                           OR (%s='planned' AND re.status='active')
+                           OR (%s='completed'
+                               AND cm.start_date<=%s::date
+                               AND (cm.end_date IS NULL OR %s::date<=cm.end_date))
+                         )
+                       ORDER BY e.full_name,e.emp_code""" + lock_clause,
+                    (unit[1], session_unit_id, course_run_id, unit[0], unit[1], unit[1], unit[3], unit[3]))
+        columns = ["run_enrollment_id", "emp_code", "full_name", "start_session_number", "effective_status", "attendance_id"]
+        rows = [dict(zip(columns, row)) for row in cur.fetchall()]
+        for row in rows:
+            row["recorded_status"] = row["effective_status"] if row["attendance_id"] is not None else None
+        return unit, rows
 
     def bulk_record_attendance(self, records: Iterable[dict[str, Any]]) -> CommandResult:
         records=list(records)
