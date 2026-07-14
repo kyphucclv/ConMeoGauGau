@@ -818,8 +818,18 @@ class CanonicalLoader:
                 )
             self.outcome(row, "loaded", "cohort_membership_resolved", "cohort_memberships", f"{emp_code}:{class_code}")
             membership_id = self.membership_id(employee_id, cohort_id)
-            bu_id = self.ensure_named_ref("business_units", "business_unit_name", clean_text(row.values.get("BU")))
-            role_id = self.ensure_named_ref("job_roles", "job_role_name", clean_text(row.values.get("Role")))
+            bu_value = clean_text(row.values.get("BU"))
+            role_value = clean_text(row.values.get("Role"))
+            if enrollment_status == "active":
+                # Active enrollments must carry BU/role snapshots (enforced by
+                # enforce_active_run_enrollment_completeness).  Mirror
+                # load_org_history and the migration 017 backfill by falling back
+                # to the approved "Unknown" org placeholders when the source row
+                # (or its approved override) omits BU/Role.
+                bu_value = bu_value or "Unknown BU"
+                role_value = role_value or "Unknown Role"
+            bu_id = self.ensure_named_ref("business_units", "business_unit_name", bu_value)
+            role_id = self.ensure_named_ref("job_roles", "job_role_name", role_value)
             with self.conn.cursor() as cur:
                 cur.execute(
                     """
