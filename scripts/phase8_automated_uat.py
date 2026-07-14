@@ -6,10 +6,12 @@ import os
 import subprocess
 import sys
 from datetime import date, datetime, timezone
+from io import BytesIO
 from pathlib import Path
 
 import psycopg2
 import psycopg2.extras
+from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -332,6 +334,9 @@ def verify_monthly_review(conn, ids: dict[str, int], database_url: str) -> dict[
         summary = monthly_review_summary(data)
         assert summary["repeated"] >= 1
         assert summary["improved_count"] >= 1
+        assert summary["delivery_rate"] is not None
+        assert data["course_participation"]
+        assert data["class_participation"]
         editor = BusinessService(conn, ids["phase8_editor"])
         draft = proposed_monthly_actions(summary)
         saved = editor.save_monthly_action_summary(review_month, **draft)
@@ -340,6 +345,8 @@ def verify_monthly_review(conn, ids: dict[str, int], database_url: str) -> dict[
         assert refreshed["action_summary"]["version_number"] == 1
         export = monthly_review_xlsx(review_month, refreshed, draft)
         assert export[:2] == b"PK"
+        workbook = load_workbook(BytesIO(export), read_only=True)
+        assert {"Course participation", "Class participation"}.issubset(set(workbook.sheetnames))
         return {"repeated_participants": summary["repeated"], "improved_latest_tests": summary["improved_count"], "monthly_export": True}
     finally:
         pool.closeall()

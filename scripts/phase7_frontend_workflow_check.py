@@ -101,6 +101,10 @@ def assert_static_ui_contract() -> None:
         "propose_next_attendance_session",
         "save_attendance_roster",
         "_attendance_session_summary",
+        "_shift_review_month",
+        "course_participation",
+        "class_participation",
+        "Delivery rate",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

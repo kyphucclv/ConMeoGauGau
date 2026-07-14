@@ -202,7 +202,34 @@ def monthly_review_data(pool, review_month: date) -> dict[str, object]:
     for row in progress:
         key = (row["course_name"], row["latest_level"])
         level_distribution[key] = level_distribution.get(key, 0) + 1
+    course_participation: dict[tuple[str, str], dict[str, object]] = {}
+    class_participation: dict[tuple[str, str, str], dict[str, object]] = {}
+    for row in participation:
+        course_key = (row["course_code"], row["course_name"])
+        class_key = (row["class_code"], row["course_code"], row["course_name"])
+        for target, key, labels in (
+            (course_participation, course_key, {"course_code": row["course_code"], "course_name": row["course_name"]}),
+            (class_participation, class_key, {"class_code": row["class_code"], "course_code": row["course_code"], "course_name": row["course_name"]}),
+        ):
+            bucket = target.setdefault(
+                key,
+                {**labels, "applicable_sessions": 0, "present_sessions": 0, "learner_count": 0, "low_attendance_count": 0},
+            )
+            bucket["applicable_sessions"] += row["applicable_sessions"] or 0
+            bucket["present_sessions"] += row["present_sessions"] or 0
+            bucket["learner_count"] += 1
+            if row["attendance_ratio"] is not None and row["attendance_ratio"] < row["attendance_threshold"]:
+                bucket["low_attendance_count"] += 1
+    for rows in (course_participation.values(), class_participation.values()):
+        for row in rows:
+            row["attendance_ratio"] = (
+                round(row["present_sessions"] / row["applicable_sessions"], 4)
+                if row["applicable_sessions"]
+                else None
+            )
     return {"program": program, "participation": participation, "progress": progress, "new_courses": new_courses,
+            "course_participation": sorted(course_participation.values(), key=lambda row: (row["course_name"], row["course_code"])),
+            "class_participation": sorted(class_participation.values(), key=lambda row: (row["class_code"], row["course_name"])),
             "level_distribution": [{"course_name": course, "latest_level": level, "learner_count": count}
                                    for (course, level), count in sorted(level_distribution.items())],
             "action_summary": action_versions[0] if action_versions else None}
@@ -223,6 +250,9 @@ def monthly_review_summary(data: dict[str, object]) -> dict[str, object]:
     return {"active": active, "repeated": repeated, "planned": planned, "delivered": delivered,
             "variance": delivered-planned, "attendance_ratio": (present / total) if total else None,
             "low_count": len(low), "improved_count": len(improved), "tested_count": len(progress),
+            "delivery_rate": (delivered / planned) if planned else None,
+            "low_rate": (len(low) / len(participation)) if participation else None,
+            "improved_rate": (len(improved) / len(progress)) if progress else None,
             "new_course_count": len(data["new_courses"])}
 
 
@@ -240,6 +270,7 @@ def monthly_review_xlsx(review_month: date, data: dict[str, object], action_summ
     workbook = Workbook()
     workbook.remove(workbook.active)
     sheets = [("Program status", data["program"]), ("Participation", data["participation"]),
+              ("Course participation", data["course_participation"]), ("Class participation", data["class_participation"]),
               ("Learning progress", data["progress"]), ("Level distribution", data["level_distribution"]),
               ("New courses", data["new_courses"])]
     for title, rows in sheets:

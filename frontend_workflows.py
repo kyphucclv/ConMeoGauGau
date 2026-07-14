@@ -954,33 +954,70 @@ def _open_operation_section(section: str) -> None:
     st.session_state["operations_section"] = section
 
 
+def _month_start(value: date) -> date:
+    return value.replace(day=1)
+
+
+def _shift_month(value: date, delta: int) -> date:
+    month_index = value.year * 12 + value.month - 1 + delta
+    return date(month_index // 12, month_index % 12 + 1, 1)
+
+
+def _shift_review_month(delta: int) -> None:
+    current = st.session_state.get("monthly_review_month", date.today().replace(day=1))
+    st.session_state["monthly_review_month"] = _shift_month(_month_start(current), delta)
+
+
+def _percent(value) -> str:
+    return f"{value:.0%}" if value is not None else "No data"
+
+
 def render_monthly_review(pool, actor: AppUser) -> None:
-    selected = st.date_input("Review month", value=date.today().replace(day=1), key="monthly_review_month")
-    review_month = selected.replace(day=1)
+    st.session_state.setdefault("monthly_review_month", date.today().replace(day=1))
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        st.button("Previous month", icon=":material/chevron_left:", on_click=_shift_review_month, args=(-1,))
+        selected = st.date_input("Review month", key="monthly_review_month")
+        st.button("Next month", icon=":material/chevron_right:", on_click=_shift_review_month, args=(1,))
+    review_month = _month_start(selected)
     data = monthly_review_data(pool, review_month)
     summary = monthly_review_summary(data)
     with st.container(horizontal=True):
         st.metric("Active participants", summary["active"], border=True)
         st.metric("Repeated participants", summary["repeated"], border=True)
-        st.metric("Planned / delivered sessions", f"{summary['planned']} / {summary['delivered']}", f"Variance {summary['variance']:+d}", border=True)
-        st.metric("Overall attendance", f"{summary['attendance_ratio']:.0%}" if summary["attendance_ratio"] is not None else "No attendance", border=True)
-        st.metric("Below attendance threshold", summary["low_count"], border=True)
-        st.metric("Improved latest test", f"{summary['improved_count']} / {summary['tested_count']}", border=True)
+        st.metric("Planned / delivered sessions", f"{summary['planned']} / {summary['delivered']}", f"{summary['variance']:+d}", border=True)
+        st.metric("Delivery rate", _percent(summary["delivery_rate"]), border=True)
+        st.metric("Overall attendance", _percent(summary["attendance_ratio"]), border=True)
+        st.metric("Below threshold", summary["low_count"], _percent(summary["low_rate"]), border=True, delta_color="inverse")
+        st.metric("Improved latest test", f"{summary['improved_count']} / {summary['tested_count']}", _percent(summary["improved_rate"]), border=True)
 
     with st.container(border=True):
         st.subheader("Program status")
-        st.bar_chart(data["program"], x="class_code", y=["planned_sessions", "delivered_sessions"], horizontal=False)
-        st.dataframe(data["program"], hide_index=True)
+        if data["program"]:
+            st.bar_chart(data["program"], x="class_code", y=["planned_sessions", "delivered_sessions"])
+            st.dataframe(data["program"], hide_index=True)
+        else:
+            st.info("No program activity for this month.")
     with st.container(border=True):
         st.subheader("Participation")
+        if data["course_participation"]:
+            st.bar_chart(data["course_participation"], x="course_name", y="attendance_ratio")
+            st.dataframe(data["course_participation"], hide_index=True, column_config={
+                "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+            })
+        st.dataframe(data["class_participation"], hide_index=True, column_config={
+            "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+        })
         st.dataframe(data["participation"], hide_index=True, column_config={
             "attendance_threshold": st.column_config.NumberColumn("Threshold", format="percent"),
             "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
         })
     with st.container(border=True):
         st.subheader("Learning progress")
-        st.bar_chart(data["level_distribution"], x="course_name", y="learner_count", color="latest_level")
-        st.dataframe(data["level_distribution"], hide_index=True)
+        if data["level_distribution"]:
+            st.bar_chart(data["level_distribution"], x="course_name", y="learner_count", color="latest_level")
+            st.dataframe(data["level_distribution"], hide_index=True)
+        else:
+            st.info("No final evaluation activity for this month.")
         st.dataframe(data["progress"], hide_index=True)
         st.caption(f"Courses created in month: {summary['new_course_count']}")
         st.dataframe(data["new_courses"], hide_index=True)
