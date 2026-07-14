@@ -133,6 +133,10 @@ def assert_static_ui_contract() -> None:
         "monthly_review_mode",
         "render_monthly_detail_tables",
         "render_monthly_action_summary",
+        "evaluation_workspace_mode",
+        "render_eligibility_override",
+        "render_evaluation_record",
+        "render_completion_action",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

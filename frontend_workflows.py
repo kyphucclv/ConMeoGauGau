@@ -809,7 +809,7 @@ def render_attendance_makeup(pool, actor: AppUser, refs: dict[str, list[dict]]) 
 
 
 def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
-    st.dataframe(fetch_all(pool, """
+    rows = fetch_all(pool, """
         SELECT e.emp_code, e.full_name, c.class_code, co.course_code, cr.run_number,
                rea.attendance_ratio, rea.effective_exam_eligible, lev.version_number,
                l.level_name AS final_level, lev.passed, next_course.course_code AS next_course
@@ -824,13 +824,42 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
         LEFT JOIN courses next_course ON next_course.course_id=lev.next_course_id
         ORDER BY c.class_code, co.course_code, cr.run_number, e.full_name
         LIMIT 250
-    """))
+    """)
     enrollments = options(refs["enrollments"], "run_enrollment_id", "class_code", "course_code", "run_number", "emp_code", "status")
     levels = options(refs["levels"], "level_id", "level_name")
     courses = options(refs["courses"], "course_id", "course_code", "course_name")
+    st.session_state.setdefault("evaluation_workspace_mode", "Review outcomes")
+    mode = st.segmented_control(
+        "Evaluation workflow",
+        ["Review outcomes", "Eligibility override", "Record evaluation", "Completion"],
+        key="evaluation_workspace_mode",
+    )
 
+    if mode == "Review outcomes":
+        with st.container(horizontal=True):
+            st.metric("Visible enrollments", len(rows), border=True)
+            st.metric("Exam eligible", sum(1 for row in rows if row["effective_exam_eligible"]), border=True)
+            st.metric("Evaluated", sum(1 for row in rows if row["version_number"] is not None), border=True)
+            st.metric("Passed", sum(1 for row in rows if row["passed"]), border=True)
+        st.dataframe(rows, hide_index=True, column_config={
+            "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
+            "effective_exam_eligible": st.column_config.CheckboxColumn("Exam eligible"),
+            "passed": st.column_config.CheckboxColumn("Passed"),
+        })
+        return
+
+    if mode == "Eligibility override":
+        render_eligibility_override(pool, actor, enrollments)
+        return
+    if mode == "Record evaluation":
+        render_evaluation_record(pool, actor, enrollments, levels, courses)
+        return
+    render_completion_action(pool, actor, enrollments)
+
+
+def render_eligibility_override(pool, actor: AppUser, enrollments: dict[str, int]) -> None:
     with st.form("eligibility_override"):
-        st.markdown("Override exam eligibility")
+        st.subheader("Override exam eligibility")
         enrollment_id = selected_id("Enrollment", enrollments, key="eligibility_enrollment")
         eligible = st.checkbox("Eligible for exam", value=True)
         reason = st.text_input("Override reason")
@@ -841,8 +870,10 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
         elif safe_submit(pool, actor, lambda svc: svc.override_exam_eligibility(enrollment_id, eligible, reason)):
             st.rerun()
 
+
+def render_evaluation_record(pool, actor: AppUser, enrollments: dict[str, int], levels: dict[str, int], courses: dict[str, int]) -> None:
     with st.form("evaluation_record"):
-        st.markdown("Record or correct final evaluation")
+        st.subheader("Record or correct final evaluation")
         enrollment_id = selected_id("Enrollment", enrollments, key="evaluation_enrollment")
         level_label = st.selectbox("Final level", [""] + list(levels.keys()))
         exam_eligible = st.checkbox("Exam eligible", value=True)
@@ -861,8 +892,10 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
         )):
             st.rerun()
 
+
+def render_completion_action(pool, actor: AppUser, enrollments: dict[str, int]) -> None:
     with st.form("completion"):
-        st.markdown("Suggest or confirm completion")
+        st.subheader("Suggest or confirm completion")
         enrollment_id = selected_id("Enrollment", enrollments, key="completion_enrollment")
         action = st.segmented_control("Action", ["Suggest", "Confirm", "Reject"], default="Suggest")
         rejection_reason = st.text_input("Rejection reason")

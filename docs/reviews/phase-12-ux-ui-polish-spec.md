@@ -28,6 +28,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `.\run_app.cmd -CheckOnly`.
+- P12.6 evaluation workflow polish gate passed on 2026-07-14 through
+  `python scripts\phase7_frontend_workflow_check.py`,
+  `python scripts\phase8_automated_uat.py`, and
+  `.\run_app.cmd -CheckOnly`.
 
 ## Objective
 
@@ -55,6 +59,7 @@ must include a focused regression gate.
 3. P12.3 attendance roster ergonomics and exception review polish.
 4. P12.4 data issues remediation layout and audit confidence.
 5. P12.5 monthly review export flow and report readability.
+6. P12.6 evaluation workflow polish and completion action grouping.
 
 Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
 `python scripts\phase8_automated_uat.py` when workflow behavior is touched, and
@@ -105,6 +110,14 @@ Each slice must run `python scripts\phase7_frontend_workflow_check.py`,
 - Move detailed report tables into their own mode.
 - Move action summary save/export controls into a dedicated export mode with
   saved/draft status.
+
+## P12.6 scope
+
+- Split evaluation into explicit modes: review outcomes, eligibility override,
+  record evaluation, and completion.
+- Keep review outcomes focused on metrics and an index-free evaluation grid.
+- Move override, final evaluation, and completion forms into dedicated modes.
+- Preserve admin-only completion/override checks and existing service calls.
 
 ## Acceptance notes
 
