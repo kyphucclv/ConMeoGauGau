@@ -222,6 +222,42 @@ def _proposed_class_code(pool, actor: AppUser) -> str:
     return values["class_code"] if values else ""
 
 
+def _next_attendance_sequence(pool, actor: AppUser, course_run_id: int | None) -> int:
+    if not course_run_id:
+        return 1
+    values = service_values(pool, actor, lambda svc: svc.propose_next_attendance_session(course_run_id))
+    return int(values["sequence_in_run"]) if values else 1
+
+
+def _attendance_session_summary(pool, course_run_id: int, session_unit_id: int) -> dict:
+    rows = fetch_all(pool, """
+        SELECT su.sequence_in_run, m.status AS meeting_status,
+               count(re.run_enrollment_id) AS applicable_learners,
+               count(a.attendance_id) AS saved_rows,
+               count(a.attendance_id) FILTER (WHERE a.effective_status='Present') AS present_rows,
+               count(a.attendance_id) FILTER (WHERE a.effective_status='Absent') AS absent_rows
+        FROM session_units su
+        JOIN meetings m ON m.meeting_id=su.meeting_id
+        LEFT JOIN run_enrollments re
+          ON re.course_run_id=su.course_run_id
+         AND re.status='active'
+         AND re.start_session_number<=su.sequence_in_run
+        LEFT JOIN attendance a
+          ON a.session_unit_id=su.session_unit_id
+         AND a.run_enrollment_id=re.run_enrollment_id
+        WHERE su.course_run_id=%s AND su.session_unit_id=%s
+        GROUP BY su.sequence_in_run,m.status
+    """, (course_run_id, session_unit_id))
+    return rows[0] if rows else {
+        "sequence_in_run": None,
+        "meeting_status": None,
+        "applicable_learners": 0,
+        "saved_rows": 0,
+        "present_rows": 0,
+        "absent_rows": 0,
+    }
+
+
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     """Desktop-first learner search, onboarding, correction, and transfer workspace."""
     st.markdown("Search learners, review their history, and complete onboarding in one transaction.")
@@ -612,22 +648,31 @@ def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) 
 
 
 def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
-    st.markdown("Select a class/run and session. Every applicable learner starts as Present until HR marks an absence.")
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
-    run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
-    course_run_id = runs.get(run_label)
-    run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
-    units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
-    unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
-    session_unit_id = units.get(unit_label)
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
+        course_run_id = runs.get(run_label)
+        run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
+        units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
+        unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
+        session_unit_id = units.get(unit_label)
 
-    with st.expander("Create next planned session"):
-        with st.form("attendance_session_create"):
-            starts_on = st.date_input("Session date", value=date.today(), key="attendance_session_date")
-            starts_time = st.time_input("Session time", value=time(9, 0), key="attendance_session_time")
-            duration = st.number_input("Duration minutes", min_value=1, value=60, step=15, key="attendance_session_duration")
-            sequence = st.number_input("Logical session number", min_value=1, value=1, step=1, key="attendance_session_sequence")
-            submitted = st.form_submit_button("Create session", icon=":material/add_circle:")
+    with st.container(border=True):
+        st.subheader("Create session")
+        with st.form("attendance_session_create", border=False):
+            row = st.container(horizontal=True, vertical_alignment="bottom")
+            with row:
+                starts_on = st.date_input("Session date", value=date.today(), key="attendance_session_date")
+                starts_time = st.time_input("Session time", value=time(9, 0), key="attendance_session_time")
+                duration = st.number_input("Duration minutes", min_value=1, value=60, step=15, key="attendance_session_duration")
+                sequence = st.number_input(
+                    "Logical session number",
+                    min_value=1,
+                    value=_next_attendance_sequence(pool, actor, course_run_id),
+                    step=1,
+                    key=f"attendance_session_sequence_{course_run_id or 'none'}",
+                )
+                submitted = st.form_submit_button("Create session", icon=":material/add_circle:")
         if submitted:
             if not course_run_id:
                 st.error("Select a class and course run first.")
@@ -638,15 +683,16 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
 
     roster = None
     if course_run_id and session_unit_id:
-        conn_ctx, svc = service(pool, actor)
-        try:
-            roster = svc.attendance_roster(course_run_id, session_unit_id).values
-        except CommandError as error:
-            st.error(error.message)
-        finally:
-            conn_ctx.__exit__(None, None, None)
+        roster = service_values(pool, actor, lambda svc: svc.attendance_roster(course_run_id, session_unit_id))
     if roster is not None:
-        st.caption(f"Logical session {roster['sequence_in_run']} · {len(roster['rows'])} applicable learner(s)")
+        summary = _attendance_session_summary(pool, course_run_id, session_unit_id)
+        with st.container(horizontal=True):
+            st.metric("Logical session", summary["sequence_in_run"], border=True)
+            st.metric("Meeting status", summary["meeting_status"], border=True)
+            st.metric("Applicable learners", summary["applicable_learners"], border=True)
+            st.metric("Saved rows", summary["saved_rows"], border=True)
+            st.metric("Present", summary["present_rows"], border=True)
+            st.metric("Absent", summary["absent_rows"], border=True)
         editor_rows = [
             {"run_enrollment_id": row["run_enrollment_id"], "employee": f"{row['emp_code']} | {row['full_name']}",
              "start_session_number": row["start_session_number"], "effective_status": row["effective_status"]}

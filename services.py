@@ -532,6 +532,10 @@ class BusinessService:
         def op(cur):
             if duration_minutes <= 0 or sequence_in_run < 1:
                 raise CommandError("invalid_input", "duration and session number must be positive")
+            self._advisory_lock(cur, f"attendance_session:{course_run_id}")
+            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
+            if not cur.fetchone():
+                raise CommandError("not_found", "course run not found")
             cur.execute("""INSERT INTO meetings(course_run_id,starts_at,duration_minutes,status)
                            VALUES(%s,%s,%s,'planned') RETURNING meeting_id""", (course_run_id, starts_at, duration_minutes))
             meeting_id = cur.fetchone()[0]
@@ -542,6 +546,19 @@ class BusinessService:
                         {"course_run_id": course_run_id, "meeting_id": meeting_id, "sequence_in_run": sequence_in_run})
             return CommandResult("session_unit", session_unit_id, {"meeting_id": meeting_id, "sequence_in_run": sequence_in_run})
         return self._run({"admin", "editor"}, op)
+
+    def propose_next_attendance_session(self, course_run_id: int) -> CommandResult:
+        """Return the next logical session number for attendance entry."""
+        def op(cur):
+            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s", (course_run_id,))
+            if not cur.fetchone():
+                raise CommandError("not_found", "course run not found")
+            cur.execute("""SELECT COALESCE(MAX(su.sequence_in_run), 0) + 1
+                           FROM session_units su
+                           JOIN meetings m ON m.meeting_id=su.meeting_id
+                           WHERE su.course_run_id=%s AND m.status <> 'cancelled'""", (course_run_id,))
+            return CommandResult("course_run", course_run_id, {"sequence_in_run": cur.fetchone()[0]})
+        return self._run({"admin", "editor", "viewer"}, op)
 
     def save_monthly_action_summary(self, review_month: date, *, highlights: str, risks: str, next_month_priorities: str) -> CommandResult:
         """Persist only an explicitly saved HR conclusion as an immutable version."""
@@ -585,8 +602,10 @@ class BusinessService:
         """Write exactly one selected session's full applicable roster in one transaction."""
         records = list(records)
         def op(cur):
-            cur.execute("""SELECT su.sequence_in_run,m.status FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
-                           WHERE su.session_unit_id=%s AND su.course_run_id=%s FOR UPDATE""", (session_unit_id, course_run_id))
+            cur.execute("""SELECT su.sequence_in_run,m.status,m.meeting_id
+                           FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
+                           WHERE su.session_unit_id=%s AND su.course_run_id=%s
+                           FOR UPDATE OF su,m""", (session_unit_id, course_run_id))
             unit = cur.fetchone()
             if not unit: raise CommandError("not_found", "session unit does not belong to the selected course run")
             if unit[1] == "cancelled": raise CommandError("invalid_state", "cancelled sessions cannot receive attendance")
@@ -607,8 +626,10 @@ class BusinessService:
                                RETURNING attendance_id""",
                             (item["run_enrollment_id"], session_unit_id, status, item.get("original_status", status),
                              psycopg2.extras.Json(_json_safe(item.get("details", {})))))
+            if unit[1] == "planned":
+                cur.execute("UPDATE meetings SET status='completed' WHERE meeting_id=%s", (unit[2],))
             self._audit(cur, "attendance.roster.save", "session_unit", session_unit_id,
-                        {"course_run_id": course_run_id, "roster_count": len(records)})
+                        {"course_run_id": course_run_id, "roster_count": len(records), "meeting_status": "completed"})
             return CommandResult("attendance", None, {"count": len(records), "session_unit_id": session_unit_id})
         return self._run({"admin", "editor"}, op)
 

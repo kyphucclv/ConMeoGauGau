@@ -22,7 +22,7 @@ if str(ROOT) not in sys.path:
 from auth import hash_password
 from migrate import apply_migrations
 from scripts.phase4_integration_check import _database_url, recreate_database
-from services import BusinessService
+from services import BusinessService, CommandError
 
 
 DEFAULT_MAINTENANCE_URL = "postgresql://postgres@localhost:5432/postgres"
@@ -33,6 +33,16 @@ def one(conn, sql: str, params: tuple = ()):
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(sql, params)
         return cur.fetchone()
+
+
+def expect_command_error(code: str, fn) -> None:
+    try:
+        fn()
+    except CommandError as exc:
+        if exc.code != code:
+            raise AssertionError(f"expected CommandError {code}, got {exc.code}") from exc
+        return
+    raise AssertionError(f"expected CommandError {code}")
 
 
 def seed(conn) -> dict[str, int]:
@@ -88,6 +98,9 @@ def assert_static_ui_contract() -> None:
         "selection_mode=\"single-row\"",
         "create_class_course_run",
         "accept_new_options=True",
+        "propose_next_attendance_session",
+        "save_attendance_roster",
+        "_attendance_session_summary",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:
@@ -158,6 +171,46 @@ def run_gate(database_url: str) -> dict[str, object]:
         assert created_class["run_status"] == "active"
         assert created_class["pic_label"] == "Phase Seven Team"
         assert "Phase Seven Team" in editor.pic_label_suggestions("seven").values["labels"]
+        attendance_learner = editor.onboard_learner(
+            emp_code="P7-ATT",
+            full_name="Phase Seven Attendance",
+            business_unit_id=ids["business_unit_id"],
+            job_role_id=ids["job_role_id"],
+            entrance_level_id=ids["p7_entrance"],
+            course_run_id=created_run.entity_id,
+            joined_on=date(2026, 7, 5),
+        )
+        next_session = editor.propose_next_attendance_session(created_run.entity_id).values["sequence_in_run"]
+        assert next_session == 1
+        attendance_session = editor.create_attendance_session(
+            created_run.entity_id,
+            datetime(2026, 7, 6, 9, 0, tzinfo=timezone.utc),
+            60,
+            next_session,
+        )
+        roster = editor.attendance_roster(created_run.entity_id, attendance_session.entity_id).values
+        assert len(roster["rows"]) == 1
+        assert roster["rows"][0]["effective_status"] == "Present"
+        editor.save_attendance_roster(
+            created_run.entity_id,
+            attendance_session.entity_id,
+            [{"run_enrollment_id": attendance_learner.entity_id, "effective_status": "Absent"}],
+        )
+        completed_session = one(
+            conn,
+            """SELECT m.status,a.effective_status
+               FROM session_units su
+               JOIN meetings m ON m.meeting_id=su.meeting_id
+               JOIN attendance a ON a.session_unit_id=su.session_unit_id
+               WHERE su.session_unit_id=%s""",
+            (attendance_session.entity_id,),
+        )
+        assert completed_session["status"] == "completed"
+        assert completed_session["effective_status"] == "Absent"
+        expect_command_error(
+            "invalid_state",
+            lambda: editor.save_attendance_roster(created_run.entity_id, attendance_session.entity_id, []),
+        )
         membership = editor.add_membership(cohort, employee, date(2026, 7, 1)).entity_id
         membership_row = one(conn, "SELECT status FROM cohort_memberships WHERE cohort_membership_id=%s", (membership,))
         assert membership_row["status"] == "active"
