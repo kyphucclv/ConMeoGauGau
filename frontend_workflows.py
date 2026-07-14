@@ -217,6 +217,13 @@ def _transfer_start_proposal(pool, actor: AppUser, target_course_run_id: int | N
     return values["start_session_number"] if values else None
 
 
+def _onboarding_start_proposal(pool, actor: AppUser, target_course_run_id: int | None) -> int | None:
+    if not target_course_run_id:
+        return None
+    values = service_values(pool, actor, lambda svc: svc.propose_onboarding_start_session(target_course_run_id))
+    return values["start_session_number"] if values else None
+
+
 def _proposed_class_code(pool, actor: AppUser) -> str:
     values = service_values(pool, actor, lambda svc: svc.propose_next_class_code())
     return values["class_code"] if values else ""
@@ -430,6 +437,9 @@ def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]])
     if capacity:
         limit = str(capacity["capacity"]) if capacity["capacity"] is not None else "Not set"
         st.info(f"{capacity['class_code']}: {capacity['active_learners']} active learner(s) / capacity {limit}")
+    start_session_proposal = _onboarding_start_proposal(pool, actor, course_run_id)
+    if start_session_proposal is not None:
+        st.info(f"First applicable session starts at {start_session_proposal} for this run.")
     default_bu = known_employee["business_unit_name"] if known_employee else ""
     default_role = known_employee["job_role_name"] if known_employee else ""
     bu_labels = [""] + list(bu)
@@ -441,7 +451,13 @@ def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]])
         job_role = st.selectbox("Job role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
         entrance_level = st.selectbox("Entrance level", [""] + list(levels))
         joined_on = st.date_input("Joined on", value=date.today())
-        start_session = st.number_input("First applicable session", min_value=1, value=1, step=1)
+        start_session = st.number_input(
+            "First applicable session",
+            min_value=1,
+            value=start_session_proposal or 1,
+            step=1,
+            key=f"onboard_start_session_{course_run_id or 'none'}",
+        )
         allow_override = st.checkbox("Approve capacity override")
         override_reason = st.text_input("Override reason", disabled=not allow_override)
         submitted = st.form_submit_button("Add learner", type="primary", icon=":material/person_add:")

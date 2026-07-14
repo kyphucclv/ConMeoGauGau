@@ -88,6 +88,35 @@ def run(database_url):
             entrance_level_id=level_id, course_run_id=target_run, joined_on=date(2026, 7, 3),
         ))
 
+        midrun_cohort = svc.create_cohort('EL003', 'Mid-run intake', status='active', capacity=5).entity_id
+        midrun_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
+        completed_units = []
+        for seq in (1, 2):
+            completed_meeting = svc.save_meeting(
+                midrun_run,
+                datetime(2026, 7, seq, 9, tzinfo=timezone.utc),
+                60,
+                status='completed',
+            ).entity_id
+            completed_units.append(svc.add_session_unit(midrun_run, completed_meeting, seq).entity_id)
+        assert svc.propose_onboarding_start_session(midrun_run).values['start_session_number'] == 3
+        expect_error('invalid_input', lambda: svc.onboard_learner(
+            emp_code='P11-MIDRUN-BAD', full_name='Bad Midrun Start', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=midrun_run, joined_on=date(2026, 7, 3),
+            start_session_number=1,
+        ))
+        svc.onboard_learner(
+            emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=midrun_run, joined_on=date(2026, 7, 3),
+            start_session_number=3,
+        )
+        assert scalar(
+            conn,
+            """SELECT count(*) FROM v_operational_data_issues
+               WHERE issue_code='incomplete_attendance_roster' AND entity_key IN (%s,%s)""",
+            tuple(str(unit_id) for unit_id in completed_units),
+        ) == 0
+
         target_meeting = svc.save_meeting(target_run, datetime(2026, 7, 8, 9, tzinfo=timezone.utc), 60).entity_id
         target_unit = svc.add_session_unit(target_run, target_meeting, 3).entity_id
         assert svc.propose_transfer_start_session(target_run).values['start_session_number'] == 3

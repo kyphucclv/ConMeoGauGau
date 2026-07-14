@@ -92,6 +92,7 @@ Streamlit smoke path, backup/restore rehearsal, and Phase 11 workflow fixtures.
 | Fixture | Result |
 |---|---:|
 | Transfer start-session proposal | 3 |
+| Onboarding start-session guard | Passed |
 | Monthly repeated participant fixture | 1 |
 | Two-latest-test improvement fixture | 1 |
 | Monthly Excel export | Passed |

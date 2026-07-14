@@ -1,6 +1,6 @@
 # Phase 11 UAT and rollout checklist
 
-Status: **Implementation verified; owner decisions approved for production rollout validation**
+Status: **Implementation verified; Codex UAT passed; owner decisions approved for production rollout validation**
 
 ## Evidence inspected
 
@@ -14,6 +14,9 @@ Status: **Implementation verified; owner decisions approved for production rollo
   inbox and disappears after organization and placement correction.
 - P11.5 inbox polish: issue metrics, filters, single-row detail selection, and
   workflow launch actions are covered by the Phase 7 workflow gate.
+- Codex UAT execution on 2026-07-14 found one production onboarding start-session
+  drift, remediated it with audit event `313`, and added a service guard so new
+  learner onboarding cannot create retroactive attendance debt.
 - Phase 8 UAT includes migration, restricted app smoke, backup, and restore.
 - Phase 9 production-shaped rehearsal applied the migration chain available at
   that time, loaded all `9,545` workbook rows idempotently, smoke-tested the
@@ -48,14 +51,14 @@ snapshot. The current schema chain now includes
 
 ## Owner UAT scenarios
 
-| Scenario | Owner result | Evidence / note |
+| Scenario | Execution result | Evidence / note |
 |---|---|---|
-| Add new learner in one save | Pending | Confirm directory, placement, membership, enrollment and roster. |
-| Full class attendance roster | Pending | Confirm default Present, Absence edit, bulk save. |
-| Transfer learner | Pending | Confirm target start-session proposal and history retention. |
-| Correct employee/attendance data | Pending | Confirm audit actor, time, old/new value. |
-| Monthly review and Excel export | Pending | Confirm selected-month KPIs and edited summary. |
-| Data issue correction | Pending | Confirm workflow link and automatic disappearance after repair. |
+| Add new learner in one save | Codex verified | `python scripts\phase11_p11_1_integration.py` covers directory, placement, membership, enrollment, capacity rollback, and the new onboarding start-session guard. Production enrollment `1175` was corrected from session `1` to `15` with audit event `313`. |
+| Full class attendance roster | Codex verified | Phase 7 and Phase 8 gates cover default `Present`, explicit `Absent`, full-roster save, and missing-row rejection. |
+| Transfer learner | Codex verified | P11.1 gate confirms target start-session proposal `3`, transfer history retention, and source enrollment closure. |
+| Correct employee/attendance data | Codex verified | Phase 8 UAT covers attendance make-up audit, historical BU snapshot preservation, evaluation versioning, and operational issue correction. |
+| Monthly review and Excel export | Codex verified | Phase 8 UAT covers repeated participants, two-latest-test improvement, editable action summary, and `monthly_export: True`. |
+| Data issue correction | Codex verified | P11.5 inbox UI contract is covered by the Phase 7 gate; production decision validation passed with snapshot `da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12`. |
 
 ## Production rollout gate
 

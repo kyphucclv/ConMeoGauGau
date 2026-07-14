@@ -22,6 +22,10 @@ Implementation evidence:
   `python scripts\phase7_frontend_workflow_check.py`,
   `python scripts\phase8_automated_uat.py`, and
   `$env:PHASE11_DB='english_class'; python scripts\phase11_operational_issue_snapshot.py --validate-decisions`.
+- Post-UAT onboarding start-session guard passed on 2026-07-14 through
+  `python scripts\phase11_p11_1_integration.py`,
+  `python scripts\phase7_frontend_workflow_check.py`, and
+  `python scripts\phase8_automated_uat.py`.
 - End-to-end UAT and rollout evidence is tracked in
   `docs/reviews/phase-11-uat-and-rollout.md`.
 

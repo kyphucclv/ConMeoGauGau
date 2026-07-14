@@ -109,6 +109,7 @@ def assert_static_ui_contract() -> None:
         "issue_severity_filter",
         "operational_issue_grid",
         "JsonColumn",
+        "propose_onboarding_start_session",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

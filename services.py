@@ -364,6 +364,12 @@ class BusinessService:
             if not target:
                 raise CommandError("not_found", "course run not found")
             cohort_id, capacity = target
+            proposed_start_session = self._propose_course_run_start_session_in_tx(cur, course_run_id)
+            if start_session_number < proposed_start_session:
+                raise CommandError(
+                    "invalid_input",
+                    f"first applicable session must be {proposed_start_session} or later for this run",
+                )
             # Lock the employee row when it exists, so concurrent onboarding does
             # not create competing organization histories or active enrollments.
             cur.execute("SELECT employee_id FROM employees WHERE emp_code=%s FOR UPDATE", (emp_code.strip(),))
@@ -422,17 +428,22 @@ class BusinessService:
             return CommandResult("run_enrollment", enrollment_id, {"employee_id": employee_id, "placement_id": placement_id, "membership_id": membership_id})
         return self._run({"admin", "editor"}, op)
 
+    def propose_onboarding_start_session(self, target_course_run_id: int) -> CommandResult:
+        def op(cur):
+            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
+            if not cur.fetchone(): raise CommandError("not_found", "target course run not found")
+            return CommandResult("course_run", target_course_run_id, {
+                "start_session_number": self._propose_course_run_start_session_in_tx(cur, target_course_run_id)
+            })
+        return self._run({"admin", "editor"}, op)
+
     def propose_transfer_start_session(self, target_course_run_id: int) -> CommandResult:
         def op(cur):
             cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
             if not cur.fetchone(): raise CommandError("not_found", "target course run not found")
-            cur.execute("""SELECT COALESCE(
-                             min(su.sequence_in_run) FILTER (WHERE m.status='planned'),
-                             max(su.sequence_in_run) FILTER (WHERE m.status='completed') + 1,
-                             1
-                           ) FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
-                           WHERE su.course_run_id=%s""", (target_course_run_id,))
-            return CommandResult("course_run", target_course_run_id, {"start_session_number": cur.fetchone()[0]})
+            return CommandResult("course_run", target_course_run_id, {
+                "start_session_number": self._propose_course_run_start_session_in_tx(cur, target_course_run_id)
+            })
         return self._run({"admin", "editor"}, op)
 
     def transfer_learner(self, run_enrollment_id: int, target_course_run_id: int, transfer_date: date, *, confirmed_start_session_number: int) -> CommandResult:
@@ -475,10 +486,14 @@ class BusinessService:
         return self._run({"admin", "editor"}, op)
 
     @staticmethod
-    def _propose_transfer_start_session_in_tx(cur, target_course_run_id: int) -> int:
+    def _propose_course_run_start_session_in_tx(cur, target_course_run_id: int) -> int:
         cur.execute("""SELECT COALESCE(min(su.sequence_in_run) FILTER (WHERE m.status='planned'), max(su.sequence_in_run) FILTER (WHERE m.status='completed') + 1, 1)
                        FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id WHERE su.course_run_id=%s""", (target_course_run_id,))
         return cur.fetchone()[0]
+
+    @staticmethod
+    def _propose_transfer_start_session_in_tx(cur, target_course_run_id: int) -> int:
+        return BusinessService._propose_course_run_start_session_in_tx(cur, target_course_run_id)
 
     def transfer_enrollment(self, run_enrollment_id: int, target_course_run_id: int, transfer_date: date, start_session_number: int = 1) -> CommandResult:
         def op(cur):
