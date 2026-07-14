@@ -163,12 +163,30 @@ def monthly_review_data(pool, review_month: date) -> dict[str, object]:
         SELECT c.class_code,co.course_code,co.course_name,re.run_enrollment_id,e.emp_code,e.full_name,
                cr.attendance_threshold_ratio_snapshot AS attendance_threshold,
                count(DISTINCT su.sequence_in_run) AS applicable_sessions,
-               count(DISTINCT su.sequence_in_run) FILTER (WHERE a.effective_status='Present') AS present_sessions,
-               round(count(DISTINCT su.sequence_in_run) FILTER (WHERE a.effective_status='Present')::numeric /
+               count(DISTINCT su.sequence_in_run) FILTER (
+                   WHERE a.effective_status='Present' OR makeup_meeting.meeting_id IS NOT NULL
+               ) AS present_sessions,
+               round(count(DISTINCT su.sequence_in_run) FILTER (
+                         WHERE a.effective_status='Present' OR makeup_meeting.meeting_id IS NOT NULL
+                     )::numeric /
                      NULLIF(count(DISTINCT su.sequence_in_run),0),4) AS attendance_ratio
-        FROM attendance a JOIN session_units su ON su.session_unit_id=a.session_unit_id
+        FROM run_enrollments re
+        JOIN session_units su
+          ON su.course_run_id=re.course_run_id
+         AND su.sequence_in_run>=re.start_session_number
+         AND su.unit_type<>'makeup'
         JOIN meetings m ON m.meeting_id=su.meeting_id AND m.status='completed'
-        JOIN run_enrollments re ON re.run_enrollment_id=a.run_enrollment_id
+        LEFT JOIN attendance a
+          ON a.run_enrollment_id=re.run_enrollment_id
+         AND a.session_unit_id=su.session_unit_id
+        LEFT JOIN attendance makeup
+          ON makeup.makeup_for_attendance_id=a.attendance_id
+         AND makeup.is_makeup
+         AND makeup.effective_status='Present'
+        LEFT JOIN session_units makeup_unit ON makeup_unit.session_unit_id=makeup.session_unit_id
+        LEFT JOIN meetings makeup_meeting
+          ON makeup_meeting.meeting_id=makeup_unit.meeting_id
+         AND makeup_meeting.status='completed'
         JOIN employees e ON e.employee_id=re.employee_id JOIN course_runs cr ON cr.course_run_id=re.course_run_id
         JOIN cohorts c ON c.cohort_id=cr.cohort_id JOIN courses co ON co.course_id=cr.course_id
         WHERE m.starts_at >= %s AND m.starts_at < %s

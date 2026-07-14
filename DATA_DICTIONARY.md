@@ -188,21 +188,27 @@ session units. Duration and credited units are separate concepts.
 
 ## attendance
 
-One row per enrollment and applicable session unit.
+One row per run enrollment and session unit. A normal row records the direct
+`Present`/`Absent` fact. A make-up row records `Present` at one make-up session
+and links to exactly one original absence for the same enrollment.
 
 | Field | Type | Class | Required | Meaning / rule |
 |---|---|---|---|---|
 | `attendance_id` | bigint | audit | yes | Internal key. |
-| `enrollment_id` | bigint FK | input | yes | Learner/run enrollment. |
+| `run_enrollment_id` | bigint FK | input | yes | Learner/run enrollment. |
 | `session_unit_id` | bigint FK | input | yes | Credited session. |
-| `status` | enum | input | yes | Only `Present` or `Absent`. |
-| `is_makeup` | boolean | input | yes | Present credit came from a make-up class. |
-| `note` | text | input | no | Optional correction/make-up explanation. |
-| `updated_by` | bigint FK | audit | yes | App user who last confirmed the result. |
+| `effective_status` | enum | input | yes | Only `Present` or `Absent`; a make-up row must be `Present`. |
+| `original_status` | text | snapshot | no | Status supplied when the row was first recorded. |
+| `is_makeup` | boolean | input | yes | Whether this row is linked replacement credit. |
+| `makeup_for_attendance_id` | bigint FK | input | required for make-up | Original non-make-up `Absent` row; unique when present. |
+| `details` | jsonb | input/audit | yes | Structured note or correction reason. |
+| `created_at` | timestamptz | audit | yes | Creation timestamp. |
 | `updated_at` | timestamptz | audit | yes | Last update timestamp. |
 
-A make-up changes the effective status to `Present`. The audit log preserves
-the previous `Absent` value and the reason for transparency.
+A make-up does not overwrite the original absence and does not add an
+attendance denominator unit. A valid linked make-up credits the original
+logical session as present. The make-up event, actor, reason, before/after
+credit, and zero denominator effect are retained in `audit_events`.
 
 The Phase 11 attendance grid defaults every applicable roster row to `Present`;
 this is a UI default, not a database default. Only an explicit bulk save writes
@@ -269,7 +275,7 @@ These are views/queries, never editable columns:
 | `regression_flag` | Latest final level is lower than the preceding final level. |
 | `progress_trajectory` | Ordered placement + final evaluations over time. |
 | `last_active_at` | Latest `Present` attendance meeting. |
-| `attendance_ratio` | Applicable present units / applicable non-cancelled units. |
+| `attendance_ratio` | Present applicable logical units / applicable non-cancelled non-make-up logical units; linked make-up credits the original unit. |
 | `sessions_per_month` | Credited session units in completed meetings per calendar month. |
 
 ## Spreadsheet fields to deprecate

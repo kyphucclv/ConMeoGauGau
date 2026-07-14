@@ -137,7 +137,7 @@ python migrate.py "$env:MIGRATION_DATABASE_URL"
 `migrate.py` records applied versions in `schema_migrations`, skips completed
 versions, and stops if an already-applied migration file was modified.
 The current chain is expected to include
-`017_phase11_enrollment_membership_snapshot_remediation`.
+`019_phase13_makeup_link_immutability`.
 
 ## Troubleshooting
 

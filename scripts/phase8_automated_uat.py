@@ -156,6 +156,8 @@ def verify_migrations(conn) -> list[str]:
         "015_phase11_unknown_placement_numeric_fix",
         "016_phase11_runtime_invariants",
         "017_phase11_enrollment_membership_snapshot_remediation",
+        "018_phase13_makeup_replacement_credit",
+        "019_phase13_makeup_link_immutability",
     ]
     assert versions == expected
     return versions
@@ -273,11 +275,28 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
             {"run_enrollment_id": midrun_enrollment, "session_unit_id": unit_2, "effective_status": "Present"},
         ]
     )
-    editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "UAT make-up")
+    makeup = editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "UAT make-up")
+    assert makeup.values["denominator_units_added"] == 0
+
+    def rewrite_linked_makeup():
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE attendance SET session_unit_id=session_unit_id WHERE attendance_id=%s",
+                    (makeup.entity_id,),
+                )
+
+    expect_db_error(rewrite_linked_makeup)
+    expect_command_error(
+        "duplicate_makeup",
+        lambda: editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "duplicate"),
+    )
 
     attendance_row = one(conn, "SELECT * FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s", (enrollment,))
-    assert attendance_row["applicable_units"] == 4
+    assert attendance_row["applicable_units"] == 3
     assert attendance_row["present_units"] == 2
+    assert attendance_row["makeup_present_units"] == 1
+    assert str(attendance_row["attendance_ratio"]) == "0.6667"
     assert attendance_row["calculated_exam_eligible"] is False
     admin.override_exam_eligibility(enrollment, True, "UAT reasoned override")
     expect_command_error(
@@ -286,7 +305,7 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     )
 
     midrun_row = one(conn, "SELECT applicable_units FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s", (midrun_enrollment,))
-    assert midrun_row["applicable_units"] == 3
+    assert midrun_row["applicable_units"] == 2
     transfer_row = one(conn, "SELECT start_session_number FROM run_enrollments WHERE run_enrollment_id=%s", (transfer_enrollment,))
     assert transfer_row["start_session_number"] == 3
 
@@ -374,8 +393,14 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
 
     eval_versions = one(conn, "SELECT count(*) AS total FROM evaluation_versions ev JOIN evaluations e ON e.evaluation_id=ev.evaluation_id WHERE e.run_enrollment_id=%s", (enrollment,))
     makeup_audit = one(conn, "SELECT count(*) AS total FROM audit_events WHERE action='attendance.makeup'")
+    makeup_detail = one(conn, "SELECT details FROM audit_events WHERE action='attendance.makeup' ORDER BY audit_event_id DESC LIMIT 1")
+    original_absence = one(conn, "SELECT effective_status FROM attendance WHERE attendance_id=%s", (attendance.values["attendance_ids"][1],))
     assert eval_versions["total"] == 3
     assert makeup_audit["total"] >= 1
+    assert makeup_detail["details"]["denominator_units_added"] == 0
+    assert makeup_detail["details"]["before"]["original_status"] == "Absent"
+    assert makeup_detail["details"]["after"]["credited_status"] == "Present"
+    assert original_absence["effective_status"] == "Absent"
 
     return {
         "attendance_ratio": str(attendance_row["attendance_ratio"]),
@@ -404,6 +429,10 @@ def verify_monthly_review(conn, ids: dict[str, int], database_url: str) -> dict[
         assert summary["delivery_rate"] is not None
         assert data["course_participation"]
         assert data["class_participation"]
+        learner_attendance = next(row for row in data["participation"] if row["emp_code"] == "UAT-001")
+        assert learner_attendance["applicable_sessions"] == 3
+        assert learner_attendance["present_sessions"] == 2
+        assert str(learner_attendance["attendance_ratio"]) == "0.6667"
         editor = BusinessService(conn, ids["phase8_editor"])
         draft = proposed_monthly_actions(summary)
         saved = editor.save_monthly_action_summary(review_month, **draft)
@@ -524,7 +553,7 @@ def backup_restore_rehearsal(database_url: str, restored_db: str, maintenance_ur
         restored_counts = one(restored_conn, "SELECT count(*) AS employees FROM employees")
         assert source_counts["employees"] == restored_counts["employees"]
         restored_schema = one(restored_conn, "SELECT count(*) AS versions FROM schema_migrations")
-        assert restored_schema["versions"] == 17
+        assert restored_schema["versions"] == 19
         return {"restored_employees": restored_counts["employees"], "restored_migrations": restored_schema["versions"]}
     finally:
         source_conn.close()

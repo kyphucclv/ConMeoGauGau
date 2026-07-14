@@ -86,9 +86,9 @@ Latest rehearsal evidence is recorded in
 `docs/reviews/phase-9-cutover-rehearsal.md`.
 
 The current local production database is applied through
-`017_phase11_enrollment_membership_snapshot_remediation`, which enforces
-attendance/enrollment course-run consistency plus active enrollment membership
-and snapshot completeness at the database layer.
+`019_phase13_makeup_link_immutability`, which additionally enforces one linked
+make-up per original absence and excludes make-up units from the attendance
+denominator while preserving present replacement credit and immutable linkage.
 
 ## Files
 

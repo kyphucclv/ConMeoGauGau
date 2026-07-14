@@ -292,9 +292,10 @@ def run_gate(database_url: str) -> dict[str, object]:
         makeup_unit = editor.add_session_unit(run, makeup_meeting, 4, unit_number_in_meeting=1, unit_type="makeup").entity_id
         editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "monthly workflow make-up")
         attendance_row = one(conn, "SELECT * FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s", (enrollment,))
-        assert attendance_row["applicable_units"] == 3
+        assert attendance_row["applicable_units"] == 2
         assert attendance_row["present_units"] == 2
-        assert attendance_row["calculated_exam_eligible"] is False
+        assert attendance_row["makeup_present_units"] == 1
+        assert attendance_row["calculated_exam_eligible"] is True
 
         admin.override_exam_eligibility(enrollment, True, "monthly workflow override")
         eligibility_row = one(conn, "SELECT effective_exam_eligible FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s", (enrollment,))

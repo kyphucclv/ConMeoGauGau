@@ -137,8 +137,9 @@ The terms must be defined at the same source-row grain.
 - Sessions before an enrollment's `start_session_number` are not applicable,
   not absent.
 - An admin override requires actor, reason, previous result, and timestamp.
-- A make-up can change effective attendance to Present, but the old Absent
-  state remains in audit history.
+- A make-up links one later Present event to one original Absent row. The
+  original remains unchanged, the linked credit does not add a denominator
+  unit, and the change is retained in audit history.
 - Pass and next-course eligibility come from the teacher evaluation.
 - Current level means the latest valid evaluation; highest level is a separate
   metric. Never substitute one for the other.
@@ -201,4 +202,3 @@ A task may be marked complete only when all applicable conditions are true:
 - residual risks and deferred cases are explicitly listed.
 
 If evidence is missing, the task status is `in progress`, not `complete`.
-

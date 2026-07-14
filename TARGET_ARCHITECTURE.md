@@ -38,7 +38,9 @@ employees
 2. A cohort can study many courses and can repeat a course using a new run.
 3. A learner may join a run mid-course. Earlier units are not applicable.
 4. A transfer closes the old enrollment and creates a target enrollment.
-5. Attendance has only effective `Present`/`Absent`; make-up corrections are audited.
+5. Attendance has only effective `Present`/`Absent`; a linked make-up preserves
+   the original absence, credits that logical unit as present, adds no
+   denominator unit, and is audited.
 6. Cancelled meetings are excluded from attendance eligibility.
 7. Exam eligibility is derived from an attendance ratio and can be overridden
    by an admin with a required reason.

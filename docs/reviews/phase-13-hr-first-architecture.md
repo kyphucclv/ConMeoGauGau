@@ -336,10 +336,10 @@ and optional note.
 
 The owner approved replacement credit. The original absence remains
 historically visible, while one linked make-up event changes effective
-attendance credit to present without adding another denominator unit. The
-current model mixes replacement and additional-unit behavior, so service,
-reporting, and database enforcement must be aligned before the make-up UI is
-released as a normal HR path.
+attendance credit to present without adding another denominator unit. Migration
+018 enforces one linked make-up per original absence, matching enrollment and
+unit type, event order, and immutable linkage. Service eligibility, canonical
+reporting, monthly review, and the HR form use the same replacement semantics.
 
 ### 9.7 Record final result and completion
 
@@ -460,6 +460,11 @@ Completed on 2026-07-14:
   and rejoin paths. It reuses an existing entrance placement and applicable
   active class membership, rejects silent placement changes and cross-class
   membership conflicts, and creates only the missing lifecycle records.
+- **P13.0-I**: migrations 018-019 implement owner-approved replacement credit. The
+  original absence remains `Absent`; one later completed make-up session grants
+  present credit to its logical unit, adds zero denominator units, and writes a
+  reasoned before/after audit event. Database constraints reject malformed,
+  cross-purpose, duplicate, and rewritten links.
 
 Verification evidence:
 
@@ -472,9 +477,17 @@ Verification evidence:
 - `python scripts\phase11_operational_issue_snapshot.py --validate-decisions --database-url postgresql://postgres@localhost:5432/english_class`
 - `.\run_app.cmd -CheckOnly`
 
-P13.0-A through P13.0-H are complete. P13.0-I through P13.0-L remain open;
-P13.0-I still gates release of the make-up workflow, and P13.0-J through
-P13.0-L still gate Phase 13 sign-off.
+Production migration evidence on 2026-07-14:
+
+- custom-format pre-018 backup catalog verified with 445 entries;
+- migrations 018-019 applied with the restricted migration role in separate
+  versioned transactions;
+- production retained 6,281 attendance rows and zero pre-existing make-up rows;
+- operational issue count and source/snapshot checksums remained unchanged;
+- the restricted app role passed the launcher database health check.
+
+P13.0-A through P13.0-I are complete. P13.0-J through P13.0-L remain open and
+still gate Phase 13 sign-off.
 
 ## 13. Verification strategy
 

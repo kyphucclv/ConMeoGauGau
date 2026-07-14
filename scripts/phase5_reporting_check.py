@@ -42,7 +42,7 @@ def seed(conn) -> dict[str, int]:
             cur.execute(
                 """
                 INSERT INTO courses(course_code, course_name, expected_units, attendance_threshold_ratio)
-                VALUES ('RPT-A', 'Reporting Course A', 4, 0.500),
+                VALUES ('RPT-A', 'Reporting Course A', 4, 0.750),
                        ('RPT-B', 'Reporting Course B', 3, 0.500)
                 RETURNING course_id, course_code
                 """
@@ -243,13 +243,14 @@ def run_fixture(database_url: str) -> dict[str, object]:
         admin.suggest_completion(enrollment)
 
         attendance_row = one(conn, "SELECT * FROM v_run_enrollment_attendance WHERE run_enrollment_id = %s", (enrollment,))
-        assert attendance_row["applicable_units"] == 4
+        assert attendance_row["applicable_units"] == 3
         assert attendance_row["present_units"] == 3
-        assert str(attendance_row["attendance_ratio"]) == "0.7500"
+        assert attendance_row["makeup_present_units"] == 1
+        assert str(attendance_row["attendance_ratio"]) == "1.0000"
         assert attendance_row["effective_exam_eligible"] is True
 
         midrun_row = one(conn, "SELECT * FROM v_run_enrollment_attendance WHERE run_enrollment_id = %s", (midrun_enrollment,))
-        assert midrun_row["applicable_units"] == 3
+        assert midrun_row["applicable_units"] == 2
         assert midrun_row["present_units"] == 1
         assert midrun_row["effective_exam_eligible"] is False
 

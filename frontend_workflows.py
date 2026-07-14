@@ -836,7 +836,10 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
     with st.container(horizontal=True, vertical_alignment="bottom"):
         run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
         course_run_id = runs.get(run_label)
-        run_units = [row for row in refs["session_units"] if row["course_run_id"] == course_run_id] if course_run_id else []
+        run_units = [
+            row for row in refs["session_units"]
+            if row["course_run_id"] == course_run_id and row["unit_type"] != "makeup"
+        ] if course_run_id else []
         units = options(run_units, "session_unit_id", "sequence_in_run", "unit_type", "starts_at", "meeting_status")
         unit_label = st.selectbox("Session", [""] + list(units), key="attendance_session")
         session_unit_id = units.get(unit_label)
@@ -899,7 +902,7 @@ def _set_attendance_workspace_mode(mode: str) -> None:
 
 def render_attendance_makeup(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     absences = fetch_all(pool, """
-        SELECT a.attendance_id, e.emp_code, e.full_name, c.class_code, co.course_code,
+        SELECT a.attendance_id, re.course_run_id, e.emp_code, e.full_name, c.class_code, co.course_code,
                su.sequence_in_run, a.effective_status
         FROM attendance a
         JOIN run_enrollments re ON re.run_enrollment_id=a.run_enrollment_id
@@ -908,18 +911,40 @@ def render_attendance_makeup(pool, actor: AppUser, refs: dict[str, list[dict]]) 
         JOIN course_runs cr ON cr.course_run_id=su.course_run_id
         JOIN cohorts c ON c.cohort_id=cr.cohort_id
         JOIN courses co ON co.course_id=cr.course_id
+        JOIN meetings m ON m.meeting_id=su.meeting_id
         WHERE a.effective_status='Absent'
+          AND NOT a.is_makeup
+          AND m.status='completed'
+          AND NOT EXISTS (
+              SELECT 1 FROM attendance makeup
+              WHERE makeup.makeup_for_attendance_id=a.attendance_id
+          )
         ORDER BY a.updated_at DESC
         LIMIT 300
     """)
+    st.subheader("Record make-up attendance")
     absence_options = options(absences, "attendance_id", "class_code", "course_code", "sequence_in_run", "emp_code")
-    units = options(refs["session_units"], "session_unit_id", "class_code", "course_code", "run_number", "sequence_in_run", "unit_type")
+    attendance_id = selected_id("Original absence", absence_options, key="makeup_attendance")
+    selected_absence = next((row for row in absences if row["attendance_id"] == attendance_id), None)
+    eligible_units = [
+        row for row in refs["session_units"]
+        if selected_absence
+        and row["course_run_id"] == selected_absence["course_run_id"]
+        and row["unit_type"] == "makeup"
+        and row["meeting_status"] != "cancelled"
+    ]
+    units = options(
+        eligible_units,
+        "session_unit_id",
+        "class_code",
+        "course_code",
+        "starts_at",
+        "meeting_status",
+    )
     with st.form("attendance_makeup"):
-        st.subheader("Correct absence with make-up")
-        attendance_id = selected_id("Absent attendance", absence_options, key="makeup_attendance")
-        makeup_unit_id = selected_id("Make-up session unit", units, key="makeup_unit")
-        reason = st.text_input("Correction reason")
-        submitted = st.form_submit_button("Apply make-up", icon=":material/healing:")
+        makeup_unit_id = selected_id("Make-up session", units, key="makeup_unit")
+        reason = st.text_input("Reason")
+        submitted = st.form_submit_button("Record make-up", icon=":material/healing:")
     if submitted and attendance_id and makeup_unit_id:
         if safe_submit(pool, actor, lambda svc: svc.correct_attendance_makeup(attendance_id, makeup_unit_id, reason)):
             st.rerun()

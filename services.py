@@ -894,7 +894,7 @@ class BusinessService:
 
     @staticmethod
     def _attendance_roster_in_tx(cur, course_run_id: int, session_unit_id: int, *, lock_enrollments: bool = False):
-        cur.execute("""SELECT su.sequence_in_run,m.status,m.meeting_id,m.starts_at
+        cur.execute("""SELECT su.sequence_in_run,m.status,m.meeting_id,m.starts_at,su.unit_type
                        FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
                        WHERE su.session_unit_id=%s AND su.course_run_id=%s""", (session_unit_id, course_run_id))
         unit = cur.fetchone()
@@ -902,6 +902,8 @@ class BusinessService:
             raise CommandError("not_found", "session unit does not belong to the selected course run")
         if unit[1] == "cancelled":
             raise CommandError("invalid_state", "cancelled sessions do not have an attendance roster")
+        if unit[4] == "makeup":
+            raise CommandError("invalid_state", "make-up sessions use the linked absence workflow")
         lock_clause = " FOR UPDATE OF re" if lock_enrollments else ""
         cur.execute("""SELECT re.run_enrollment_id,e.emp_code,e.full_name,re.start_session_number,
                               CASE WHEN a.attendance_id IS NOT NULL THEN a.effective_status
@@ -937,6 +939,12 @@ class BusinessService:
             for item in records:
                 status=item.get("effective_status")
                 if status not in {"Present","Absent"}: raise CommandError("invalid_input","attendance status must be Present or Absent")
+                cur.execute("SELECT unit_type FROM session_units WHERE session_unit_id=%s", (item["session_unit_id"],))
+                unit = cur.fetchone()
+                if not unit:
+                    raise CommandError("not_found", "attendance session not found")
+                if unit[0] == "makeup":
+                    raise CommandError("invalid_state", "make-up sessions use the linked absence workflow")
                 cur.execute("""INSERT INTO attendance(run_enrollment_id,session_unit_id,effective_status,original_status,details)
                              VALUES(%s,%s,%s,%s,%s)
                              ON CONFLICT(run_enrollment_id,session_unit_id) DO UPDATE SET effective_status=EXCLUDED.effective_status,
@@ -947,12 +955,68 @@ class BusinessService:
 
     def correct_attendance_makeup(self, attendance_id: int, makeup_session_unit_id: int, reason: str) -> CommandResult:
         def op(cur):
-            _required(reason,"reason")
-            cur.execute("SELECT run_enrollment_id,effective_status FROM attendance WHERE attendance_id=%s FOR UPDATE",(attendance_id,)); old=cur.fetchone()
-            if not old: raise CommandError("not_found","attendance not found")
+            reason_value = _required(reason, "reason").strip()
+            self._advisory_lock(cur, f"attendance_makeup:{attendance_id}")
+            cur.execute("""SELECT a.run_enrollment_id,a.effective_status,a.is_makeup,
+                                  re.course_run_id,re.start_session_number,
+                                  su.sequence_in_run,m.status,m.starts_at
+                           FROM attendance a
+                           JOIN run_enrollments re ON re.run_enrollment_id=a.run_enrollment_id
+                           JOIN session_units su ON su.session_unit_id=a.session_unit_id
+                           JOIN meetings m ON m.meeting_id=su.meeting_id
+                           WHERE a.attendance_id=%s FOR UPDATE OF a""", (attendance_id,))
+            original = cur.fetchone()
+            if not original:
+                raise CommandError("not_found", "attendance not found")
+            if original[2] or original[1] != "Absent":
+                raise CommandError("invalid_state", "make-up credit requires an original absence")
+            if original[6] != "completed":
+                raise CommandError("invalid_state", "the original session must be completed")
+            cur.execute("""SELECT su.course_run_id,su.unit_type,su.sequence_in_run,
+                                  m.meeting_id,m.status,m.starts_at
+                           FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
+                           WHERE su.session_unit_id=%s FOR UPDATE OF su,m""", (makeup_session_unit_id,))
+            target = cur.fetchone()
+            if not target:
+                raise CommandError("not_found", "make-up session not found")
+            if target[0] != original[3]:
+                raise CommandError("invalid_input", "make-up session must belong to the same course run")
+            if target[1] != "makeup":
+                raise CommandError("invalid_input", "select a session configured for make-up attendance")
+            if target[2] < original[4]:
+                raise CommandError("invalid_input", "make-up session is before the enrollment start")
+            if target[4] == "cancelled":
+                raise CommandError("invalid_state", "cancelled sessions cannot provide make-up credit")
+            if target[5] <= original[7]:
+                raise CommandError("invalid_input", "make-up session must occur after the original absence")
+            cur.execute("SELECT 1 FROM attendance WHERE makeup_for_attendance_id=%s", (attendance_id,))
+            if cur.fetchone():
+                raise CommandError("duplicate_makeup", "this absence already has make-up credit")
+            cur.execute("""SELECT 1 FROM attendance
+                           WHERE run_enrollment_id=%s AND session_unit_id=%s""",
+                        (original[0], makeup_session_unit_id))
+            if cur.fetchone():
+                raise CommandError("invalid_state", "attendance already exists for this learner and make-up session")
             cur.execute("""INSERT INTO attendance(run_enrollment_id,session_unit_id,effective_status,original_status,is_makeup,makeup_for_attendance_id,details)
-                         VALUES(%s,%s,'Present',%s,TRUE,%s,%s) RETURNING attendance_id""",(old[0],makeup_session_unit_id,old[1],attendance_id,psycopg2.extras.Json({"correction_reason":reason})))
-            new_id=cur.fetchone()[0]; self._audit(cur,"attendance.makeup","attendance",new_id,{"makeup_for":attendance_id,"reason":reason}); return CommandResult("attendance",new_id,{"makeup_for":attendance_id})
+                         VALUES(%s,%s,'Present','Absent',TRUE,%s,%s) RETURNING attendance_id""",
+                        (original[0], makeup_session_unit_id, attendance_id,
+                         psycopg2.extras.Json({"correction_reason": reason_value})))
+            new_id = cur.fetchone()[0]
+            if target[4] == "planned":
+                cur.execute("UPDATE meetings SET status='completed' WHERE meeting_id=%s", (target[3],))
+            self._audit(cur, "attendance.makeup", "attendance", new_id, {
+                "makeup_for": attendance_id,
+                "makeup_session_unit_id": makeup_session_unit_id,
+                "reason": reason_value,
+                "before": {"original_status": "Absent", "credited_status": "Absent"},
+                "after": {"original_status": "Absent", "credited_status": "Present"},
+                "denominator_units_added": 0,
+            })
+            return CommandResult("attendance", new_id, {
+                "makeup_for": attendance_id,
+                "credited_status": "Present",
+                "denominator_units_added": 0,
+            })
         return self._run({"admin","editor"},op)
 
     def calculate_exam_eligibility(self, run_enrollment_id: int) -> CommandResult:
@@ -974,14 +1038,13 @@ class BusinessService:
         return self._run({"admin"},op)
 
     def _eligibility_in_tx(self, cur, enrollment_id):
-        cur.execute("""SELECT re.course_run_id,re.start_session_number,cr.attendance_threshold_ratio_snapshot
-                     FROM run_enrollments re JOIN course_runs cr ON cr.course_run_id=re.course_run_id WHERE re.run_enrollment_id=%s""",(enrollment_id,)); row=cur.fetchone()
-        if not row: raise CommandError("not_found","enrollment not found")
-        cur.execute("""SELECT COUNT(DISTINCT su.sequence_in_run),COUNT(DISTINCT su.sequence_in_run) FILTER (WHERE a.effective_status='Present') FROM session_units su
-                     JOIN meetings m ON m.meeting_id=su.meeting_id LEFT JOIN attendance a ON a.session_unit_id=su.session_unit_id AND a.run_enrollment_id=%s
-                     WHERE su.course_run_id=%s AND m.status<>'cancelled' AND su.sequence_in_run >= %s""",(enrollment_id,row[0],row[1])); total,present=cur.fetchone()
-        ratio = (Decimal(present) / Decimal(total)) if total else Decimal("0")
-        calculated = ratio >= row[2]
+        cur.execute("""SELECT applicable_units,present_units,
+                              COALESCE(attendance_ratio,0::numeric),calculated_exam_eligible
+                       FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s""", (enrollment_id,))
+        attendance = cur.fetchone()
+        if not attendance:
+            raise CommandError("not_found", "enrollment not found")
+        total, present, ratio, calculated = attendance
         cur.execute(
             """SELECT ev.exam_eligible,ev.exam_eligibility_override,
                       ev.exam_eligibility_override_reason,ev.version_number
@@ -997,7 +1060,7 @@ class BusinessService:
             "applicable_units": total,
             "present_units": present,
             "attendance_ratio": ratio,
-            "calculated_exam_eligible": calculated,
+            "calculated_exam_eligible": bool(calculated),
             "effective_exam_eligible": effective,
             "exam_eligible": effective,
             "exam_eligibility_override": has_override,

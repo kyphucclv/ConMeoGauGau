@@ -11,6 +11,7 @@ import os
 import sys
 import threading
 from datetime import date, datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from queue import Queue
 from urllib.parse import quote, urlparse, urlunparse
@@ -108,7 +109,7 @@ def seed_reference_data(conn) -> dict[str, int]:
                 """
                 INSERT INTO courses(course_code, course_name, expected_units, attendance_threshold_ratio)
                 VALUES
-                    ('P4-A', 'Phase 4 Course A', 2, 0.500),
+                    ('P4-A', 'Phase 4 Course A', 2, 0.750),
                     ('P4-B', 'Phase 4 Course B', 2, 0.500)
                 RETURNING course_id, course_code
                 """
@@ -235,11 +236,15 @@ def run_gate(database_url: str) -> dict[str, object]:
             status="completed",
         ).entity_id
         editor.add_session_unit(run.entity_id, alternate_meeting, 1, unit_number_in_meeting=1)
+        makeup_meeting = editor.save_meeting(
+            run.entity_id,
+            datetime(2026, 1, 19, 9, 0, tzinfo=timezone.utc),
+            60,
+        ).entity_id
         makeup_unit = editor.add_session_unit(
             run.entity_id,
-            meeting,
+            makeup_meeting,
             3,
-            unit_number_in_meeting=3,
             unit_type="makeup",
         ).entity_id
         attendance = editor.bulk_record_attendance(
@@ -250,10 +255,50 @@ def run_gate(database_url: str) -> dict[str, object]:
         )
 
         eligibility = viewer.calculate_exam_eligibility(enrollment)
-        assert eligibility.values["applicable_units"] == 3
+        assert eligibility.values["applicable_units"] == 2
         assert eligibility.values["present_units"] == 1
         assert eligibility.values["exam_eligible"] is False
-        editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "valid make-up")
+        expect_command_error(
+            "invalid_state",
+            lambda: editor.attendance_roster(run.entity_id, makeup_unit),
+        )
+        expect_command_error(
+            "invalid_state",
+            lambda: editor.bulk_record_attendance([{
+                "run_enrollment_id": enrollment,
+                "session_unit_id": makeup_unit,
+                "effective_status": "Present",
+            }]),
+        )
+        expect_command_error(
+            "invalid_state",
+            lambda: editor.correct_attendance_makeup(attendance.values["attendance_ids"][0], makeup_unit, "not absent"),
+        )
+        expect_command_error(
+            "invalid_input",
+            lambda: editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], unit_1, "wrong unit type"),
+        )
+        makeup = editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "valid make-up")
+        assert makeup.values["denominator_units_added"] == 0
+        credited = viewer.calculate_exam_eligibility(enrollment)
+        assert credited.values["applicable_units"] == 2
+        assert credited.values["present_units"] == 2
+        assert credited.values["attendance_ratio"] == Decimal("1.0000")
+        with conn.cursor() as cur:
+            cur.execute("SELECT status FROM meetings WHERE meeting_id=%s", (makeup_meeting,))
+            assert cur.fetchone()[0] == "completed"
+        expect_command_error(
+            "duplicate_makeup",
+            lambda: editor.correct_attendance_makeup(attendance.values["attendance_ids"][1], makeup_unit, "duplicate"),
+        )
+        expect_command_error(
+            "invalid_state",
+            lambda: editor.bulk_record_attendance([{
+                "run_enrollment_id": enrollment,
+                "session_unit_id": unit_2,
+                "effective_status": "Present",
+            }]),
+        )
         admin.override_exam_eligibility(enrollment, True, "admin verification")
 
         evaluation = editor.record_evaluation(
