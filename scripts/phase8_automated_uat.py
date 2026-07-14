@@ -117,6 +117,7 @@ def verify_migrations(conn) -> list[str]:
         "013_phase11_legacy_attendance_exceptions",
         "014_phase11_unknown_placement_placeholder",
         "015_phase11_unknown_placement_numeric_fix",
+        "016_phase11_runtime_invariants",
     ]
     assert versions == expected
     return versions
@@ -386,45 +387,18 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     os.environ["APP_DATABASE_URL"] = database_url
     from streamlit.testing.v1 import AppTest
 
-    login_app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
-    login_app.run(timeout=10)
-    assert not login_app.exception
-    assert any("English Class Admin" in item.value for item in login_app.title)
-
-    authed_app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
-    authed_app.session_state["user"] = {
-        "user_id": 1,
-        "username": "phase8_admin",
-        "full_name": "Phase 8 Admin",
-        "role": "admin",
-    }
-    authed_app.run(timeout=10)
-    assert not authed_app.exception
-    assert len(authed_app.tabs) >= 4
-    assert len(authed_app.segmented_control) >= 1
-
-    with psycopg2.connect(database_url) as conn:
-        with conn.cursor() as cur:
-            cur.execute("UPDATE app_users SET is_active = FALSE WHERE username = 'phase8_admin'")
-    stale_session_app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
-    stale_session_app.session_state["user"] = {
-        "user_id": 1,
-        "username": "phase8_admin",
-        "full_name": "Phase 8 Admin",
-        "role": "admin",
-    }
-    stale_session_app.run(timeout=10)
-    assert not stale_session_app.exception
-    assert len(stale_session_app.tabs) == 0
-    assert len(stale_session_app.text_input) >= 2
-    with psycopg2.connect(database_url) as conn:
-        with conn.cursor() as cur:
-            cur.execute("UPDATE app_users SET is_active = TRUE WHERE username = 'phase8_admin'")
+    app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
+    app.run(timeout=10)
+    assert not app.exception
+    assert any("English Class Admin" in item.value for item in app.title)
+    assert [tab.label for tab in app.tabs] == ["Operations", "Reports", "Audit"]
+    assert all(button.label != "Sign in" for button in app.button)
+    assert len(app.segmented_control) >= 1
 
     return {
-        "login_titles": len(login_app.title),
-        "authenticated_tabs": len(authed_app.tabs),
-        "deactivated_session_rejected": True,
+        "titles": len(app.title),
+        "tabs": len(app.tabs),
+        "sign_in_buttons": sum(1 for button in app.button if button.label == "Sign in"),
     }
 
 
@@ -448,7 +422,7 @@ def backup_restore_rehearsal(database_url: str, restored_db: str, maintenance_ur
         restored_counts = one(restored_conn, "SELECT count(*) AS employees FROM employees")
         assert source_counts["employees"] == restored_counts["employees"]
         restored_schema = one(restored_conn, "SELECT count(*) AS versions FROM schema_migrations")
-        assert restored_schema["versions"] == 15
+        assert restored_schema["versions"] == 16
         return {"restored_employees": restored_counts["employees"], "restored_migrations": restored_schema["versions"]}
     finally:
         source_conn.close()

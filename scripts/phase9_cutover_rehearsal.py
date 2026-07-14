@@ -109,9 +109,11 @@ def streamlit_smoke(database_url: str) -> dict:
     app.run(timeout=12)
     assert not app.exception
     assert any("English Class Admin" in item.value for item in app.title)
+    assert [tab.label for tab in app.tabs] == ["Operations", "Reports", "Audit"]
+    assert all(button.label != "Sign in" for button in app.button)
     return {
         "database_user": restricted_user,
-        "login_titles": len(app.title),
+        "tabs": len(app.tabs),
         "errors": len(app.error),
         "exceptions": len(app.exception),
     }

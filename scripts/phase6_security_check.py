@@ -140,6 +140,22 @@ def try_sql(database_url: str, sql: str) -> None:
         conn.close()
 
 
+def assert_table_privileges(database_url: str, checks: list[tuple[str, str]]) -> None:
+    conn = psycopg2.connect(database_url)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                for object_name, privilege in checks:
+                    cur.execute(
+                        "SELECT has_table_privilege(current_user, %s, %s)",
+                        (object_name, privilege),
+                    )
+                    if not cur.fetchone()[0]:
+                        raise AssertionError(f"missing {privilege} on {object_name}")
+    finally:
+        conn.close()
+
+
 def seed_app_users(database_url: str) -> dict[str, int]:
     conn = psycopg2.connect(database_url)
     try:
@@ -188,6 +204,27 @@ def run_gate(database_url: str, db_name: str, roles: dict[str, DbRole]) -> dict[
     try_sql(app_url, "SELECT count(*) FROM v_operational_data_issues")
     try_sql(readonly_url, "SELECT count(*) FROM v_reporting_metric_definitions")
     try_sql(readonly_url, "SELECT count(*) FROM v_operational_data_issues")
+    assert_table_privileges(
+        app_url,
+        [
+            ("cohort_capacity_overrides", "SELECT"),
+            ("cohort_capacity_overrides", "INSERT"),
+            ("monthly_review_action_summary_versions", "SELECT"),
+            ("monthly_review_action_summary_versions", "INSERT"),
+            ("attendance_roster_legacy_exceptions", "SELECT"),
+            ("attendance_roster_legacy_exceptions", "INSERT"),
+            ("v_operational_data_issues", "SELECT"),
+        ],
+    )
+    assert_table_privileges(
+        readonly_url,
+        [
+            ("cohort_capacity_overrides", "SELECT"),
+            ("monthly_review_action_summary_versions", "SELECT"),
+            ("attendance_roster_legacy_exceptions", "SELECT"),
+            ("v_operational_data_issues", "SELECT"),
+        ],
+    )
 
     app_pool = create_pool(app_url, application_name="phase6_app_role_test")
     viewer_conn = psycopg2.connect(app_url)

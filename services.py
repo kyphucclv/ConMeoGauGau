@@ -81,6 +81,19 @@ class BusinessService:
                     (action, entity_type, str(entity_id) if entity_id is not None else None,
                      psycopg2.extras.Json(_json_safe(details or {})), self.actor_user_id))
 
+    @staticmethod
+    def _advisory_lock(cur, key: str) -> None:
+        cur.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (key,))
+
+    @staticmethod
+    def _next_evaluation_version(cur, evaluation_id: int) -> int:
+        BusinessService._advisory_lock(cur, f"evaluation_version:{evaluation_id}")
+        cur.execute(
+            "SELECT COALESCE(MAX(version_number),0)+1 FROM evaluation_versions WHERE evaluation_id=%s",
+            (evaluation_id,),
+        )
+        return cur.fetchone()[0]
+
     def _run(self, roles: set[str], fn):
         with self.connection:
             with self.connection.cursor() as cur:
@@ -138,7 +151,7 @@ class BusinessService:
         def op(cur):
             prefix_value = _required(prefix, "prefix").strip().upper()
             if width < 1: raise CommandError("invalid_input", "width must be positive")
-            cur.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (f"class_code:{prefix_value}",))
+            self._advisory_lock(cur, f"class_code:{prefix_value}")
             cur.execute("""SELECT COALESCE(MAX((substring(class_code FROM %s))::integer), 0) + 1
                            FROM cohorts WHERE class_code ~ %s""",
                         (f"^{prefix_value}([0-9]+)$", f"^{prefix_value}[0-9]+$"))
@@ -212,7 +225,7 @@ class BusinessService:
         def op(cur):
             # Advisory lock serializes run-number allocation for this business key;
             # MAX()+1 is safe only while this lock is held.
-            cur.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (f"course_run:{cohort_id}:{course_id}",))
+            self._advisory_lock(cur, f"course_run:{cohort_id}:{course_id}")
             cur.execute("SELECT COALESCE(MAX(run_number),0)+1 FROM course_runs WHERE cohort_id=%s AND course_id=%s", (cohort_id,course_id)); run_no=cur.fetchone()[0]
             cur.execute("SELECT expected_units,attendance_threshold_ratio FROM courses WHERE course_id=%s",(course_id,)); course=cur.fetchone()
             if not course: raise CommandError("not_found","course not found")
@@ -455,6 +468,7 @@ class BusinessService:
         def op(cur):
             if review_month.day != 1:
                 raise CommandError("invalid_input", "review month must be the first day of the month")
+            self._advisory_lock(cur, f"monthly_review_action_summary:{review_month.isoformat()}")
             cur.execute("SELECT COALESCE(MAX(version_number),0)+1 FROM monthly_review_action_summary_versions WHERE review_month=%s", (review_month,))
             version_number = cur.fetchone()[0]
             cur.execute("""INSERT INTO monthly_review_action_summary_versions(
@@ -562,7 +576,7 @@ class BusinessService:
         def op(cur):
             _required(reason,"reason"); calc=self._eligibility_in_tx(cur,run_enrollment_id)
             cur.execute("""INSERT INTO evaluations(run_enrollment_id) VALUES(%s) ON CONFLICT(run_enrollment_id) DO UPDATE SET run_enrollment_id=EXCLUDED.run_enrollment_id RETURNING evaluation_id""",(run_enrollment_id,)); evaluation_id=cur.fetchone()[0]
-            cur.execute("SELECT COALESCE(MAX(version_number),0)+1 FROM evaluation_versions WHERE evaluation_id=%s",(evaluation_id,)); version=cur.fetchone()[0]
+            version = self._next_evaluation_version(cur, evaluation_id)
             cur.execute("""INSERT INTO evaluation_versions(evaluation_id,version_number,exam_eligible,exam_eligibility_override,exam_eligibility_override_reason,created_by_user_id,correction_reason)
                          VALUES(%s,%s,%s,TRUE,%s,%s,%s) RETURNING evaluation_version_id""",(evaluation_id,version,eligible,reason,self.actor_user_id,"eligibility override" if version>1 else None))
             entity_id=cur.fetchone()[0]; self._audit(cur,"eligibility.override","evaluation_version",entity_id,{"previous":calc,"eligible":eligible,"reason":reason}); return CommandResult("evaluation_version",entity_id,{"exam_eligible":eligible,"previous":calc})
@@ -581,7 +595,7 @@ class BusinessService:
                           exam_eligible=None, teacher_notes=None) -> CommandResult:
         def op(cur):
             cur.execute("INSERT INTO evaluations(run_enrollment_id) VALUES(%s) ON CONFLICT(run_enrollment_id) DO UPDATE SET run_enrollment_id=EXCLUDED.run_enrollment_id RETURNING evaluation_id",(run_enrollment_id,)); evaluation_id=cur.fetchone()[0]
-            cur.execute("SELECT COALESCE(MAX(version_number),0)+1 FROM evaluation_versions WHERE evaluation_id=%s",(evaluation_id,)); version=cur.fetchone()[0]
+            version = self._next_evaluation_version(cur, evaluation_id)
             correction=None if version==1 else "new evaluation version"
             cur.execute("""INSERT INTO evaluation_versions(evaluation_id,version_number,final_level_id,exam_eligible,passed,next_course_id,teacher_notes,correction_reason,created_by_user_id)
                          VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING evaluation_version_id""",(evaluation_id,version,final_level_id,exam_eligible,passed,next_course_id,teacher_notes,correction,self.actor_user_id))

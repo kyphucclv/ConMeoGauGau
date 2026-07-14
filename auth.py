@@ -77,6 +77,24 @@ def active_user_by_id(pool, user_id: int) -> AppUser | None:
     return AppUser(row["user_id"], row["username"], row["full_name"], row["role"])
 
 
+def ensure_local_admin(pool) -> AppUser:
+    row = execute_one(
+        pool,
+        """
+        INSERT INTO app_users(username, password_hash, full_name, role, is_active)
+        VALUES ('local_admin', %s, 'Local Admin', 'admin', TRUE)
+        ON CONFLICT (username) DO UPDATE
+        SET full_name = EXCLUDED.full_name,
+            role = 'admin',
+            is_active = TRUE,
+            updated_at = NOW()
+        RETURNING user_id, username, full_name, role
+        """,
+        (hash_password(os.urandom(32).hex()),),
+    )
+    return AppUser(row["user_id"], row["username"], row["full_name"], row["role"])
+
+
 def list_users(pool):
     return fetch_all(
         pool,

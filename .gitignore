@@ -1,7 +1,8 @@
 __pycache__/
 *.py[cod]
 .venv/
+
+# Local credentials and machine-specific runtime state.
 .streamlit/secrets.toml
 .env
 backups/
-

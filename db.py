@@ -37,6 +37,10 @@ def pooled_connection(pool):
         conn.rollback()
         close_conn = conn.closed != 0
         raise
+    else:
+        # psycopg2 opens a transaction even for SELECT. Clear any successful
+        # read-only transaction before returning the connection to the pool.
+        conn.rollback()
     finally:
         pool.putconn(conn, close=close_conn)
 

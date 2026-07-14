@@ -17,6 +17,9 @@ spreadsheet. Follow this on the new machine.
 | `scripts/phase9_cutover_rehearsal.py` | Disposable cutover rehearsal. |
 | `scripts/phase11_operational_issue_snapshot.py` | Phase 11 operational issue snapshot and owner-decision gate. |
 | `database_roles.sql` | Restricted migration/app/read-only DB roles. |
+| `run_app.cmd`, `run_app.ps1` | Windows launcher and app health check. |
+| `.streamlit/config.toml` | Local Streamlit server defaults. |
+| `.streamlit/secrets.example.toml` | Template for the ignored local database secret. |
 | `streamlit_app.py` | Canonical Streamlit app entrypoint. |
 | `okok_FIXED_v2.xlsx` | Source data. |
 | `README.md` | Canonical path and archived legacy context. |
@@ -83,18 +86,31 @@ or covered by owner-approved legacy decisions for the exact current snapshot.
 
 ## Run the dashboard app
 
-After you have loaded the data, start the web UI with:
+After you have loaded the data, start the web UI with the checked launcher:
 
 ```powershell
-python -m streamlit run streamlit_app.py
+.\run_app.cmd
 ```
 
-Then open the local URL shown in the terminal. Store the restricted app
-connection in `.streamlit/secrets.toml` or set `DATABASE_URL`; no connection
-string is pasted into the browser.
+Then open `http://127.0.0.1:8501`. Keep the launcher window open while using
+the app; press `Ctrl+C` in that window to stop it.
 
-On first login, if no app users exist yet, the app will ask you to create the
-initial admin account.
+The launcher checks Python dependencies, Streamlit, the restricted app database
+connection, and the canonical schema before it starts the app. Store the
+restricted app connection in `APP_DATABASE_URL`, `DATABASE_URL`, or copy
+`.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill in the
+local value. The real `secrets.toml` is ignored by git and should stay local.
+The app opens directly with the `local_admin` actor, so there is no application
+username/password prompt.
+
+For a health check without starting Streamlit:
+
+```powershell
+.\run_app.cmd -CheckOnly
+```
+
+The `local_admin` app actor is created automatically if needed so audit events
+still identify who made local operational changes.
 
 ## Updating an existing database
 
@@ -109,6 +125,7 @@ python migrate.py "$env:MIGRATION_DATABASE_URL"
 
 `migrate.py` records applied versions in `schema_migrations`, skips completed
 versions, and stops if an already-applied migration file was modified.
+The current chain is expected to include `016_phase11_runtime_invariants`.
 
 ## Troubleshooting
 

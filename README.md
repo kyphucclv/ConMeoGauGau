@@ -37,9 +37,19 @@ The current verified path is:
    `python scripts/stage_workbook.py okok_FIXED_v2.xlsx --database-url "<migration-role-database-url>" --profile-output docs/reviews/final-workbook-profile.json`
 5. Run canonical ETL:
    `python scripts/canonical_etl_v3.py "<migration-role-database-url>"`.
-6. Configure `DATABASE_URL` or `.streamlit/secrets.toml`.
-7. Start the app:
-   `python -m streamlit run streamlit_app.py`
+6. Configure `APP_DATABASE_URL`, `DATABASE_URL`, or copy
+   `.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill the
+   restricted app role URL.
+7. Start the app with the checked Windows launcher:
+   `.\run_app.cmd`
+
+The launcher verifies Python packages, the restricted app database connection,
+and the canonical schema before starting Streamlit at
+`http://127.0.0.1:8501`.
+
+The local app does not prompt for an application username or password. It
+automatically uses the `local_admin` app actor so operational changes and audit
+events still have a stable owner.
 
 Phase 9 rehearsal command:
 
@@ -74,6 +84,10 @@ or the high-severity issues are resolved.
 Latest rehearsal evidence is recorded in
 `docs/reviews/phase-9-cutover-rehearsal.md`.
 
+The current local production database is applied through
+`016_phase11_runtime_invariants`, which enforces attendance/enrollment
+course-run consistency at the database layer.
+
 ## Files
 
 - `migrations/` + `migrate.py` — canonical schema, staging, ETL batch, service,
@@ -84,6 +98,10 @@ Latest rehearsal evidence is recorded in
   overrides and unresolved confirmation inventory.
 - `services.py` — transactional business commands.
 - `streamlit_app.py` + `frontend_workflows.py` — canonical admin UI.
+- `.streamlit/config.toml` — local Streamlit server defaults; keep
+  `.streamlit/secrets.toml` local and ignored.
+- `run_app.cmd` / `run_app.ps1` — Windows launcher and health check for the
+  local admin app.
 - `database_roles.sql` — restricted migration/app/read-only role grants.
 - `scripts/phase*_*.py` — disposable integration, UAT, and cutover rehearsal gates.
 - `scripts/phase10_quality_signoff.py` — reproducible quality issue snapshot and

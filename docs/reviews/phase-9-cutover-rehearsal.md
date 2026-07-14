@@ -151,8 +151,12 @@ application, and read-only roles.
 
 On 2026-07-14, `python scripts\phase9_cutover_rehearsal.py` was rerun after
 the Phase 11 operations workflow and operational issue snapshot gate were
-added. The rehearsal now applies all 15 migrations and emits the Phase 11
-snapshot as part of the same production-shaped run.
+added. That rehearsal applied all 15 migrations available at the time and
+emitted the Phase 11 snapshot as part of the same production-shaped run.
+
+A follow-up hardening migration, `016_phase11_runtime_invariants`, now extends
+the current chain with database enforcement for attendance/enrollment
+course-run consistency.
 
 Inspected output:
 

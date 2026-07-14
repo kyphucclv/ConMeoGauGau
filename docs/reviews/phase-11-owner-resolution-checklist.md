@@ -73,7 +73,7 @@ python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
 
 | Check | Result |
 |---|---:|
-| Schema migrations applied | 15 |
+| Schema migrations applied | 16 |
 | Staged workbook rows | 9,545 |
 | Employees | 365 |
 | Run enrollments | 552 |

@@ -59,6 +59,8 @@ def run(database_url):
         target_cohort = svc.create_cohort('EL002', 'Target', status='active', capacity=2).entity_id
         source_run = svc.create_course_run(source_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
         target_run = svc.create_course_run(target_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
+        source_meeting = svc.save_meeting(source_run, datetime(2026, 7, 1, 9, tzinfo=timezone.utc), 60).entity_id
+        source_unit = svc.add_session_unit(source_run, source_meeting, 1).entity_id
 
         learner = svc.onboard_learner(
             emp_code='P11-001', full_name='First Learner', business_unit_id=bu_id, job_role_id=role_id,
@@ -104,6 +106,18 @@ def run(database_url):
         }])
         assert scalar(conn, 'SELECT effective_status FROM attendance WHERE run_enrollment_id=%s', (moved.entity_id,)) == 'Absent'
         expect_error('invalid_state', lambda: svc.save_attendance_roster(target_run, roster.entity_id, []))
+        try:
+            with conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """INSERT INTO attendance(run_enrollment_id,session_unit_id,effective_status)
+                           VALUES(%s,%s,'Present')""",
+                        (moved.entity_id, source_unit),
+                    )
+        except psycopg2.Error:
+            pass
+        else:
+            raise AssertionError('attendance outside the enrollment course run should be rejected')
 
         # The database, not only the service, protects immutable event snapshots.
         try:
