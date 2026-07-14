@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import psycopg2.errors
 
-from db import execute_one, fetch_all, fetch_one, pooled_connection
+from db import fetch_all, fetch_one, pooled_connection
 from services import CommandError
 
 
@@ -74,24 +74,6 @@ def active_user_by_id(pool, user_id: int) -> AppUser | None:
     )
     if not row:
         return None
-    return AppUser(row["user_id"], row["username"], row["full_name"], row["role"])
-
-
-def ensure_local_admin(pool) -> AppUser:
-    row = execute_one(
-        pool,
-        """
-        INSERT INTO app_users(username, password_hash, full_name, role, is_active)
-        VALUES ('local_admin', %s, 'Local Admin', 'admin', TRUE)
-        ON CONFLICT (username) DO UPDATE
-        SET full_name = EXCLUDED.full_name,
-            role = 'admin',
-            is_active = TRUE,
-            updated_at = NOW()
-        RETURNING user_id, username, full_name, role
-        """,
-        (hash_password(os.urandom(32).hex()),),
-    )
     return AppUser(row["user_id"], row["username"], row["full_name"], row["role"])
 
 
@@ -166,25 +148,35 @@ class UserAdminService:
 
 
 def bootstrap_first_admin(pool, username: str, full_name: str, password: str) -> int:
-    user_count = fetch_one(pool, "SELECT count(*) AS total FROM app_users")["total"]
-    if user_count:
-        raise CommandError("invalid_state", "bootstrap is only allowed before users exist")
-    row = execute_one(
-        pool,
-        """
-        INSERT INTO app_users(username, password_hash, full_name, role)
-        VALUES (%s, %s, %s, 'admin')
-        RETURNING user_id
-        """,
-        (username.strip(), hash_password(password), full_name.strip()),
-    )
-    execute_one(
-        pool,
-        """
-        INSERT INTO audit_events(actor_user_id, actor_username, action, entity_type, entity_key, details)
-        VALUES (%s, %s, 'app_user.bootstrap_admin', 'app_user', %s, '{}'::jsonb)
-        RETURNING audit_event_id
-        """,
-        (row["user_id"], username.strip(), username.strip()),
-    )
-    return row["user_id"]
+    clean_username = username.strip()
+    clean_name = full_name.strip()
+    if not clean_username or not clean_name or not password:
+        raise CommandError("invalid_input", "username, full name, and password are required")
+    try:
+        with pooled_connection(pool) as conn:
+            with conn:
+                with conn.cursor() as cur:
+                    cur.execute("LOCK TABLE app_users IN SHARE ROW EXCLUSIVE MODE")
+                    cur.execute("SELECT count(*) FROM app_users WHERE username <> 'local_admin'")
+                    if cur.fetchone()[0]:
+                        raise CommandError("invalid_state", "a named application user already exists")
+                    cur.execute(
+                        """
+                        INSERT INTO app_users(username, password_hash, full_name, role)
+                        VALUES (%s, %s, %s, 'admin')
+                        RETURNING user_id
+                        """,
+                        (clean_username, hash_password(password), clean_name),
+                    )
+                    user_id = cur.fetchone()[0]
+                    cur.execute(
+                        """
+                        INSERT INTO audit_events(
+                            actor_user_id, actor_username, action, entity_type, entity_key, details
+                        ) VALUES (%s, %s, 'app_user.bootstrap_admin', 'app_user', %s, '{}'::jsonb)
+                        """,
+                        (user_id, clean_username, clean_username),
+                    )
+                    return user_id
+    except psycopg2.errors.UniqueViolation as exc:
+        raise CommandError("duplicate", "username already exists") from exc

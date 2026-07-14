@@ -42,6 +42,8 @@ def _required(value: Any, name: str) -> Any:
 def _json_safe(value: Any) -> Any:
     if isinstance(value, Decimal):
         return str(value)
+    if isinstance(value, (date, datetime)):
+        return value.isoformat()
     if isinstance(value, dict):
         return {key: _json_safe(item) for key, item in value.items()}
     if isinstance(value, list):
@@ -515,24 +517,210 @@ class BusinessService:
             self._audit(cur,"enrollment.transfer","run_enrollment",new_id,{"from_enrollment_id":run_enrollment_id,"transfer_date":str(transfer_date)}); return CommandResult("run_enrollment",new_id,{"from_enrollment_id":run_enrollment_id})
         return self._run({"admin","editor"},op)
 
-    def save_meeting(self, course_run_id: int, starts_at: datetime, duration_minutes: int, *, meeting_id=None, status="planned", cancellation_reason=None) -> CommandResult:
+    def save_meeting(
+        self,
+        course_run_id: int,
+        starts_at: datetime,
+        duration_minutes: int,
+        *,
+        meeting_id=None,
+        status="planned",
+        cancellation_reason=None,
+        change_reason: str | None = None,
+    ) -> CommandResult:
         def op(cur):
             if duration_minutes <= 0: raise CommandError("invalid_input", "duration_minutes must be positive")
             if status not in {"planned", "completed", "cancelled"}: raise CommandError("invalid_input", "invalid meeting status")
             if status == "cancelled" and not cancellation_reason: raise CommandError("invalid_input", "cancellation_reason is required")
             if meeting_id:
+                if status == "cancelled":
+                    raise CommandError("invalid_input", "use the dedicated cancellation command")
+                cur.execute(
+                    """SELECT course_run_id,starts_at,duration_minutes,status,cancellation_reason
+                       FROM meetings WHERE meeting_id=%s FOR UPDATE""",
+                    (meeting_id,),
+                )
+                previous = cur.fetchone()
+                if not previous:
+                    raise CommandError("not_found", "meeting not found")
+                if previous[0] != course_run_id:
+                    raise CommandError("invalid_input", "meeting does not belong to the selected course run")
+                if previous[3] == "cancelled":
+                    raise CommandError("invalid_state", "cancelled meetings require a dedicated correction workflow")
+                if previous[3] == "completed" and status == "planned":
+                    raise CommandError("invalid_state", "completed meetings cannot return to planned status")
+                cur.execute("SELECT %s::timestamptz", (starts_at,))
+                normalized_starts_at = cur.fetchone()[0]
+                schedule_changed = previous[1] != normalized_starts_at or previous[2] != duration_minutes
+                reason = _normalize_label(change_reason)
+                if schedule_changed and not reason:
+                    raise CommandError("invalid_input", "change reason is required for a schedule correction")
                 cur.execute("""UPDATE meetings SET starts_at=%s,duration_minutes=%s,status=%s,cancellation_reason=%s
                              WHERE meeting_id=%s RETURNING meeting_id""",(starts_at,duration_minutes,status,cancellation_reason,meeting_id))
+                entity_id = cur.fetchone()[0]
+                before = {
+                    "course_run_id": previous[0], "starts_at": previous[1],
+                    "duration_minutes": previous[2], "status": previous[3],
+                    "cancellation_reason": previous[4],
+                }
+                after = {
+                    "course_run_id": course_run_id, "starts_at": normalized_starts_at,
+                    "duration_minutes": duration_minutes, "status": status,
+                    "cancellation_reason": None,
+                }
+                self._audit(
+                    cur,
+                    "meeting.correct" if schedule_changed else "meeting.status",
+                    "meeting",
+                    entity_id,
+                    {"reason": reason, "before": before, "after": after},
+                )
             else:
+                cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
+                if not cur.fetchone():
+                    raise CommandError("not_found", "course run not found")
                 cur.execute("""INSERT INTO meetings(course_run_id,starts_at,duration_minutes,status,cancellation_reason)
                              VALUES(%s,%s,%s,%s,%s) RETURNING meeting_id""",(course_run_id,starts_at,duration_minutes,status,cancellation_reason))
-            row=cur.fetchone()
-            if not row: raise CommandError("not_found","meeting not found")
-            entity_id=row[0]; self._audit(cur,"meeting.save","meeting",entity_id,{"status":status,"cancellation_reason":cancellation_reason if status == "cancelled" else None}); return CommandResult("meeting",entity_id,{"status":status})
+                entity_id = cur.fetchone()[0]
+                self._audit(cur, "meeting.create", "meeting", entity_id, {
+                    "after": {
+                        "course_run_id": course_run_id, "starts_at": starts_at,
+                        "duration_minutes": duration_minutes, "status": status,
+                        "cancellation_reason": cancellation_reason if status == "cancelled" else None,
+                    }
+                })
+            return CommandResult("meeting",entity_id,{"status":status})
         return self._run({"admin","editor"},op)
 
     def cancel_meeting(self, meeting_id: int, reason: str) -> CommandResult:
-        return self.save_meeting(0, datetime.now(), 1, meeting_id=meeting_id, status="cancelled", cancellation_reason=_required(reason, "reason"))
+        def op(cur):
+            clean_reason = _normalize_label(_required(reason, "reason"))
+            cur.execute(
+                """SELECT course_run_id,starts_at,duration_minutes,status,cancellation_reason
+                   FROM meetings WHERE meeting_id=%s FOR UPDATE""",
+                (meeting_id,),
+            )
+            previous = cur.fetchone()
+            if not previous:
+                raise CommandError("not_found", "meeting not found")
+            if previous[3] == "cancelled":
+                raise CommandError("invalid_state", "meeting is already cancelled")
+            cur.execute(
+                """UPDATE meetings SET status='cancelled',cancellation_reason=%s
+                   WHERE meeting_id=%s RETURNING meeting_id""",
+                (clean_reason, meeting_id),
+            )
+            entity_id = cur.fetchone()[0]
+            before = {
+                "course_run_id": previous[0], "starts_at": previous[1],
+                "duration_minutes": previous[2], "status": previous[3],
+                "cancellation_reason": previous[4],
+            }
+            after = dict(before)
+            after.update({"status": "cancelled", "cancellation_reason": clean_reason})
+            self._audit(cur, "meeting.cancel", "meeting", entity_id, {
+                "reason": clean_reason, "before": before, "after": after,
+            })
+            return CommandResult("meeting", entity_id, {"status": "cancelled"})
+        return self._run({"admin", "editor"}, op)
+
+    def create_meeting_with_units(
+        self,
+        course_run_id: int,
+        starts_at: datetime,
+        duration_minutes: int,
+        first_sequence_in_run: int,
+        *,
+        unit_count: int = 1,
+        unit_type: str = "normal",
+        status: str = "planned",
+    ) -> CommandResult:
+        """Create one meeting and all credited units in one transaction."""
+        def op(cur):
+            if duration_minutes <= 0 or first_sequence_in_run < 1:
+                raise CommandError("invalid_input", "duration and first session number must be positive")
+            if unit_count not in {1, 2}:
+                raise CommandError("invalid_input", "a meeting must create one or two credited units")
+            if unit_type not in {"normal", "final_test", "makeup", "admin"}:
+                raise CommandError("invalid_input", "invalid unit type")
+            if unit_type != "normal" and unit_count != 1:
+                raise CommandError("invalid_input", "only normal meetings may create two credited units")
+            if status not in {"planned", "completed"}:
+                raise CommandError("invalid_input", "new meeting status must be planned or completed")
+            self._advisory_lock(cur, f"meeting_units:{course_run_id}")
+            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
+            if not cur.fetchone():
+                raise CommandError("not_found", "course run not found")
+            cur.execute(
+                """INSERT INTO meetings(course_run_id,starts_at,duration_minutes,status)
+                   VALUES(%s,%s,%s,%s) RETURNING meeting_id""",
+                (course_run_id, starts_at, duration_minutes, status),
+            )
+            meeting_id = cur.fetchone()[0]
+            unit_ids = []
+            for offset in range(unit_count):
+                cur.execute(
+                    """INSERT INTO session_units(
+                           course_run_id,meeting_id,sequence_in_run,unit_number_in_meeting,unit_type
+                       ) VALUES(%s,%s,%s,%s,%s) RETURNING session_unit_id""",
+                    (course_run_id, meeting_id, first_sequence_in_run + offset, offset + 1, unit_type),
+                )
+                unit_ids.append(cur.fetchone()[0])
+            self._audit(cur, "meeting.units.create", "meeting", meeting_id, {
+                "course_run_id": course_run_id,
+                "starts_at": starts_at,
+                "duration_minutes": duration_minutes,
+                "status": status,
+                "unit_type": unit_type,
+                "session_unit_ids": unit_ids,
+                "sequence_numbers": [first_sequence_in_run + offset for offset in range(unit_count)],
+            })
+            return CommandResult("meeting", meeting_id, {"session_unit_ids": unit_ids})
+        return self._run({"admin", "editor"}, op)
+
+    def add_session_units(
+        self,
+        course_run_id: int,
+        meeting_id: int,
+        first_sequence_in_run: int,
+        *,
+        unit_count: int = 1,
+        unit_type: str = "normal",
+    ) -> CommandResult:
+        """Add one or two units to an existing meeting without partial commit."""
+        def op(cur):
+            if first_sequence_in_run < 1 or unit_count not in {1, 2}:
+                raise CommandError("invalid_input", "first session number and unit count are invalid")
+            if unit_type not in {"normal", "final_test", "makeup", "admin"}:
+                raise CommandError("invalid_input", "invalid unit type")
+            if unit_type != "normal" and unit_count != 1:
+                raise CommandError("invalid_input", "only normal meetings may create two credited units")
+            self._advisory_lock(cur, f"meeting_units:{course_run_id}")
+            cur.execute(
+                "SELECT status FROM meetings WHERE meeting_id=%s AND course_run_id=%s FOR UPDATE",
+                (meeting_id, course_run_id),
+            )
+            meeting = cur.fetchone()
+            if not meeting:
+                raise CommandError("not_found", "meeting does not belong to the selected course run")
+            if meeting[0] == "cancelled":
+                raise CommandError("invalid_state", "cancelled meetings cannot receive credited units")
+            unit_ids = []
+            for offset in range(unit_count):
+                cur.execute(
+                    """INSERT INTO session_units(
+                           course_run_id,meeting_id,sequence_in_run,unit_number_in_meeting,unit_type
+                       ) VALUES(%s,%s,%s,%s,%s) RETURNING session_unit_id""",
+                    (course_run_id, meeting_id, first_sequence_in_run + offset, offset + 1, unit_type),
+                )
+                unit_ids.append(cur.fetchone()[0])
+            self._audit(cur, "meeting.units.add", "meeting", meeting_id, {
+                "session_unit_ids": unit_ids,
+                "sequence_numbers": [first_sequence_in_run + offset for offset in range(unit_count)],
+                "unit_type": unit_type,
+            })
+            return CommandResult("session_unit", None, {"session_unit_ids": unit_ids})
+        return self._run({"admin", "editor"}, op)
 
     def add_session_unit(self, course_run_id: int, meeting_id: int, sequence_in_run: int, *, unit_number_in_meeting=1, unit_type="normal", title=None) -> CommandResult:
         def op(cur):
@@ -676,22 +864,16 @@ class BusinessService:
 
     def calculate_exam_eligibility(self, run_enrollment_id: int) -> CommandResult:
         def op(cur):
-            cur.execute("""SELECT re.course_run_id,re.start_session_number,cr.attendance_threshold_ratio_snapshot
-                         FROM run_enrollments re JOIN course_runs cr ON cr.course_run_id=re.course_run_id
-                         WHERE re.run_enrollment_id=%s""",(run_enrollment_id,)); row=cur.fetchone()
-            if not row: raise CommandError("not_found","enrollment not found")
-            cur.execute("""SELECT COUNT(DISTINCT su.sequence_in_run), COUNT(DISTINCT su.sequence_in_run) FILTER (WHERE a.effective_status='Present')
-                         FROM session_units su JOIN meetings m ON m.meeting_id=su.meeting_id
-                         LEFT JOIN attendance a ON a.session_unit_id=su.session_unit_id AND a.run_enrollment_id=%s
-                         WHERE su.course_run_id=%s AND m.status<>'cancelled' AND su.sequence_in_run >= %s""",(run_enrollment_id,row[0],row[1]))
-            total,present=cur.fetchone(); ratio=(Decimal(present)/Decimal(total)) if total else Decimal("0"); eligible=ratio >= row[2]
-            return CommandResult("run_enrollment",run_enrollment_id,{"applicable_units":total,"present_units":present,"attendance_ratio":ratio,"exam_eligible":eligible})
+            values = self._eligibility_in_tx(cur, run_enrollment_id)
+            return CommandResult("run_enrollment", run_enrollment_id, values)
         return self._run({"admin","editor","viewer"},op)
 
     def override_exam_eligibility(self, run_enrollment_id: int, eligible: bool, reason: str) -> CommandResult:
         def op(cur):
-            _required(reason,"reason"); calc=self._eligibility_in_tx(cur,run_enrollment_id)
+            _required(reason,"reason")
             cur.execute("""INSERT INTO evaluations(run_enrollment_id) VALUES(%s) ON CONFLICT(run_enrollment_id) DO UPDATE SET run_enrollment_id=EXCLUDED.run_enrollment_id RETURNING evaluation_id""",(run_enrollment_id,)); evaluation_id=cur.fetchone()[0]
+            self._advisory_lock(cur, f"evaluation_version:{evaluation_id}")
+            calc = self._eligibility_in_tx(cur, run_enrollment_id)
             version = self._next_evaluation_version(cur, evaluation_id)
             cur.execute("""INSERT INTO evaluation_versions(evaluation_id,version_number,exam_eligible,exam_eligibility_override,exam_eligibility_override_reason,created_by_user_id,correction_reason)
                          VALUES(%s,%s,%s,TRUE,%s,%s,%s) RETURNING evaluation_version_id""",(evaluation_id,version,eligible,reason,self.actor_user_id,"eligibility override" if version>1 else None))
@@ -705,17 +887,83 @@ class BusinessService:
         cur.execute("""SELECT COUNT(DISTINCT su.sequence_in_run),COUNT(DISTINCT su.sequence_in_run) FILTER (WHERE a.effective_status='Present') FROM session_units su
                      JOIN meetings m ON m.meeting_id=su.meeting_id LEFT JOIN attendance a ON a.session_unit_id=su.session_unit_id AND a.run_enrollment_id=%s
                      WHERE su.course_run_id=%s AND m.status<>'cancelled' AND su.sequence_in_run >= %s""",(enrollment_id,row[0],row[1])); total,present=cur.fetchone()
-        ratio=(Decimal(present)/Decimal(total)) if total else Decimal("0"); return {"applicable_units":total,"present_units":present,"attendance_ratio":ratio,"exam_eligible":ratio>=row[2]}
+        ratio = (Decimal(present) / Decimal(total)) if total else Decimal("0")
+        calculated = ratio >= row[2]
+        cur.execute(
+            """SELECT ev.exam_eligible,ev.exam_eligibility_override,
+                      ev.exam_eligibility_override_reason,ev.version_number
+               FROM evaluations e JOIN evaluation_versions ev ON ev.evaluation_id=e.evaluation_id
+               WHERE e.run_enrollment_id=%s
+               ORDER BY ev.version_number DESC LIMIT 1""",
+            (enrollment_id,),
+        )
+        latest = cur.fetchone()
+        has_override = bool(latest and latest[1])
+        effective = bool(latest[0]) if has_override else calculated
+        return {
+            "applicable_units": total,
+            "present_units": present,
+            "attendance_ratio": ratio,
+            "calculated_exam_eligible": calculated,
+            "effective_exam_eligible": effective,
+            "exam_eligible": effective,
+            "exam_eligibility_override": has_override,
+            "exam_eligibility_override_reason": latest[2] if has_override else None,
+            "latest_evaluation_version": latest[3] if latest else None,
+        }
 
     def record_evaluation(self, run_enrollment_id: int, *, final_level_id=None, passed=None, next_course_id=None,
-                          exam_eligible=None, teacher_notes=None) -> CommandResult:
+                          exam_eligible=None, teacher_notes=None, correction_reason=None) -> CommandResult:
         def op(cur):
+            if exam_eligible is not None:
+                raise CommandError(
+                    "invalid_input",
+                    "exam eligibility is calculated; use the authorized override action when needed",
+                )
             cur.execute("INSERT INTO evaluations(run_enrollment_id) VALUES(%s) ON CONFLICT(run_enrollment_id) DO UPDATE SET run_enrollment_id=EXCLUDED.run_enrollment_id RETURNING evaluation_id",(run_enrollment_id,)); evaluation_id=cur.fetchone()[0]
+            self._advisory_lock(cur, f"evaluation_version:{evaluation_id}")
+            eligibility = self._eligibility_in_tx(cur, run_enrollment_id)
             version = self._next_evaluation_version(cur, evaluation_id)
-            correction=None if version==1 else "new evaluation version"
-            cur.execute("""INSERT INTO evaluation_versions(evaluation_id,version_number,final_level_id,exam_eligible,passed,next_course_id,teacher_notes,correction_reason,created_by_user_id)
-                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING evaluation_version_id""",(evaluation_id,version,final_level_id,exam_eligible,passed,next_course_id,teacher_notes,correction,self.actor_user_id))
-            entity_id=cur.fetchone()[0]; self._audit(cur,"evaluation.record" if version==1 else "evaluation.correct","evaluation_version",entity_id); return CommandResult("evaluation_version",entity_id,{"version_number":version})
+            reason = _normalize_label(correction_reason)
+            if version > 1 and not reason:
+                raise CommandError("invalid_input", "correction reason is required for an updated final result")
+            cur.execute(
+                """SELECT exam_eligibility_override,exam_eligibility_override_reason
+                   FROM evaluation_versions
+                   WHERE evaluation_id=%s
+                   ORDER BY version_number DESC LIMIT 1""",
+                (evaluation_id,),
+            )
+            latest = cur.fetchone()
+            carry_override = bool(latest and latest[0])
+            override_reason = latest[1] if carry_override else None
+            cur.execute("""INSERT INTO evaluation_versions(
+                              evaluation_id,version_number,final_level_id,exam_eligible,
+                              exam_eligibility_override,exam_eligibility_override_reason,
+                              passed,next_course_id,teacher_notes,correction_reason,created_by_user_id
+                           ) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                           RETURNING evaluation_version_id""",
+                        (evaluation_id,version,final_level_id,eligibility["effective_exam_eligible"],
+                         carry_override,override_reason,passed,next_course_id,teacher_notes,reason,self.actor_user_id))
+            entity_id = cur.fetchone()[0]
+            self._audit(
+                cur,
+                "evaluation.record" if version == 1 else "evaluation.correct",
+                "evaluation_version",
+                entity_id,
+                {
+                    "version_number": version,
+                    "correction_reason": reason,
+                    "calculated_exam_eligible": eligibility["calculated_exam_eligible"],
+                    "effective_exam_eligible": eligibility["effective_exam_eligible"],
+                    "exam_eligibility_override": carry_override,
+                },
+            )
+            return CommandResult("evaluation_version", entity_id, {
+                "version_number": version,
+                "exam_eligible": eligibility["effective_exam_eligible"],
+                "exam_eligibility_override": carry_override,
+            })
         return self._run({"admin","editor"},op)
 
     def suggest_completion(self, run_enrollment_id: int) -> CommandResult:

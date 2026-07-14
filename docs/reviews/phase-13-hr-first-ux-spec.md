@@ -1,10 +1,14 @@
 # Phase 13 HR-first UX specification
 
-Status: **Architecture gated; implementation paused pending P13.0 integrity foundation**
+Status: **Architecture owner-approved; P13.0 integrity foundation in progress**
 
 Baseline commit: `712d6fb phase12 polish evaluation workflow`
 
 Start date: 2026-07-14
+
+Owner architecture approval date: 2026-07-14
+
+Owner make-up decision: replacement credit without denominator inflation.
 
 Implementation evidence:
 
@@ -16,6 +20,11 @@ Implementation evidence:
   `docs/reviews/phase-13-hr-first-architecture.md`.
 - The P13.1 shell is treated as an exploratory baseline. No additional workflow
   implementation proceeds before P13.0 blockers are remediated.
+- P13.0-A through P13.0-D and P13.0-H passed service, security, reporting,
+  Streamlit UAT, launcher, and operational-decision gates on 2026-07-14. Named
+  actor identity, atomic schedule writes, safe schedule
+  cancellation/correction, derived exam eligibility, and explicit evaluation
+  correction reasons are now enforced.
 
 ## Problem statement
 

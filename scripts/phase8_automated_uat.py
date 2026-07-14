@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from auth import hash_password
+from auth import authenticate, bootstrap_first_admin, hash_password
 from db import create_pool
 from migrate import apply_migrations
 from reporting import monthly_review_data, monthly_review_summary, monthly_review_xlsx, proposed_monthly_actions
@@ -61,20 +61,55 @@ def expect_command_error(code: str, fn) -> None:
     raise AssertionError(f"expected CommandError {code}")
 
 
-def seed(conn) -> dict[str, int]:
+def verify_named_auth(database_url: str) -> int:
+    conn = psycopg2.connect(database_url)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO app_users(username,password_hash,full_name,role)
+                       VALUES('local_admin',%s,'Legacy Local Admin','admin')""",
+                    (hash_password("unusable-local-password"),),
+                )
+    finally:
+        conn.close()
+
+    pool = create_pool(database_url, application_name="phase8_named_auth")
+    try:
+        user_id = bootstrap_first_admin(pool, "phase8_admin", "Phase 8 Admin", "admin-pass")
+        user = authenticate(pool, "phase8_admin", "admin-pass")
+        assert user is not None and user.user_id == user_id and user.role == "admin"
+        assert authenticate(pool, "phase8_admin", "wrong-password") is None
+        expect_command_error(
+            "invalid_state",
+            lambda: bootstrap_first_admin(pool, "second_admin", "Second Admin", "second-pass"),
+        )
+    finally:
+        pool.closeall()
+
+    conn = psycopg2.connect(database_url)
+    try:
+        audit = one(conn, "SELECT count(*) AS total FROM audit_events WHERE action='app_user.bootstrap_admin' AND actor_user_id=%s", (user_id,))
+        assert audit["total"] == 1
+    finally:
+        conn.close()
+    return user_id
+
+
+def seed(conn, admin_user_id: int) -> dict[str, int]:
     with conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
                 INSERT INTO app_users(username, password_hash, full_name, role)
-                VALUES ('phase8_admin', %s, 'Phase 8 Admin', 'admin'),
-                       ('phase8_editor', %s, 'Phase 8 Editor', 'editor'),
+                VALUES ('phase8_editor', %s, 'Phase 8 Editor', 'editor'),
                        ('phase8_viewer', %s, 'Phase 8 Viewer', 'viewer')
                 RETURNING user_id, username
                 """,
-                (hash_password("admin-pass"), hash_password("editor-pass"), hash_password("viewer-pass")),
+                (hash_password("editor-pass"), hash_password("viewer-pass")),
             )
             ids = {username: user_id for user_id, username in cur.fetchall()}
+            ids["phase8_admin"] = admin_user_id
             cur.execute("INSERT INTO business_units(business_unit_name) VALUES('Original BU'), ('Updated BU') RETURNING business_unit_id, business_unit_name")
             ids.update({name.lower().replace(" ", "_"): row_id for row_id, name in cur.fetchall()})
             cur.execute("INSERT INTO job_roles(job_role_name) VALUES('Original Role'), ('Updated Role') RETURNING job_role_id, job_role_name")
@@ -137,6 +172,19 @@ def verify_schema_constraints(conn, svc: BusinessService, ids: dict[str, int]) -
     svc.add_session_unit(run, meeting, 1, unit_number_in_meeting=1)
     svc.add_session_unit(run, meeting, 2, unit_number_in_meeting=2)
     expect_command_error("invalid_state", lambda: svc.add_session_unit(run, meeting, 3, unit_number_in_meeting=3))
+
+    atomic_cohort = svc.create_cohort("UAT-ATOMIC", "Atomic schedule").entity_id
+    atomic_run = svc.create_course_run(atomic_cohort, ids["course_a"], start_date=date(2026, 8, 2)).entity_id
+    occupied_meeting = svc.save_meeting(atomic_run, datetime(2026, 8, 2, 9, 0, tzinfo=timezone.utc), 60).entity_id
+    svc.add_session_unit(atomic_run, occupied_meeting, 2)
+    target_meeting = svc.save_meeting(atomic_run, datetime(2026, 8, 2, 11, 0, tzinfo=timezone.utc), 120).entity_id
+    svc.add_session_unit(atomic_run, target_meeting, 99, unit_number_in_meeting=2)
+    expect_command_error(
+        "invalid_state",
+        lambda: svc.add_session_units(atomic_run, target_meeting, 1, unit_count=2),
+    )
+    atomic_rows = one(conn, "SELECT count(*) AS total FROM session_units WHERE course_run_id=%s AND sequence_in_run=1", (atomic_run,))
+    assert atomic_rows["total"] == 0
     svc.close_membership(membership, date(2026, 8, 31))
 
 
@@ -199,8 +247,14 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     meeting = editor.save_meeting(run_a, datetime(2026, 8, 3, 9, 0, tzinfo=timezone.utc), 120, status="completed").entity_id
     cancelled = editor.save_meeting(run_a, datetime(2026, 8, 10, 9, 0, tzinfo=timezone.utc), 120).entity_id
     editor.cancel_meeting(cancelled, "UAT cancellation")
-    cancellation_audit = one(conn, "SELECT details FROM audit_events WHERE action='meeting.save' AND entity_key=%s ORDER BY created_at DESC LIMIT 1", (str(cancelled),))
-    assert cancellation_audit["details"]["cancellation_reason"] == "UAT cancellation"
+    cancelled_row = one(conn, "SELECT starts_at,duration_minutes,status,cancellation_reason FROM meetings WHERE meeting_id=%s", (cancelled,))
+    assert cancelled_row["starts_at"] == datetime(2026, 8, 10, 9, 0, tzinfo=timezone.utc)
+    assert cancelled_row["duration_minutes"] == 120
+    assert cancelled_row["status"] == "cancelled"
+    cancellation_audit = one(conn, "SELECT details FROM audit_events WHERE action='meeting.cancel' AND entity_key=%s ORDER BY created_at DESC LIMIT 1", (str(cancelled),))
+    assert cancellation_audit["details"]["reason"] == "UAT cancellation"
+    assert cancellation_audit["details"]["before"]["duration_minutes"] == 120
+    assert cancellation_audit["details"]["after"]["status"] == "cancelled"
     final_test = editor.save_meeting(run_a, datetime(2026, 8, 17, 9, 0, tzinfo=timezone.utc), 180, status="completed").entity_id
     makeup_meeting = editor.save_meeting(run_a, datetime(2026, 8, 24, 9, 0, tzinfo=timezone.utc), 60, status="completed").entity_id
 
@@ -226,6 +280,10 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     assert attendance_row["present_units"] == 2
     assert attendance_row["calculated_exam_eligible"] is False
     admin.override_exam_eligibility(enrollment, True, "UAT reasoned override")
+    expect_command_error(
+        "invalid_input",
+        lambda: editor.record_evaluation(enrollment, final_level_id=ids["uat_peak"], exam_eligible=True, passed=True),
+    )
 
     midrun_row = one(conn, "SELECT applicable_units FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s", (midrun_enrollment,))
     assert midrun_row["applicable_units"] == 3
@@ -235,30 +293,39 @@ def run_uat(conn, ids: dict[str, int]) -> dict[str, object]:
     editor.record_evaluation(
         enrollment,
         final_level_id=ids["uat_peak"],
-        exam_eligible=True,
         passed=True,
         next_course_id=ids["course_b"],
         teacher_notes="first evaluation",
+        correction_reason="final result after approved eligibility override",
+    )
+    expect_command_error(
+        "invalid_input",
+        lambda: editor.record_evaluation(
+            enrollment,
+            final_level_id=ids["uat_middle"],
+            passed=True,
+            next_course_id=ids["course_b"],
+            teacher_notes="correction without reason",
+        ),
     )
     editor.record_evaluation(
         enrollment,
         final_level_id=ids["uat_middle"],
-        exam_eligible=True,
         passed=True,
         next_course_id=ids["course_b"],
         teacher_notes="correction creates regression",
+        correction_reason="teacher corrected the final level",
     )
     no_continuation = editor.record_evaluation(
         transfer_enrollment,
         final_level_id=ids["uat_middle"],
-        exam_eligible=True,
         passed=True,
         next_course_id=None,
         teacher_notes="completed with no continuation",
     )
     assert no_continuation.entity_id
-    editor.record_evaluation(midrun_enrollment, final_level_id=ids["uat_entrance"], exam_eligible=True, passed=True, teacher_notes="first improvement fixture")
-    editor.record_evaluation(midrun_enrollment, final_level_id=ids["uat_peak"], exam_eligible=True, passed=True, teacher_notes="improved fixture")
+    editor.record_evaluation(midrun_enrollment, final_level_id=ids["uat_entrance"], passed=True, teacher_notes="first improvement fixture")
+    editor.record_evaluation(midrun_enrollment, final_level_id=ids["uat_peak"], passed=True, teacher_notes="improved fixture", correction_reason="teacher confirmed improved level")
 
     suggestion = editor.suggest_completion(enrollment)
     assert suggestion.values["suggested"] is True
@@ -414,18 +481,26 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     app.run(timeout=10)
     assert not app.exception
     assert any("English class HR workspace" in item.value for item in app.title)
+    assert not app.tabs
+    sign_in_buttons = sum(1 for button in app.button if button.label == "Sign in")
+    assert sign_in_buttons == 1
+    next(item for item in app.text_input if item.label == "Username").input("phase8_admin")
+    next(item for item in app.text_input if item.label == "Password").input("admin-pass")
+    next(button for button in app.button if button.label == "Sign in").click()
+    app.run(timeout=10)
+    assert not app.exception
     assert [tab.label for tab in app.tabs] == [
         ":material/home_work: HR workspace",
         ":material/table_chart: Reports",
         ":material/history: Audit",
     ]
-    assert all(button.label != "Sign in" for button in app.button)
+    assert any(button.label == "Sign out" for button in app.button)
     assert len(app.segmented_control) >= 1
 
     return {
         "titles": len(app.title),
         "tabs": len(app.tabs),
-        "sign_in_buttons": sum(1 for button in app.button if button.label == "Sign in"),
+        "sign_in_buttons": sign_in_buttons,
     }
 
 
@@ -464,9 +539,10 @@ def main() -> None:
 
     recreate_database(maintenance_url, db_name)
     apply_migrations(database_url)
+    admin_user_id = verify_named_auth(database_url)
     conn = psycopg2.connect(database_url)
     try:
-        ids = seed(conn)
+        ids = seed(conn, admin_user_id)
         versions = verify_migrations(conn)
         editor = BusinessService(conn, ids["phase8_editor"])
         verify_schema_constraints(conn, editor, ids)

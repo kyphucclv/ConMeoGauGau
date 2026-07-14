@@ -1,8 +1,14 @@
 # Phase 13 HR-first application architecture
 
-Status: **Architecture baseline ready for owner review; UI implementation is gated**
+Status: **Owner approved; P13.0 integrity foundation authorized**
 
 Date: 2026-07-14
+
+Owner approval date: 2026-07-14
+
+Owner-approved make-up policy: **Replacement credit**. The original absence
+remains historically visible and one linked make-up event changes effective
+attendance credit without increasing the denominator.
 
 Baseline commit reviewed: `9d0db4b phase13 start hr-first workspace`
 
@@ -328,15 +334,12 @@ and optional note.
 
 ### 9.6 Record make-up attendance
 
-The owner must approve one precise policy before implementation:
-
-1. Replacement credit: the original absence remains historically visible but
-   becomes effectively present because of one linked make-up event; or
-2. Additional delivered unit: the make-up is a separate applicable unit in both
-   numerator and denominator.
-
-The current model mixes these interpretations. Until the policy is approved,
-the make-up UI must not be redesigned as a normal HR path.
+The owner approved replacement credit. The original absence remains
+historically visible, while one linked make-up event changes effective
+attendance credit to present without adding another denominator unit. The
+current model mixes replacement and additional-unit behavior, so service,
+reporting, and database enforcement must be aligned before the make-up UI is
+released as a normal HR path.
 
 ### 9.7 Record final result and completion
 
@@ -419,14 +422,47 @@ findings, not permission to change production data.
 | P13.0-F | high | Attendance updates overwrite effective status while the audit event records only roster count, not row-level before/after values | Add row-level change history or complete audit details in the same transaction |
 | P13.0-G | high | Learner onboarding always inserts placement and membership, so a returning learner is not a supported lifecycle | Split first-time start, continuation, transfer, and rejoin behavior inside lifecycle-aware use cases |
 | P13.0-H | high | Evaluation corrections use a generic generated reason instead of the operator's reason | Require and store an explicit reason for version 2+ |
-| P13.0-I | high | Make-up attendance semantics and denominator behavior are not consistently defined | Obtain owner policy, encode it once, then constrain service and database behavior |
+| P13.0-I | high | Make-up attendance semantics and denominator behavior are not consistently defined | Implement the owner-approved replacement-credit policy in service, reporting, and database constraints |
 | P13.0-J | medium | Saving an employee with unchanged BU/role can create an unnecessary organization-history period | Compare locked current values and append history only for a real change |
 | P13.0-K | medium | UI modules contain extensive read SQL and database terminology, coupling copy, screens, and schema | Move reads into task-specific query modules before major page restructuring |
 | P13.0-L | medium | `DATA_DICTIONARY.md` contains status/field language that has drifted from the applied canonical schema | Reconcile the dictionary against migrations before using it as UI terminology input |
 
 No P13.2 learner-page implementation begins until P13.0-A through P13.0-H are
-tested. P13.0-I requires an explicit owner decision. P13.0-J through P13.0-L
-must be completed before Phase 13 sign-off.
+tested. P13.0-I now has an owner decision and must be implemented before the
+make-up workflow is released. P13.0-J through P13.0-L must be completed before
+Phase 13 sign-off.
+
+### P13.0 implementation status
+
+Completed on 2026-07-14:
+
+- **P13.0-A**: runtime auto-admin creation was removed; named sign-in, sign-out,
+  active-user revalidation, and one-time audited admin bootstrap are in place.
+- **P13.0-B**: meeting plus credited-unit creation and one/two-unit additions
+  now use atomic service commands. Failure on a later unit rolls back earlier
+  units.
+- **P13.0-C**: cancellation preserves schedule fields and writes reasoned
+  before/after audit. Schedule correction locks the row, requires a reason when
+  date/time/duration changes, and rejects invalid reverse transitions.
+- **P13.0-D**: the final-result form no longer accepts exam eligibility.
+  Eligibility is derived in the service, and only the admin override command
+  can change its effective result.
+- **P13.0-H**: evaluation version 2 and later require the HR operator's explicit
+  correction reason; the service no longer generates a generic reason.
+
+Verification evidence:
+
+- `python scripts\phase4_integration_check.py`
+- `python scripts\phase5_reporting_check.py`
+- `python scripts\phase6_security_check.py`
+- `python scripts\phase7_frontend_workflow_check.py`
+- `python scripts\phase8_automated_uat.py`
+- `python scripts\phase11_p11_1_integration.py`
+- `python scripts\phase11_operational_issue_snapshot.py --validate-decisions --database-url postgresql://postgres@localhost:5432/english_class`
+- `.\run_app.cmd -CheckOnly`
+
+P13.0-E through P13.0-G and P13.0-I through P13.0-L remain open. Phase 13
+learner-page implementation is still gated by P13.0-E through P13.0-G.
 
 ## 13. Verification strategy
 
@@ -500,9 +536,8 @@ Integration tests run on disposable databases only.
 Phase 13 implementation may resume only when:
 
 - this architecture is owner-approved;
-- the make-up attendance policy is decided;
+- the replacement-credit make-up attendance policy is implemented and tested;
 - each P13.0 blocker has an implementation/test owner;
 - schema changes, if any, have forward verification and backup/rollback notes;
 - the Phase 11 operational snapshot and owner decisions still validate;
 - no UI workflow writes around the application use-case boundary.
-

@@ -97,6 +97,8 @@ def assert_static_ui_contract() -> None:
         "page_icon=\":material/school:\"",
         "operations_snapshot",
         "render_app_header",
+        "render_sign_in",
+        "active_user_by_id",
         "phase-11-ready",
         ":material/home_work: HR workspace",
     ]
@@ -108,6 +110,8 @@ def assert_static_ui_contract() -> None:
         "on_select=\"rerun\"",
         "selection_mode=\"single-row\"",
         "create_class_course_run",
+        "create_meeting_with_units",
+        "add_session_units",
         "accept_new_options=True",
         "propose_next_attendance_session",
         "save_attendance_roster",
@@ -299,18 +303,18 @@ def run_gate(database_url: str) -> dict[str, object]:
         editor.record_evaluation(
             enrollment,
             final_level_id=ids["p7_current"],
-            exam_eligible=True,
             passed=True,
             next_course_id=ids["course_b"],
             teacher_notes="monthly workflow evaluation",
+            correction_reason="final result after approved eligibility override",
         )
         editor.record_evaluation(
             enrollment,
             final_level_id=ids["p7_highest"],
-            exam_eligible=True,
             passed=True,
             next_course_id=ids["course_b"],
             teacher_notes="transparent correction",
+            correction_reason="corrected final level after teacher review",
         )
         eval_history = one(conn, "SELECT count(*) AS total FROM evaluation_versions ev JOIN evaluations e ON e.evaluation_id=ev.evaluation_id WHERE e.run_enrollment_id=%s", (enrollment,))
         assert eval_history["total"] == 3

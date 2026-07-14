@@ -40,16 +40,17 @@ The current verified path is:
 6. Configure `APP_DATABASE_URL`, `DATABASE_URL`, or copy
    `.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill the
    restricted app role URL.
-7. Start the app with the checked Windows launcher:
+7. Create the first named app admin once:
+   `python scripts/bootstrap_admin.py --username hr-admin --full-name "HR Admin"`.
+8. Start the app with the checked Windows launcher:
    `.\run_app.cmd`
 
 The launcher verifies Python packages, the restricted app database connection,
 and the canonical schema before starting Streamlit at
 `http://127.0.0.1:8501`.
 
-The local app does not prompt for an application username or password. It
-automatically uses the `local_admin` app actor so operational changes and audit
-events still have a stable owner.
+The app requires a named application username and password so every operational
+change and audit event is attributed to the HR user who performed it.
 
 Phase 9 rehearsal command:
 

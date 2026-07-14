@@ -173,7 +173,8 @@ def load_refs(pool) -> dict[str, list[dict]]:
             LIMIT 500
         """),
         "meetings": fetch_all(pool, """
-            SELECT m.meeting_id, c.class_code, co.course_code, cr.run_number, m.starts_at, m.status
+            SELECT m.meeting_id, m.course_run_id, c.class_code, co.course_code, cr.run_number,
+                   m.starts_at, m.duration_minutes, m.status, m.cancellation_reason
             FROM meetings m
             JOIN course_runs cr ON cr.course_run_id=m.course_run_id
             JOIN cohorts c ON c.cohort_id=cr.cohort_id
@@ -723,37 +724,91 @@ def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     """))
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "run_number", "status")
     meetings = options(refs["meetings"], "meeting_id", "class_code", "course_code", "run_number", "starts_at", "status")
+    open_meeting_ids = {row["meeting_id"] for row in refs["meetings"] if row["status"] != "cancelled"}
+    open_meetings = {label: item_id for label, item_id in meetings.items() if item_id in open_meeting_ids}
 
-    with st.form("meeting_create"):
-        st.markdown("Create or update meeting")
+    with st.form("meeting_create_with_units"):
+        st.markdown("Create meeting and credited units")
         run_id = selected_id("Course run", runs, key="meeting_run")
-        meeting_label = st.selectbox("Existing meeting to update", [""] + list(meetings.keys()))
         starts_on = st.date_input("Meeting date", value=date.today())
         starts_time = st.time_input("Start time", value=time(9, 0))
         duration = st.number_input("Duration minutes", min_value=1, value=120, step=15)
-        status = st.selectbox("Meeting status", ["planned", "completed", "cancelled"])
-        reason = st.text_input("Cancellation reason")
-        submitted = st.form_submit_button("Save meeting", icon=":material/event:")
+        status = st.selectbox("Meeting status", ["planned", "completed"])
+        first_sequence = st.number_input("First session number", min_value=1, value=1, step=1)
+        units_to_add = st.segmented_control("Credited units", [1, 2], default=1)
+        unit_type = st.selectbox("Unit type", ["normal", "final_test", "makeup", "admin"])
+        submitted = st.form_submit_button("Create meeting", icon=":material/event:")
     if submitted and run_id:
         starts_at = datetime.combine(starts_on, starts_time)
-        meeting_id = meetings.get(meeting_label)
-        if safe_submit(pool, actor, lambda svc: svc.save_meeting(run_id, starts_at, int(duration), meeting_id=meeting_id, status=status, cancellation_reason=reason.strip() or None)):
+        if safe_submit(pool, actor, lambda svc: svc.create_meeting_with_units(
+            run_id,
+            starts_at,
+            int(duration),
+            int(first_sequence),
+            unit_count=int(units_to_add),
+            unit_type=unit_type,
+            status=status,
+        )):
             st.rerun()
 
-    with st.form("session_units"):
-        st.markdown("Add one or two credited units")
+    meeting_label = st.selectbox("Meeting to revise", [""] + list(open_meetings), key="schedule_meeting_to_revise")
+    meeting_id = open_meetings.get(meeting_label)
+    meeting_row = next((row for row in refs["meetings"] if row["meeting_id"] == meeting_id), None)
+    if meeting_row:
+        starts_at_value = meeting_row["starts_at"]
+        with st.form(f"meeting_update_{meeting_id}"):
+            st.markdown("Revise meeting")
+            starts_on = st.date_input("Meeting date", value=starts_at_value.date())
+            starts_time = st.time_input("Start time", value=starts_at_value.time().replace(tzinfo=None))
+            duration = st.number_input(
+                "Duration minutes",
+                min_value=1,
+                value=int(meeting_row["duration_minutes"]),
+                step=15,
+            )
+            status = st.selectbox(
+                "Meeting status",
+                ["planned", "completed"],
+                index=["planned", "completed"].index(meeting_row["status"])
+                if meeting_row["status"] in {"planned", "completed"} else 0,
+            )
+            change_reason = st.text_input("Reason for schedule change")
+            submitted = st.form_submit_button("Save meeting changes", icon=":material/edit_calendar:")
+        if submitted:
+            starts_at = datetime.combine(starts_on, starts_time)
+            if safe_submit(pool, actor, lambda svc: svc.save_meeting(
+                meeting_row["course_run_id"],
+                starts_at,
+                int(duration),
+                meeting_id=meeting_id,
+                status=status,
+                change_reason=change_reason,
+            )):
+                st.rerun()
+
+        with st.form(f"meeting_cancel_{meeting_id}"):
+            cancellation_reason = st.text_input("Cancellation reason")
+            cancel_submitted = st.form_submit_button("Cancel meeting", icon=":material/event_busy:")
+        if cancel_submitted:
+            if safe_submit(pool, actor, lambda svc: svc.cancel_meeting(meeting_id, cancellation_reason)):
+                st.rerun()
+
+    with st.form("session_units_add"):
+        st.markdown("Add credited units to an existing meeting")
         run_id = selected_id("Course run", runs, key="unit_run")
-        meeting_id = selected_id("Meeting", meetings, key="unit_meeting")
+        meeting_id = selected_id("Meeting", open_meetings, key="unit_meeting")
         first_sequence = st.number_input("First sequence in run", min_value=1, value=1, step=1)
         units_to_add = st.segmented_control("Units to add", [1, 2], default=1)
         unit_type = st.selectbox("Unit type", ["normal", "final_test", "makeup", "admin"])
         submitted = st.form_submit_button("Add units", icon=":material/add_circle:")
     if submitted and run_id and meeting_id:
-        def op(svc):
-            svc.add_session_unit(run_id, meeting_id, int(first_sequence), unit_number_in_meeting=1, unit_type=unit_type)
-            if units_to_add == 2:
-                svc.add_session_unit(run_id, meeting_id, int(first_sequence) + 1, unit_number_in_meeting=2, unit_type=unit_type)
-        if safe_submit(pool, actor, op):
+        if safe_submit(pool, actor, lambda svc: svc.add_session_units(
+            run_id,
+            meeting_id,
+            int(first_sequence),
+            unit_count=int(units_to_add),
+            unit_type=unit_type,
+        )):
             st.rerun()
 
 
@@ -946,23 +1001,43 @@ def render_eligibility_override(pool, actor: AppUser, enrollments: dict[str, int
 
 
 def render_evaluation_record(pool, actor: AppUser, enrollments: dict[str, int], levels: dict[str, int], courses: dict[str, int]) -> None:
+    enrollment_id = selected_id("Enrollment", enrollments, key="evaluation_enrollment")
+    eligibility = service_values(
+        pool,
+        actor,
+        lambda svc: svc.calculate_exam_eligibility(enrollment_id),
+    ) if enrollment_id else None
+    if eligibility:
+        with st.container(horizontal=True):
+            st.metric("Attendance", f"{eligibility['attendance_ratio']:.0%}", border=True)
+            st.metric(
+                "Exam eligibility",
+                "Eligible" if eligibility["effective_exam_eligible"] else "Not eligible",
+                border=True,
+            )
+            st.metric(
+                "Eligibility source",
+                "Admin override" if eligibility["exam_eligibility_override"] else "Attendance rule",
+                border=True,
+            )
     with st.form("evaluation_record"):
         st.subheader("Record or correct final evaluation")
-        enrollment_id = selected_id("Enrollment", enrollments, key="evaluation_enrollment")
         level_label = st.selectbox("Final level", [""] + list(levels.keys()))
-        exam_eligible = st.checkbox("Exam eligible", value=True)
         passed = st.checkbox("Passed", value=True)
         next_course_label = st.selectbox("Next course", [""] + list(courses.keys()))
         notes = st.text_area("Teacher notes")
+        correction_reason = None
+        if eligibility and eligibility["latest_evaluation_version"] is not None:
+            correction_reason = st.text_input("Reason for changing this result")
         submitted = st.form_submit_button("Save evaluation", icon=":material/rate_review:")
     if submitted and enrollment_id:
         if safe_submit(pool, actor, lambda svc: svc.record_evaluation(
             enrollment_id,
             final_level_id=levels.get(level_label),
-            exam_eligible=exam_eligible,
             passed=passed,
             next_course_id=courses.get(next_course_label),
             teacher_notes=notes.strip() or None,
+            correction_reason=correction_reason,
         )):
             st.rerun()
 

@@ -6,7 +6,7 @@ import os
 
 import streamlit as st
 
-from auth import AppUser, ensure_local_admin
+from auth import AppUser, active_user_by_id, authenticate
 from db import create_pool, fetch_all, verify_canonical_schema
 from frontend_workflows import render_operations
 from reporting import REPORTS, metric_definitions, report_by_label, run_report
@@ -56,6 +56,9 @@ def render_app_header(pool, user: AppUser) -> None:
         st.badge(user.role.title(), icon=":material/verified_user:", color="blue")
         st.caption(user.full_name)
         st.caption("Baseline: phase-11-ready")
+        if st.button("Sign out", icon=":material/logout:"):
+            st.session_state.pop("actor_user_id", None)
+            st.rerun()
 
     with st.container(horizontal=True, vertical_alignment="center"):
         st.title("English class HR workspace")
@@ -113,6 +116,26 @@ def render_audit(pool, actor: AppUser) -> None:
         st.info("No audit events found.")
 
 
+def render_sign_in(pool) -> None:
+    st.title("English class HR workspace")
+    st.subheader("Sign in")
+    with st.form("sign_in", border=True):
+        username = st.text_input("Username", key="auth_username")
+        password = st.text_input("Password", type="password", key="auth_password")
+        submitted = st.form_submit_button(
+            "Sign in",
+            type="primary",
+            icon=":material/login:",
+        )
+    if submitted:
+        user = authenticate(pool, username, password)
+        if user is None:
+            st.error("Username or password is incorrect.")
+        else:
+            st.session_state["actor_user_id"] = user.user_id
+            st.rerun()
+
+
 def render_app() -> None:
     conn_str = configured_database_url()
     if not conn_str:
@@ -126,7 +149,12 @@ def render_app() -> None:
         st.error("The application could not connect to the canonical database.")
         st.stop()
 
-    user = ensure_local_admin(pool)
+    actor_user_id = st.session_state.get("actor_user_id")
+    user = active_user_by_id(pool, actor_user_id) if actor_user_id else None
+    if user is None:
+        st.session_state.pop("actor_user_id", None)
+        render_sign_in(pool)
+        return
     render_app_header(pool, user)
 
     workspace_tab, reports_tab, audit_tab = st.tabs(

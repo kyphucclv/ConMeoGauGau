@@ -108,17 +108,23 @@ Rollback if any of these happen during production cutover:
    url = "postgresql://english_class_app:APP_PASSWORD@localhost:5432/english_class"
    ```
 
-10. Smoke test:
+10. Create the first named application admin:
+
+    ```powershell
+    python scripts\bootstrap_admin.py --username hr-admin --full-name "HR Admin"
+    ```
+
+11. Smoke test:
 
     ```powershell
     python -m streamlit run streamlit_app.py
     ```
 
-    Confirm the server is using `english_class_app`, then inspect login,
-    Operations, Reports, Users, and Audit. Phase 8 UAT remains a disposable-DB
-    precondition and is not a production smoke command.
+    Confirm the server is using `english_class_app`, sign in with the named
+    admin, then inspect the HR workspace, Reports, and Audit. Phase 8 UAT
+    remains a disposable-DB precondition and is not a production smoke command.
 
-11. Unlock setup only after sign-off:
+12. Unlock setup only after sign-off:
 
     - remove `DRAFT_MIGRATIONS.lock`;
     - record sign-off in `docs/reviews/phase-9-cutover-rehearsal.md`;
@@ -126,7 +132,7 @@ Rollback if any of these happen during production cutover:
     - retain the approved Phase 10 JSON and its issue snapshot SHA-256 as
       cutover evidence.
 
-12. For Phase 11 rollout, generate and validate the operational issue snapshot:
+13. For Phase 11 rollout, generate and validate the operational issue snapshot:
 
     ```powershell
     python scripts\phase11_operational_issue_snapshot.py --database-url "$env:MIGRATION_DATABASE_URL"

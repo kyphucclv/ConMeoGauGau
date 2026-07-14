@@ -222,6 +222,7 @@ def run_gate(database_url: str) -> dict[str, object]:
             datetime(2026, 1, 12, 10, 0, tzinfo=timezone.utc),
             90,
             meeting_id=cancelled_meeting,
+            change_reason="teacher confirmed a revised time",
         )
         editor.cancel_meeting(cancelled_meeting, "teacher unavailable")
 
@@ -260,8 +261,8 @@ def run_gate(database_url: str) -> dict[str, object]:
             final_level_id=ids["level_id"],
             passed=True,
             next_course_id=ids["course_b_id"],
-            exam_eligible=True,
             teacher_notes="ready",
+            correction_reason="final result after approved eligibility override",
         )
         assert evaluation.values["version_number"] >= 1
         suggestion = editor.suggest_completion(enrollment)

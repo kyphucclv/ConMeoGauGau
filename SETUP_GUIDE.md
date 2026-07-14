@@ -16,6 +16,7 @@ spreadsheet. Follow this on the new machine.
 | `scripts/canonical_etl_v3.py` | Canonical v3 ETL. |
 | `scripts/phase9_cutover_rehearsal.py` | Disposable cutover rehearsal. |
 | `scripts/phase11_operational_issue_snapshot.py` | Phase 11 operational issue snapshot and owner-decision gate. |
+| `scripts/bootstrap_admin.py` | One-time named application admin bootstrap. |
 | `database_roles.sql` | Restricted migration/app/read-only DB roles. |
 | `run_app.cmd`, `run_app.ps1` | Windows launcher and app health check. |
 | `.streamlit/config.toml` | Local Streamlit server defaults. |
@@ -84,6 +85,19 @@ python scripts/phase11_operational_issue_snapshot.py --validate-decisions
 This command exits zero only when high-severity operational issues are resolved
 or covered by owner-approved legacy decisions for the exact current snapshot.
 
+## Create the first named application admin
+
+Run this once after migrations and before opening the application:
+
+```powershell
+python scripts\bootstrap_admin.py --username hr-admin --full-name "HR Admin"
+```
+
+The command prompts for the password without echoing it. It is allowed only
+when no named application user exists and writes the bootstrap audit event in
+the same transaction as the user. Application startup never creates,
+reactivates, or promotes a user.
+
 ## Run the dashboard app
 
 After you have loaded the data, start the web UI with the checked launcher:
@@ -100,17 +114,14 @@ connection, and the canonical schema before it starts the app. Store the
 restricted app connection in `APP_DATABASE_URL`, `DATABASE_URL`, or copy
 `.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill in the
 local value. The real `secrets.toml` is ignored by git and should stay local.
-The app opens directly with the `local_admin` actor, so there is no application
-username/password prompt.
+Sign in with a named application username and password. Each write and audit
+event is attributed to that named user.
 
 For a health check without starting Streamlit:
 
 ```powershell
 .\run_app.cmd -CheckOnly
 ```
-
-The `local_admin` app actor is created automatically if needed so audit events
-still identify who made local operational changes.
 
 ## Updating an existing database
 
