@@ -102,9 +102,17 @@ def seed_reference_data(conn) -> dict[str, int]:
             )
             business_unit_id = cur.fetchone()[0]
             cur.execute(
+                "INSERT INTO business_units(business_unit_name) VALUES('Phase 4 BU Changed') RETURNING business_unit_id"
+            )
+            changed_business_unit_id = cur.fetchone()[0]
+            cur.execute(
                 "INSERT INTO job_roles(job_role_name) VALUES('Phase 4 Role') RETURNING job_role_id"
             )
             job_role_id = cur.fetchone()[0]
+            cur.execute(
+                "INSERT INTO job_roles(job_role_name) VALUES('Phase 4 Role Changed') RETURNING job_role_id"
+            )
+            changed_job_role_id = cur.fetchone()[0]
             cur.execute(
                 """
                 INSERT INTO courses(course_code, course_name, expected_units, attendance_threshold_ratio)
@@ -126,7 +134,9 @@ def seed_reference_data(conn) -> dict[str, int]:
     return {
         **users,
         "business_unit_id": business_unit_id,
+        "changed_business_unit_id": changed_business_unit_id,
         "job_role_id": job_role_id,
+        "changed_job_role_id": changed_job_role_id,
         "course_a_id": courses["P4-A"],
         "course_b_id": courses["P4-B"],
         "level_id": level_id,
@@ -181,6 +191,27 @@ def run_gate(database_url: str) -> dict[str, object]:
             job_role_id=ids["job_role_id"],
             valid_from=date(2026, 1, 1),
         ).entity_id
+
+        unchanged_org = editor.create_or_update_employee(
+            "P4-STUDENT",
+            "Phase Four Student",
+            employment_status="active",
+            business_unit_id=ids["business_unit_id"],
+            job_role_id=ids["job_role_id"],
+            valid_from=date(2026, 2, 1),
+        )
+        assert unchanged_org.values["org_history_action"] == "unchanged"
+        assert count_rows(conn, "employee_org_history", "employee_id = %s", (student,)) == 1
+        changed_org = editor.create_or_update_employee(
+            "P4-STUDENT",
+            "Phase Four Student",
+            employment_status="active",
+            business_unit_id=ids["changed_business_unit_id"],
+            job_role_id=ids["changed_job_role_id"],
+            valid_from=date(2026, 2, 1),
+        )
+        assert changed_org.values["org_history_action"] == "changed"
+        assert count_rows(conn, "employee_org_history", "employee_id = %s", (student,)) == 2
 
         cohort = editor.create_cohort("P4-COHORT", "Phase 4 Cohort").entity_id
         target_cohort = editor.create_cohort("P4-TARGET", "Phase 4 Target").entity_id

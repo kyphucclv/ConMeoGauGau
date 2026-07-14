@@ -127,15 +127,48 @@ class BusinessService:
                            employment_status=EXCLUDED.employment_status RETURNING employee_id""",
                         (emp_code.strip(), full_name.strip(), english_name, email, employment_status))
             employee_id = cur.fetchone()[0]
+            org_history_action = "not_requested"
             if business_unit_id is not None or job_role_id is not None:
                 vf = valid_from or date.today()
-                cur.execute("UPDATE employee_org_history SET valid_to=%s,is_current=FALSE WHERE employee_id=%s AND is_current",
-                            (vf, employee_id))
-                cur.execute("""INSERT INTO employee_org_history(employee_id,business_unit_id,job_role_id,valid_from)
-                             VALUES(%s,%s,%s,%s) RETURNING employee_org_history_id""",
-                            (employee_id, business_unit_id, job_role_id, vf))
-            self._audit(cur, "employee.upsert", "employee", employee_id)
-            return CommandResult("employee", employee_id, {"emp_code": emp_code})
+                cur.execute(
+                    """SELECT employee_org_history_id,business_unit_id,job_role_id,valid_from
+                       FROM employee_org_history
+                       WHERE employee_id=%s AND is_current
+                       FOR UPDATE""",
+                    (employee_id,),
+                )
+                current_org = cur.fetchone()
+                requested_org = (business_unit_id, job_role_id)
+                if current_org and requested_org == (current_org[1], current_org[2]):
+                    org_history_action = "unchanged"
+                else:
+                    if current_org and vf < current_org[3]:
+                        raise CommandError(
+                            "invalid_input",
+                            "organization change date cannot precede the current assignment",
+                        )
+                    if current_org:
+                        cur.execute(
+                            """UPDATE employee_org_history
+                               SET valid_to=%s,is_current=FALSE
+                               WHERE employee_org_history_id=%s""",
+                            (vf, current_org[0]),
+                        )
+                        org_history_action = "changed"
+                    else:
+                        org_history_action = "created"
+                    cur.execute(
+                        """INSERT INTO employee_org_history(
+                               employee_id,business_unit_id,job_role_id,valid_from
+                           ) VALUES(%s,%s,%s,%s)""",
+                        (employee_id, business_unit_id, job_role_id, vf),
+                    )
+            details = {
+                "emp_code": emp_code.strip(),
+                "org_history_action": org_history_action,
+            }
+            self._audit(cur, "employee.upsert", "employee", employee_id, details)
+            return CommandResult("employee", employee_id, details)
         return self._run({"admin", "editor"}, op)
 
     def create_cohort(self, class_code: str, display_name: str, *, status="planned", capacity: int | None = None) -> CommandResult:

@@ -1,297 +1,307 @@
 # English Class Data Dictionary
 
-Status: **Canonical v3 implemented; Phase 11 additions identified**
+Status: **Canonical v3 reconciled through migrations 001-019**
 
-This document defines the business meaning and source of truth for each field.
-Fields marked `derived` must be calculated from source records and must not be
-manually edited.
+Last schema validation: 2026-07-14 against the applied `english_class`
+database. Physical names and stored values in this document are canonical.
+HR-facing labels may be friendlier, but must map to these values at the UI
+boundary and must never be written as alternate database values.
+
+## Naming contract
+
+| Layer | Example | Rule |
+|---|---|---|
+| Physical schema | `run_enrollments.start_session_number` | Used by migrations, services, query modules, tests, and technical docs. |
+| HR label | First applicable session | Used in the interface; maps to one physical field or derived value. |
+| Derived read model | `attendance_ratio` | Calculated from canonical facts; never maintained as a parallel input. |
 
 ## Field classes
 
 | Class | Meaning |
 |---|---|
-| `input` | Entered or confirmed by an admin. |
+| `input` | Entered or confirmed by an authorized user. |
 | `reference` | Controlled lookup value. |
-| `snapshot` | Value copied at an event time for historical reporting. |
-| `derived` | Calculated from source records. Never manually maintained. |
-| `audit` | System-generated history metadata. |
+| `snapshot` | Copied at event time and immutable afterward. |
+| `derived` | Calculated from source records; never manually maintained. |
+| `audit` | System-generated identity, actor, version, or timestamp. |
+
+## Controlled values
+
+Stored values are lower-case unless explicitly shown otherwise.
+
+| Field | Canonical values | Suggested HR labels |
+|---|---|---|
+| `employees.employment_status` | `active`, `inactive`, `unknown` | Employed, Not active, Needs confirmation |
+| `cohorts.status` | `planned`, `active`, `completed`, `archived` | Planned, Active, Completed, Archived |
+| `cohort_memberships.status` | `active`, `completed`, `transferred`, `cancelled` | Active, Completed, Transferred, Cancelled |
+| `course_runs.status` | `planned`, `active`, `completed`, `cancelled`, `archived` | Planned, Active, Completed, Cancelled, Archived |
+| `run_enrollments.status` | `active`, `completed`, `transferred`, `dropped`, `cancelled` | Learning, Completed, Transferred, Withdrawn, Cancelled |
+| `meetings.status` | `planned`, `completed`, `cancelled` | Planned, Delivered, Cancelled |
+| `session_units.unit_type` | `normal`, `final_test`, `makeup`, `admin` | Class session, Final test, Make-up session, Admin unit |
+| `attendance.effective_status` | `Present`, `Absent` | Present, Absent |
+| `placements.placement_kind` | `business`, `diagnostic`, `other` | Entrance placement, Diagnostic, Other |
 
 ## employees
 
-One row per known employee. Learners belong here. A PIC may reference an
-employee, but Phase 11 also permits a free-text team label without an employee
-record.
+Grain: one row per known employee. A learner is an employee participating in
+the learning lifecycle; learner identity is not duplicated elsewhere.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `employee_id` | bigint | audit | yes | Internal immutable key. |
-| `emp_code` | text | input | yes | Company employee code; unique and stable if the employee returns. |
-| `full_name` | text | input | yes | Current employee name. Not used as an identifier. |
-| `employment_status` | enum | input | yes | `Employed` or `Resigned`. Resign is not a course drop reason. |
-| `created_at` | timestamptz | audit | yes | Creation timestamp. |
-| `updated_at` | timestamptz | audit | yes | Last confirmed update timestamp. |
+`employees` physical columns: `employee_id`, `emp_code`, `full_name`, `english_name`,
+`email`, `employment_status`, `created_at`, `updated_at`.
+
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `employee_id` | audit | yes | Immutable internal key. |
+| `emp_code` | input | yes | Unique company employee code and stable business identity. |
+| `full_name` | input | yes | Current full name; never used as a key. |
+| `english_name`, `email` | input | no | Optional current profile values. |
+| `employment_status` | input | yes | Uses the canonical values above. Resignation is not a course exit reason. |
+| `created_at`, `updated_at` | audit | yes | Row creation and last-update timestamps. |
 
 ## employee_org_history
 
-One row per observed BU/role assignment. Exact HR effective dates are not
-available, so `recorded_at` means when the admin learned about the change.
+Grain: one row per observed BU/role assignment period. At most one row per
+employee is current. Saving the same BU and role does not create a new period.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `org_history_id` | bigint | audit | yes | Internal key. |
-| `employee_id` | bigint FK | input | yes | Employee. |
-| `business_unit` | text/FK | input | yes | BU observed at that time. |
-| `job_role` | text/FK | input | yes | Employee role observed at that time. |
-| `recorded_at` | timestamptz | audit | yes | Time the change was recorded. |
-| `is_current` | boolean | derived | yes | Exactly one current row per employee. |
+`employee_org_history` physical columns: `employee_org_history_id`, `employee_id`,
+`business_unit_id`, `job_role_id`, `valid_from`, `valid_to`, `is_current`,
+`observed_from`, `created_at`.
 
-## cohorts
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `employee_org_history_id` | audit | yes | Immutable period key. |
+| `employee_id` | input | yes | Employee whose assignment was observed. |
+| `business_unit_id`, `job_role_id` | reference | operationally yes | Controlled BU and role references; legacy unknown placeholders remain explicit references. |
+| `valid_from`, `valid_to` | input | start yes | Assignment period. `valid_to` is null for the current row. |
+| `is_current` | derived/system | yes | Exactly one current row where available. |
+| `observed_from` | audit | no | Legacy source provenance; not an HR effective-date input. |
+| `created_at` | audit | yes | Record creation timestamp. |
 
-One row per stable learning team, such as `EL001`. A cohort can study several
-courses sequentially and can repeat a course.
+## cohorts and membership
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `cohort_id` | bigint | audit | yes | Internal key. |
-| `class_code` | text | input/system | yes | Stable unique code, auto-generated but editable before use. |
-| `status` | enum | input | yes | `Forming`, `Active`, `Paused`, `Completed`, `Archived`. |
-| `capacity` | integer | input | Phase 11 | Expected maximum active learners; exceeding it requires an audited override. |
-| `created_at` | timestamptz | audit | yes | Cohort creation time. |
+`cohorts` grain: one stable learning team, such as `EL001`, which may study
+multiple course runs. `cohort_memberships` grain: one employee membership
+period in one cohort.
 
-Display names such as `EL001 - Anh Vu` are derived from `class_code` and the
-current PIC. They are not stored as cohort identifiers.
+`cohorts` physical columns: `cohort_id`, `class_code`, `display_name`, `status`,
+`created_at`, `updated_at`, `capacity`.
+
+`cohort_memberships` physical columns: `cohort_membership_id`, `cohort_id`,
+`employee_id`, `start_date`, `end_date`, `status`,
+`transfer_to_membership_id`, `created_at`.
+
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `cohorts.class_code` | input/system | yes | Stable unique class code. |
+| `cohorts.display_name` | input | yes | Administrative display name; not an identifier. |
+| `cohorts.capacity` | input | no | Positive active-learner limit; exceeding it requires an audited override. |
+| `cohort_memberships.start_date`, `end_date` | input | start yes | Event-time class applicability period. |
+| `cohort_memberships.transfer_to_membership_id` | input/system | transferred only | Target membership for a transfer. |
 
 ## cohort_pic_assignments
 
-One row per PIC assignment period. The current PIC is the assignment without
-an end timestamp. A PIC may be an employee or a normalized free-text team
-label.
+Grain: one PIC assignment period for one cohort. The target is either an
+employee reference or a normalized free-text team label.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `pic_assignment_id` | bigint | audit | yes | Internal key. |
-| `cohort_id` | bigint FK | input | yes | Cohort being represented. |
-| `employee_id` | bigint FK | input | conditional | PIC employee; null when a team label is used. |
-| `pic_label` | text | input | conditional | PIC/team display label; required when `employee_id` is null. |
-| `assigned_at` | timestamptz | input/audit | yes | Assignment start. |
-| `ended_at` | timestamptz | input | no | Assignment end. |
+`cohort_pic_assignments` physical columns: `cohort_pic_assignment_id`, `cohort_id`, `pic_employee_id`,
+`start_date`, `end_date`, `created_at`, `pic_label`.
 
-Exactly one of employee identity or a nonblank PIC label must be supplied.
-Labels are trimmed and compared case-insensitively for suggestions and duplicate
-prevention while preserving display casing.
+The current assignment has `end_date IS NULL`. At least one of
+`pic_employee_id` or nonblank `pic_label` is required. PIC display is derived
+from `pic_label` first, then the referenced employee name.
 
-## cohort_memberships
+## courses and course_runs
 
-One row per continuous membership period. Joining, leaving, and transferring
-never overwrite old membership records.
+`courses` grain: one reusable course definition. `course_runs` grain: one
+numbered delivery of one course to one cohort.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `membership_id` | bigint | audit | yes | Internal key. |
-| `cohort_id` | bigint FK | input | yes | Cohort. |
-| `employee_id` | bigint FK | input | yes | Learner. |
-| `joined_at` | date | input | yes | Date joined. |
-| `left_at` | date | input | no | Date left/transferred. |
-| `status` | enum | input | yes | `Active`, `Transferred`, `Left`, `Completed`. |
-| `transfer_to_cohort_id` | bigint FK | input | no | Destination cohort when transferred. |
+`courses` physical columns: `course_id`, `course_code`, `course_name`,
+`expected_units`, `attendance_threshold_ratio`, `is_active`, `created_at`.
 
-## courses
+`course_runs` physical columns: `course_run_id`, `cohort_id`, `course_id`,
+`run_number`, `status`, `expected_units_snapshot`,
+`attendance_threshold_ratio_snapshot`, `start_date`, `end_date`, `created_at`,
+`updated_at`.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `course_id` | bigint | audit | yes | Internal key. |
-| `course_name` | text | reference | yes | Controlled course name. |
-| `expected_session_units` | smallint | reference | yes | Expected credited one-hour units. |
-| `attendance_threshold_ratio` | numeric | reference | yes | Required attendance ratio; configurable without schema changes. |
-| `is_active` | boolean | reference | yes | Whether new runs can use the course. |
-| `created_at` | timestamptz | audit | Phase 11 | Course creation time used by the monthly new-course KPI. |
-
-## course_runs
-
-One row per time a cohort studies a course. `EL001 / Communication 1 / Run 2`
-is different from Run 1.
-
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `course_run_id` | bigint | audit | yes | Internal key. |
-| `cohort_id` | bigint FK | input | yes | Cohort. |
-| `course_id` | bigint FK | input | yes | Course. |
-| `run_number` | smallint | system | yes | Sequence for repeated cohort/course runs. |
-| `start_date` | date | input | yes | Admin-confirmed run start, not MIN(attendance date). |
-| `completed_at` | date | input | no | Completion/final-test date. |
-| `status` | enum | input/system | yes | `Planned`, `Active`, `Final evaluation`, `Completed`, `Cancelled`. |
-| `expected_session_units` | smallint | snapshot | yes | Course plan copied for this run. |
-| `attendance_threshold_ratio` | numeric | snapshot | yes | Eligibility rule copied for this run. |
-
-The system may suggest completion after evaluations are entered, but an admin
-confirms the final transition.
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `courses.expected_units` | reference | yes | Current planned logical units for new runs. |
+| `courses.attendance_threshold_ratio` | reference | yes | Current eligibility threshold for new runs. |
+| `course_runs.run_number` | input/system | yes | Positive sequence within cohort and course. |
+| `course_runs.expected_units_snapshot` | snapshot | yes | Course expected units copied when the run is created. |
+| `course_runs.attendance_threshold_ratio_snapshot` | snapshot | yes | Attendance policy copied when the run is created. |
+| `course_runs.start_date`, `end_date` | input | no | Confirmed run boundaries. |
 
 ## run_enrollments
 
-One row per learner in one course run. BU/role are snapshotted here so historic
-reports do not change when the employee later changes organization.
+Grain: one employee enrolled in one course run. An employee may have at most
+one `active` run enrollment across all runs.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `enrollment_id` | bigint | audit | yes | Internal key. |
-| `course_run_id` | bigint FK | input | yes | Course run. |
-| `employee_id` | bigint FK | input | yes | Learner. |
-| `membership_id` | bigint FK | input | yes | Cohort membership at enrollment. |
-| `joined_at` | date | input | yes | Date joined this run. |
-| `start_session_number` | smallint | input | yes | First applicable session in the target run. |
-| `status` | enum | input/system | yes | See enrollment statuses below. |
-| `bu_snapshot` | text/FK | snapshot | yes | BU when enrollment started. |
-| `role_snapshot` | text/FK | snapshot | yes | Role when enrollment started. |
-| `exit_reason` | text/FK | input | no | Course exit reason; never `Resign`. |
-| `transferred_from_enrollment_id` | bigint FK | input | no | Previous enrollment when transferred. |
+`run_enrollments` physical columns: `run_enrollment_id`, `course_run_id`, `employee_id`,
+`cohort_membership_id`, `status`, `start_session_number`,
+`business_unit_id_snapshot`, `job_role_id_snapshot`,
+`transfer_from_enrollment_id`, `created_at`, `updated_at`.
 
-Sessions before `start_session_number` have no attendance record and are
-`Not applicable`, not `Absent`.
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `run_enrollment_id` | audit | yes | Immutable enrollment key. |
+| `cohort_membership_id` | input/system | active yes | Matching active membership in the course run's cohort. |
+| `start_session_number` | input/system | yes | First applicable logical sequence; earlier sessions are not applicable, not absent. |
+| `business_unit_id_snapshot`, `job_role_id_snapshot` | snapshot | active yes | Organization copied at enrollment start and immutable afterward. |
+| `transfer_from_enrollment_id` | input/system | transfer only | Previous enrollment in the learner transfer chain. |
 
-An employee may have at most one active run enrollment across all courses. BU
-and role snapshots are copied automatically from the current organization row
-when enrollment starts. HR edits organization data only in employee history;
-snapshots are not a parallel input.
+## meetings and session_units
 
-Enrollment statuses: `Active`, `Completed`, `Completed - no continuation`,
-`Transferred`, `Withdrawn`, `Not eligible for final test`, and
-`Waiting for next course`.
+`meetings` grain: one scheduled or delivered occurrence. `session_units` grain:
+one credited logical unit in an occurrence. Duration and credited units are
+separate concepts, and one logical sequence may have multiple occurrences.
 
-## meetings
+`meetings` physical columns: `meeting_id`, `course_run_id`, `starts_at`,
+`duration_minutes`, `status`, `cancellation_reason`, `created_at`, `updated_at`.
 
-One row per scheduled/actual class meeting. Schedule changes update the current
-meeting; the general audit log records actor, reason, and old/new values.
+`session_units` physical columns: `session_unit_id`, `course_run_id`,
+`meeting_id`, `sequence_in_run`, `unit_number_in_meeting`, `unit_type`, `title`,
+`created_at`.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `meeting_id` | bigint | audit | yes | Internal key. |
-| `course_run_id` | bigint FK | input | yes | Run. |
-| `starts_at` | timestamp | input | yes | Approved date and time. |
-| `duration_minutes` | smallint | input | yes | Actual/planned duration, including 2-3 hour final tests. |
-| `meeting_type` | enum | input | yes | `Class` or `Final test`. |
-| `status` | enum | input | yes | `Planned`, `Completed`, `Cancelled`. |
-
-Cancelled meetings are excluded from attendance denominators.
-
-## session_units
-
-One row per credited one-hour unit. One meeting may contain at most two normal
-session units. Duration and credited units are separate concepts.
-
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `session_unit_id` | bigint | audit | yes | Internal key. |
-| `course_run_id` | bigint FK | input | yes | Run. |
-| `meeting_id` | bigint FK | input | yes | Meeting containing the unit. |
-| `session_number` | smallint | input/system | yes | Sequence within the run. |
-| `unit_type` | enum | input | yes | `Teaching` or `Final test`. |
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `meetings.starts_at`, `duration_minutes` | input | yes | Approved occurrence date/time and actual or planned duration. |
+| `meetings.cancellation_reason` | input | cancelled only | Required when status is `cancelled`; cancellation retains schedule facts. |
+| `session_units.sequence_in_run` | input/system | yes | Logical sequence used for applicability and attendance denominator. |
+| `session_units.unit_number_in_meeting` | input/system | yes | Positive position inside the meeting. |
+| `session_units.unit_type` | input | yes | Uses the canonical values above; at most two `normal` units per meeting. |
 
 ## attendance
 
-One row per run enrollment and session unit. A normal row records the direct
-`Present`/`Absent` fact. A make-up row records `Present` at one make-up session
-and links to exactly one original absence for the same enrollment.
+Grain: one enrollment fact for one session unit. Direct facts use a non-make-up
+unit. A make-up row records `Present` at a `makeup` unit and links to one
+original direct `Absent` fact for the same enrollment.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `attendance_id` | bigint | audit | yes | Internal key. |
-| `run_enrollment_id` | bigint FK | input | yes | Learner/run enrollment. |
-| `session_unit_id` | bigint FK | input | yes | Credited session. |
-| `effective_status` | enum | input | yes | Only `Present` or `Absent`; a make-up row must be `Present`. |
-| `original_status` | text | snapshot | no | Status supplied when the row was first recorded. |
-| `is_makeup` | boolean | input | yes | Whether this row is linked replacement credit. |
-| `makeup_for_attendance_id` | bigint FK | input | required for make-up | Original non-make-up `Absent` row; unique when present. |
-| `details` | jsonb | input/audit | yes | Structured note or correction reason. |
-| `created_at` | timestamptz | audit | yes | Creation timestamp. |
-| `updated_at` | timestamptz | audit | yes | Last update timestamp. |
+`attendance` physical columns: `attendance_id`, `run_enrollment_id`, `session_unit_id`,
+`effective_status`, `original_status`, `is_makeup`,
+`makeup_for_attendance_id`, `details`, `created_at`, `updated_at`.
 
-A make-up does not overwrite the original absence and does not add an
-attendance denominator unit. A valid linked make-up credits the original
-logical session as present. The make-up event, actor, reason, before/after
-credit, and zero denominator effect are retained in `audit_events`.
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `effective_status` | input | yes | Exactly `Present` or `Absent`; a make-up row must be `Present`. |
+| `original_status` | snapshot | no | Source status retained when available. |
+| `is_makeup` | input/system | yes | True only for linked replacement-credit attendance. |
+| `makeup_for_attendance_id` | input/system | make-up only | Unique link to an original non-make-up absence for the same enrollment. |
+| `details` | input/audit | yes | Structured source, note, or correction context. |
 
-The Phase 11 attendance grid defaults every applicable roster row to `Present`;
-this is a UI default, not a database default. Only an explicit bulk save writes
-attendance rows.
+The original absence is never overwritten. A valid make-up credits that
+logical sequence as present and adds zero denominator units. Make-up linkage,
+attended unit type, and a credited original absence are immutable.
+
+The attendance grid may propose `Present` for a new planned roster in the UI;
+the database has no default attendance fact. Historical gaps remain unknown
+until evidence is saved or a separately approved legacy exception exists.
 
 ## placements
 
-Exactly one business placement per learner. Corrections are audited; a second
-placement attempt is not part of the current process.
+Grain: one placement per employee and `placement_kind`; the current business
+process permits exactly one `business` entrance placement.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `placement_id` | bigint | audit | yes | Internal key. |
-| `employee_id` | bigint FK | input | yes | Learner. |
-| `test_date` | date | input | yes | Placement date. |
-| `level_id` | bigint FK | input | yes | Entrance level. |
-| `grammar_feedback` | text | input | no | Placement feedback. |
-| `vocabulary_feedback` | text | input | no | Placement feedback. |
-| `pronunciation_feedback` | text | input | no | Placement feedback. |
-| `fluency_feedback` | text | input | no | Placement feedback. |
+`placements` physical columns: `placement_id`, `employee_id`, `placement_kind`, `test_date`,
+`level_id`, `grammar_feedback`, `vocabulary_feedback`,
+`pronunciation_feedback`, `fluency_feedback`, `source_reference`, `created_at`.
+
+`source_reference` retains structured provenance. Corrections are audited; a
+returning learner reuses the existing business placement rather than inserting
+a second one.
 
 ## evaluations and evaluation_versions
 
-An evaluation is attached to an enrollment. Every edit creates a version;
-old results are never overwritten.
+`evaluations` grain: one stable evaluation identity per run enrollment.
+`evaluations` physical columns: `evaluation_id`, `run_enrollment_id`, `created_at`.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `evaluation_id` | bigint | audit | yes | Stable evaluation identity. |
-| `enrollment_id` | bigint FK | input | yes | Evaluated run enrollment. |
-| `version_number` | integer | audit | yes | Increasing version. |
-| `final_level_id` | bigint FK | input | no | Final level; null when not eligible. |
-| `passed` | boolean | input | yes | Teacher's pass decision. |
-| `eligible_for_next_course` | boolean | input | yes | Teacher recommendation. |
-| `evaluated_at` | date | input/system | yes | Run completion date when no separate date exists. |
-| `change_reason` | text | input | required on correction | Why an existing result changed. |
-| `created_by` | bigint FK | audit | yes | App user. |
-| `created_at` | timestamptz | audit | yes | Version creation time. |
+`evaluation_versions` grain: one immutable version of that evaluation.
+`evaluation_versions` physical columns: `evaluation_version_id`, `evaluation_id`, `version_number`,
+`final_level_id`, `exam_eligible`, `exam_eligibility_override`,
+`exam_eligibility_override_reason`, `passed`, `next_course_id`, `teacher_notes`,
+`correction_reason`, `created_by_user_id`, `created_at`.
+
+| Field | Class | Required | Meaning / rule |
+|---|---|---|---|
+| `version_number` | audit | yes | Increasing version unique within an evaluation. |
+| `exam_eligible` | input | override only | Admin-selected eligibility value only when override is active. |
+| `exam_eligibility_override` | input/system | yes | False means eligibility is derived from attendance policy. |
+| `exam_eligibility_override_reason` | input | override only | Required for an admin override. |
+| `passed`, `final_level_id`, `next_course_id`, `teacher_notes` | input | conditional | Final outcome and recommendation fields. |
+| `correction_reason` | input | version 2+ | Explicit operator reason; generic generated reasons are prohibited. |
+| `created_by_user_id`, `created_at` | audit | yes | Named actor and version timestamp. |
 
 ## levels
 
-The current spreadsheet scale is retained as a controlled ordinal scale:
-`Not Placement = 0.0` through `Advanced = 6.5` in 0.5 increments.
+Grain: one controlled ordinal level.
 
-| Field | Type | Class | Required | Meaning / rule |
-|---|---|---|---|---|
-| `level_id` | bigint | audit | yes | Internal key. |
-| `level_name` | text | reference | yes | Unique label. |
-| `numeric_value` | numeric(3,1) | reference | yes | Ordered comparison value. |
-| `sequence` | smallint | reference | yes | Stable display/progression order. |
-| `is_active` | boolean | reference | yes | Whether it can be newly selected. |
+`levels` physical columns: `level_id`, `level_name`, `numeric_value`, `sequence_order`,
+`is_active`.
 
-## Derived progress fields
+`numeric_value` supports progress calculation; `sequence_order` is the stable
+display order. Unknown legacy entrance placement remains an explicit reference,
+not a null silently interpreted as a level.
 
-These are views/queries, never editable columns:
+## Audited support records
+
+`cohort_capacity_overrides` physical columns: `cohort_capacity_override_id`,
+`cohort_id`, `employee_id`, `course_run_id`, `previous_capacity`,
+`resulting_active_learner_count`, `reason`, `actor_user_id`, `created_at`.
+
+`monthly_review_action_summary_versions` physical columns:
+`monthly_review_action_summary_version_id`, `review_month`, `version_number`,
+`highlights`, `risks`, `next_month_priorities`, `created_by_user_id`,
+`created_at`.
+
+`attendance_roster_legacy_exceptions` physical columns: `session_unit_id`,
+`reason`, `approved_by_user_id`, `approved_at`.
+
+`data_quality_issues` physical columns: `issue_id`, `import_batch_id`,
+`issue_code`, `entity_type`, `entity_key`, `source_sheet`, `source_row_number`,
+`details`, `status`, `created_at`, `resolved_at`, `resolved_by_user_id`,
+`resolution_note`.
+
+`audit_events` physical columns: `audit_event_id`, `actor_user_id`,
+`actor_username`, `action`, `entity_type`, `entity_key`, `details`, `created_at`.
+
+| Table | Grain and purpose |
+|---|---|
+| `cohort_capacity_overrides` | One approved admission above cohort capacity, including employee, run, previous capacity, resulting count, reason, actor, and timestamp. |
+| `monthly_review_action_summary_versions` | One immutable HR-authored summary version for one calendar month. |
+| `attendance_roster_legacy_exceptions` | One owner-approved acknowledgement that a historical session roster is unavailable; it creates no attendance fact. |
+| `data_quality_issues` | One imported or manually logged issue with explicit open/resolved/ignored lifecycle. |
+| `audit_events` | One named-actor application event with entity key and structured details. |
+
+## Derived progress and reporting fields
+
+These values belong to views or query modules and are never editable columns.
 
 | Field | Definition |
 |---|---|
-| `entrance_level` | The learner's single placement level. |
-| `current_level` | Final level from the latest valid evaluation. |
-| `highest_level` | Maximum final level reached across valid evaluation versions. |
-| `current_progress` | Current numeric level minus placement numeric level. |
-| `peak_progress` | Highest numeric level minus placement numeric level. |
-| `regression_flag` | Latest final level is lower than the preceding final level. |
-| `progress_trajectory` | Ordered placement + final evaluations over time. |
-| `last_active_at` | Latest `Present` attendance meeting. |
-| `attendance_ratio` | Present applicable logical units / applicable non-cancelled non-make-up logical units; linked make-up credits the original unit. |
-| `sessions_per_month` | Credited session units in completed meetings per calendar month. |
+| `entrance_level` | Level from the employee's `business` placement. |
+| `current_level` | Final level from the latest evaluation version carrying a final level. |
+| `highest_level` | Maximum final level reached across evaluation versions. |
+| `current_progress` | Current numeric level minus entrance numeric level. |
+| `peak_progress` | Highest numeric level minus entrance numeric level. |
+| `regression_flag` | Latest final level is below the immediately preceding final level. |
+| `last_active_at` | Latest completed meeting with direct or replacement-credit presence. |
+| `attendance_ratio` | Present applicable logical sequences divided by applicable non-cancelled non-make-up logical sequences. |
+| `effective_exam_eligible` | Latest admin override when active; otherwise attendance ratio compared with the run threshold snapshot. |
+| `sessions_per_month` | Credited non-final-test units in completed meetings by calendar month. |
 
 ## Spreadsheet fields to deprecate
 
-| Current field | Target treatment |
+| Legacy field | Canonical treatment |
 |---|---|
-| `STUDENTS.Status` | Replace with employment, membership, enrollment, and run statuses. |
-| `STUDENTS.PIC` | Derive from current cohort PIC assignment. |
-| `Current Course` / `Latest Class Code` | Derive from active/latest enrollment. |
-| `Current Level` | Replace with clearly named `current_level` and `highest_level`. |
-| `Last Active Date` / `Days Since Active` | Derive from attendance and current date. |
-| `Drop Flag` | Derive from enrollment status and attendance rules. |
-| Numeric/group/progress helper columns | Derive from levels and evaluations. |
-| `sheet2.Full Name`, `PIC`, `Role`, `BU` | Use employee joins; retain BU/Role enrollment snapshots only. |
-| `sheet2.start date` | Replace formula MIN date with admin-confirmed run start date. |
-| `First Class Start Date` | Remove; no current business use. |
-| `Is_Unique_Row` and pivot/helper columns | Remove from production data. |
-| `ATTENDANCE_LOG.Full Name`, `PIC` | Derive through relationships. |
-| `CLASS_DATES` | Replace with course runs and meetings. |
+| `STUDENTS.Status` | Split into employment, membership, enrollment, and run statuses. |
+| `STUDENTS.PIC` | Derive from the current `cohort_pic_assignments` row. |
+| `Current Course`, `Latest Class Code` | Derive from active or latest run enrollment. |
+| `Current Level` | Use clearly named derived current and highest levels. |
+| `Last Active Date`, `Days Since Active` | Derive from attendance and meeting facts. |
+| `Drop Flag` | Derive from enrollment state and policy; never store as a parallel truth. |
+| Numeric, grouping, and progress helper columns | Derive from controlled levels and evaluation versions. |
+| Spreadsheet name, PIC, role, and BU copies | Join employee/PIC records; retain only immutable enrollment BU/role snapshots. |
+| Formula minimum start dates | Replace with confirmed `course_runs.start_date`. |
+| `First Class Start Date`, pivot helpers, uniqueness helpers | Do not load into production canonical data. |
+| `ATTENDANCE_LOG` copied names/PIC | Derive through enrollment and class relationships. |
+| `CLASS_DATES` | Replace with `course_runs`, `meetings`, and `session_units`. |

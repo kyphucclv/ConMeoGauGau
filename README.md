@@ -99,7 +99,8 @@ denominator while preserving present replacement credit and immutable linkage.
 - `config/phase10_remediation.json` — checksum-bound, owner-approved source
   overrides and unresolved confirmation inventory.
 - `services.py` — transactional business commands.
-- `streamlit_app.py` + `frontend_workflows.py` — canonical admin UI.
+- `streamlit_app.py` + `frontend_workflows.py` — HR-facing page and workflow UI.
+- `frontend_queries.py` — task-oriented canonical read models used by the UI.
 - `.streamlit/config.toml` — local Streamlit server defaults; keep
   `.streamlit/secrets.toml` local and ignored.
 - `run_app.cmd` / `run_app.ps1` — Windows launcher and health check for the
@@ -110,6 +111,8 @@ denominator while preserving present replacement credit and immutable linkage.
   owner-decision validation gate.
 - `scripts/phase11_operational_issue_snapshot.py` — reproducible operational
   issue snapshot and Phase 11 owner-decision validation gate.
+- `scripts/phase13_dictionary_check.py` — column-level dictionary validation
+  against the applied canonical schema.
 - `docs/reviews/phase-11-operations-workspace-spec.md` — owner-approved learner,
   attendance, monthly review, and data-issues workflow contract.
 - `docs/reviews/` — phase evidence and review decisions.

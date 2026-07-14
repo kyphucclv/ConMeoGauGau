@@ -90,6 +90,9 @@ def assert_static_ui_contract() -> None:
         for pattern in forbidden:
             if pattern in text:
                 raise AssertionError(f"{filename} contains forbidden UI pattern: {pattern}")
+        for sql_pattern in ("fetch_all(", "SELECT ", "FROM ", "JOIN ", "WHERE "):
+            if sql_pattern in text:
+                raise AssertionError(f"{filename} must delegate read SQL to frontend_queries.py: {sql_pattern}")
     if "BusinessService" not in (ROOT / "frontend_workflows.py").read_text(encoding="utf-8"):
         raise AssertionError("frontend workflows must call the service layer")
     app_text = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
@@ -149,6 +152,21 @@ def assert_static_ui_contract() -> None:
     for pattern in required_patterns:
         if pattern not in workflow_text:
             raise AssertionError(f"frontend workflows missing P11.2 pattern: {pattern}")
+
+    query_text = (ROOT / "frontend_queries.py").read_text(encoding="utf-8")
+    query_patterns = [
+        "def application_snapshot",
+        "def workflow_reference_data",
+        "def learner_directory_rows",
+        "def course_run_capacity",
+        "def available_makeup_absences",
+        "def evaluation_outcome_rows",
+        "def operational_issue_rows",
+        "def audit_event_rows",
+    ]
+    for pattern in query_patterns:
+        if pattern not in query_text:
+            raise AssertionError(f"frontend query boundary missing task read model: {pattern}")
 
 
 def run_gate(database_url: str) -> dict[str, object]:

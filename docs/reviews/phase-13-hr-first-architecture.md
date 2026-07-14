@@ -465,6 +465,18 @@ Completed on 2026-07-14:
   present credit to its logical unit, adds zero denominator units, and writes a
   reasoned before/after audit event. Database constraints reject malformed,
   cross-purpose, duplicate, and rewritten links.
+- **P13.0-J**: generic employee save now locks and compares the current BU/role
+  assignment. Repeating the same values leaves history unchanged; a real change
+  closes the current period and appends exactly one new period in the same
+  transaction. The audit and command receipt identify the action taken.
+- **P13.0-K**: `streamlit_app.py` and `frontend_workflows.py` contain no read SQL.
+  Task-oriented reads now live in `frontend_queries.py`; UI writes continue to
+  cross only the `BusinessService` transaction boundary. The Phase 7 static
+  gate prevents read SQL from returning to page modules.
+- **P13.0-L**: `DATA_DICTIONARY.md` now distinguishes physical names, stored
+  values, HR labels, and derived read models. Its 20 canonical and audited
+  support tables are checked column-for-column against the applied schema, and
+  legacy aliases are rejected by `scripts/phase13_dictionary_check.py`.
 
 Verification evidence:
 
@@ -474,6 +486,7 @@ Verification evidence:
 - `python scripts\phase7_frontend_workflow_check.py`
 - `python scripts\phase8_automated_uat.py`
 - `python scripts\phase11_p11_1_integration.py`
+- `python scripts\phase13_dictionary_check.py`
 - `python scripts\phase11_operational_issue_snapshot.py --validate-decisions --database-url postgresql://postgres@localhost:5432/english_class`
 - `.\run_app.cmd -CheckOnly`
 
@@ -485,9 +498,11 @@ Production migration evidence on 2026-07-14:
 - production retained 6,281 attendance rows and zero pre-existing make-up rows;
 - operational issue count and source/snapshot checksums remained unchanged;
 - the restricted app role passed the launcher database health check.
+- a read-only organization-history audit found zero consecutive duplicate
+  BU/role periods, so P13.0-J required no production data remediation.
 
-P13.0-A through P13.0-I are complete. P13.0-J through P13.0-L remain open and
-still gate Phase 13 sign-off.
+P13.0-A through P13.0-L are complete. The integrity foundation is signed off
+for P13.2 learner-journey implementation; all gates above remain mandatory.
 
 ## 13. Verification strategy
 

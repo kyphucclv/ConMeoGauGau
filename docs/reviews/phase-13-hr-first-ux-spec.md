@@ -1,6 +1,6 @@
 # Phase 13 HR-first UX specification
 
-Status: **Architecture owner-approved; P13.0 integrity foundation in progress**
+Status: **P13.0 integrity foundation complete; P13.2 ready**
 
 Baseline commit: `712d6fb phase12 polish evaluation workflow`
 
@@ -29,6 +29,14 @@ Implementation evidence:
   historical gaps remain unknown instead of defaulting to invented attendance.
   Make-up attendance now uses linked replacement credit with no denominator
   inflation and database-enforced duplicate/relationship guards.
+- P13.0-J through P13.0-L passed on 2026-07-14. Repeated employee saves no
+  longer append unchanged organization periods; Streamlit page/workflow modules
+  delegate all reads to `frontend_queries.py`; and the data dictionary now
+  passes a 20-table applied-schema comparison through
+  `python scripts\phase13_dictionary_check.py`.
+- P13.0 is complete. The next implementation slice is P13.2 learner journeys,
+  starting from the approved lifecycle-aware service commands and HR terms in
+  the reconciled data dictionary.
 
 ## Problem statement
 

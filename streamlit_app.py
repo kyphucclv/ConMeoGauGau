@@ -7,7 +7,8 @@ import os
 import streamlit as st
 
 from auth import AppUser, active_user_by_id, authenticate
-from db import create_pool, fetch_all, verify_canonical_schema
+from db import create_pool, verify_canonical_schema
+import frontend_queries as queries
 from frontend_workflows import render_operations
 from reporting import REPORTS, metric_definitions, report_by_label, run_report
 
@@ -29,26 +30,7 @@ def cached_pool(conn_str: str):
 
 
 def operations_snapshot(pool) -> dict:
-    rows = fetch_all(
-        pool,
-        """
-        SELECT
-            (SELECT count(*) FROM employees WHERE employment_status='active') AS active_employees,
-            (SELECT count(*) FROM run_enrollments WHERE status='active') AS active_learners,
-            (SELECT count(*) FROM course_runs WHERE status IN ('planned','active')) AS open_course_runs,
-            (SELECT count(*) FROM v_operational_data_issues) AS operational_issues,
-            (SELECT count(*) FROM v_operational_data_issues WHERE severity='high') AS high_issues,
-            (SELECT count(*) FROM data_quality_issues WHERE status='open') AS open_quality_issues
-        """,
-    )
-    return rows[0] if rows else {
-        "active_employees": 0,
-        "active_learners": 0,
-        "open_course_runs": 0,
-        "operational_issues": 0,
-        "high_issues": 0,
-        "open_quality_issues": 0,
-    }
+    return queries.application_snapshot(pool)
 
 
 def render_app_header(pool, user: AppUser) -> None:
@@ -101,15 +83,7 @@ def render_audit(pool, actor: AppUser) -> None:
     if actor.role != "admin":
         st.info("Only admins can view audit events.")
         return
-    rows = fetch_all(
-        pool,
-        """
-        SELECT created_at, actor_username, action, entity_type, entity_key, details
-        FROM audit_events
-        ORDER BY created_at DESC
-        LIMIT 300
-        """,
-    )
+    rows = queries.audit_event_rows(pool)
     if rows:
         st.dataframe(rows, hide_index=True)
     else:
