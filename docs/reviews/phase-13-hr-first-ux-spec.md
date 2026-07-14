@@ -1,6 +1,6 @@
 # Phase 13 HR-first UX specification
 
-Status: **P13.0 integrity foundation complete; P13.2 ready**
+Status: **P13.2 learner journeys implemented; P13.3 ready**
 
 Baseline commit: `712d6fb phase12 polish evaluation workflow`
 
@@ -37,6 +37,11 @@ Implementation evidence:
 - P13.0 is complete. The next implementation slice is P13.2 learner journeys,
   starting from the approved lifecycle-aware service commands and HR terms in
   the reconciled data dictionary.
+- P13.2 passed on 2026-07-14. The Learners area now starts from a person and
+  routes HR to start, continue, restart, or move actions. Each write is preceded
+  by one destination summary, calculated first session, and conditional
+  capacity confirmation. Evidence is recorded in
+  `docs/reviews/phase-13-p13-2-learner-journeys.md`.
 
 ## Problem statement
 
@@ -58,8 +63,8 @@ not from database-adjacent nouns.
 
 1. P13.0 identity, transaction, audit, lifecycle, and data-contract foundation.
 2. P13.1 HR-first app shell and task start page v2.
-3. P13.2 First-time, returning, continuation, and transfer learner journeys.
-4. P13.3 Event-time attendance, schedule, and correction journeys.
+3. P13.2 First-time, returning, continuation, and transfer learner journeys. **Complete.**
+4. P13.3 Event-time attendance, schedule, and correction journeys. **Next.**
 5. P13.4 Final-result, completion, and monthly-review journeys.
 6. P13.5 Guided data follow-up and admin journeys.
 7. P13.6 Scenario-based HR UAT and rollout.

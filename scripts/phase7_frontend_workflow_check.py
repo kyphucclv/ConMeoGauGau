@@ -20,6 +20,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from auth import hash_password
+from db import create_pool
+from frontend_queries import learner_journey_context
 from migrate import apply_migrations
 from scripts.phase4_integration_check import _database_url, recreate_database
 from services import BusinessService, CommandError
@@ -130,6 +132,11 @@ def assert_static_ui_contract() -> None:
         "propose_onboarding_start_session",
         "learner_workspace_mode",
         "_set_learner_workspace_mode",
+        "Learner list",
+        "Start learning",
+        "Continue learning",
+        "Move learner",
+        "I confirm this learner, class, course, and first session",
         "Missing placement",
         "attendance_workspace_mode",
         "_set_attendance_workspace_mode",
@@ -158,6 +165,7 @@ def assert_static_ui_contract() -> None:
         "def application_snapshot",
         "def workflow_reference_data",
         "def learner_directory_rows",
+        "def learner_journey_context",
         "def course_run_capacity",
         "def available_makeup_absences",
         "def evaluation_outcome_rows",
@@ -171,6 +179,7 @@ def assert_static_ui_contract() -> None:
 
 def run_gate(database_url: str) -> dict[str, object]:
     conn = psycopg2.connect(database_url)
+    query_pool = create_pool(database_url, application_name="phase7_query_gate")
     try:
         ids = seed(conn)
         editor = BusinessService(conn, ids["phase7_editor"])
@@ -187,6 +196,8 @@ def run_gate(database_url: str) -> dict[str, object]:
         pic = editor.create_or_update_employee("P7-PIC", "Phase Seven PIC", employment_status="active").entity_id
         employee_state = one(conn, "SELECT * FROM v_current_employee_state WHERE employee_id=%s", (employee,))
         assert employee_state["business_unit_name"] == "Phase 7 BU"
+        first_time_context = learner_journey_context(query_pool, employee)
+        assert first_time_context["lifecycle"] == "first_time"
 
         cohort = editor.create_cohort("P7-COHORT", "Phase 7 Cohort", status="active").entity_id
         editor.assign_pic(cohort, pic, date(2026, 7, 1))
@@ -242,6 +253,10 @@ def run_gate(database_url: str) -> dict[str, object]:
             course_run_id=created_run.entity_id,
             joined_on=date(2026, 7, 5),
         )
+        active_context = learner_journey_context(query_pool, attendance_learner.values["employee_id"])
+        assert active_context["lifecycle"] == "active"
+        assert active_context["active_enrollment_id"] == attendance_learner.entity_id
+        assert active_context["active_class_code"] == "EL001"
         next_session = editor.propose_next_attendance_session(created_run.entity_id).values["sequence_in_run"]
         assert next_session == 1
         attendance_session = editor.create_attendance_session(
@@ -374,6 +389,7 @@ def run_gate(database_url: str) -> dict[str, object]:
             "quality_issue_status": issue["status"],
         }
     finally:
+        query_pool.closeall()
         conn.close()
 
 

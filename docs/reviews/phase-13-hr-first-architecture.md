@@ -504,6 +504,24 @@ Production migration evidence on 2026-07-14:
 P13.0-A through P13.0-L are complete. The integrity foundation is signed off
 for P13.2 learner-journey implementation; all gates above remain mandatory.
 
+### P13.2 implementation status
+
+Completed on 2026-07-14:
+
+- the learner workspace now starts from a person and exposes HR actions instead
+  of enrollment and membership maintenance;
+- one journey context classifies active, continuation, returning, rejoin, and
+  first-time states from canonical records;
+- start and move flows show destination, course, calculated first session, and
+  projected class size before confirmation;
+- continuation reuses employee, placement, and membership records without
+  meaningless profile updates or capacity overrides;
+- cross-class moves use the same explicit, reasoned capacity exception policy
+  as learner start and retain full rollback on rejection;
+- only planned or active destinations are offered and accepted.
+
+Detailed evidence: `docs/reviews/phase-13-p13-2-learner-journeys.md`.
+
 ## 13. Verification strategy
 
 ### Domain tests

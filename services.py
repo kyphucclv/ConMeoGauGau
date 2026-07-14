@@ -388,13 +388,15 @@ class BusinessService:
                 raise CommandError("invalid_input", "employment_status is invalid")
             if start_session_number < 1:
                 raise CommandError("invalid_input", "start_session_number must be positive")
-            cur.execute("""SELECT cr.cohort_id, c.capacity FROM course_runs cr
+            cur.execute("""SELECT cr.cohort_id, c.capacity, cr.status FROM course_runs cr
                            JOIN cohorts c ON c.cohort_id=cr.cohort_id
                            WHERE cr.course_run_id=%s FOR UPDATE""", (course_run_id,))
             target = cur.fetchone()
             if not target:
                 raise CommandError("not_found", "course run not found")
-            cohort_id, capacity = target
+            cohort_id, capacity, run_status = target
+            if run_status not in {"planned", "active"}:
+                raise CommandError("invalid_state", "learning can start only in a planned or active course run")
             proposed_start_session = self._propose_course_run_start_session_in_tx(cur, course_run_id)
             if start_session_number < proposed_start_session:
                 raise CommandError(
@@ -403,18 +405,28 @@ class BusinessService:
                 )
             # Lock the employee row when it exists, so concurrent onboarding does
             # not create competing organization histories or active enrollments.
-            cur.execute("SELECT employee_id FROM employees WHERE emp_code=%s FOR UPDATE", (emp_code.strip(),))
+            cur.execute(
+                """SELECT employee_id,full_name,employment_status
+                   FROM employees WHERE emp_code=%s FOR UPDATE""",
+                (emp_code.strip(),),
+            )
             row = cur.fetchone()
             employee_created = row is None
             if row:
                 employee_id = row[0]
-                cur.execute("UPDATE employees SET full_name=%s, employment_status=%s WHERE employee_id=%s",
-                            (full_name.strip(), employment_status, employee_id))
+                employee_action = "unchanged"
+                if (row[1], row[2]) != (full_name.strip(), employment_status):
+                    cur.execute(
+                        "UPDATE employees SET full_name=%s, employment_status=%s WHERE employee_id=%s",
+                        (full_name.strip(), employment_status, employee_id),
+                    )
+                    employee_action = "updated"
             else:
                 cur.execute("""INSERT INTO employees(emp_code,full_name,employment_status)
                                VALUES(%s,%s,%s) RETURNING employee_id""",
                             (emp_code.strip(), full_name.strip(), employment_status))
                 employee_id = cur.fetchone()[0]
+                employee_action = "created"
             cur.execute("SELECT business_unit_id,job_role_id FROM employee_org_history WHERE employee_id=%s AND is_current FOR UPDATE", (employee_id,))
             current_org = cur.fetchone()
             if current_org != (business_unit_id, job_role_id):
@@ -473,7 +485,8 @@ class BusinessService:
 
             cur.execute("SELECT count(*) FROM cohort_memberships WHERE cohort_id=%s AND status='active'", (cohort_id,))
             resulting_count = cur.fetchone()[0]
-            if capacity is not None and resulting_count > capacity and not _normalize_label(capacity_override_reason):
+            increases_membership = membership_action == "created"
+            if increases_membership and capacity is not None and resulting_count > capacity and not _normalize_label(capacity_override_reason):
                 raise CommandError("capacity_exceeded", "cohort is at capacity; an HR override reason is required")
             cur.execute("""INSERT INTO run_enrollments(
                                course_run_id,employee_id,cohort_membership_id,start_session_number,
@@ -481,7 +494,7 @@ class BusinessService:
                            ) VALUES(%s,%s,%s,%s,%s,%s) RETURNING run_enrollment_id""",
                         (course_run_id, employee_id, membership_id, start_session_number, business_unit_id, job_role_id))
             enrollment_id = cur.fetchone()[0]
-            if capacity is not None and resulting_count > capacity:
+            if increases_membership and capacity is not None and resulting_count > capacity:
                 reason = _normalize_label(capacity_override_reason)
                 cur.execute("""INSERT INTO cohort_capacity_overrides(
                                cohort_id,employee_id,course_run_id,previous_capacity,resulting_active_learner_count,reason,actor_user_id
@@ -493,7 +506,7 @@ class BusinessService:
             self._audit(cur, "learner.onboard", "run_enrollment", enrollment_id,
                         {"employee_id": employee_id, "placement_id": placement_id, "membership_id": membership_id,
                          "lifecycle": lifecycle, "placement_action": placement_action,
-                         "membership_action": membership_action})
+                         "membership_action": membership_action, "employee_action": employee_action})
             return CommandResult("run_enrollment", enrollment_id, {
                 "employee_id": employee_id,
                 "placement_id": placement_id,
@@ -501,13 +514,17 @@ class BusinessService:
                 "lifecycle": lifecycle,
                 "placement_action": placement_action,
                 "membership_action": membership_action,
+                "employee_action": employee_action,
             })
         return self._run({"admin", "editor"}, op)
 
     def propose_onboarding_start_session(self, target_course_run_id: int) -> CommandResult:
         def op(cur):
-            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
-            if not cur.fetchone(): raise CommandError("not_found", "target course run not found")
+            cur.execute("SELECT status FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
+            target = cur.fetchone()
+            if not target: raise CommandError("not_found", "target course run not found")
+            if target[0] not in {"planned", "active"}:
+                raise CommandError("invalid_state", "learning can start only in a planned or active course run")
             return CommandResult("course_run", target_course_run_id, {
                 "start_session_number": self._propose_course_run_start_session_in_tx(cur, target_course_run_id)
             })
@@ -515,14 +532,25 @@ class BusinessService:
 
     def propose_transfer_start_session(self, target_course_run_id: int) -> CommandResult:
         def op(cur):
-            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
-            if not cur.fetchone(): raise CommandError("not_found", "target course run not found")
+            cur.execute("SELECT status FROM course_runs WHERE course_run_id=%s", (target_course_run_id,))
+            target = cur.fetchone()
+            if not target: raise CommandError("not_found", "target course run not found")
+            if target[0] not in {"planned", "active"}:
+                raise CommandError("invalid_state", "transfer target must be a planned or active course run")
             return CommandResult("course_run", target_course_run_id, {
                 "start_session_number": self._propose_course_run_start_session_in_tx(cur, target_course_run_id)
             })
         return self._run({"admin", "editor"}, op)
 
-    def transfer_learner(self, run_enrollment_id: int, target_course_run_id: int, transfer_date: date, *, confirmed_start_session_number: int) -> CommandResult:
+    def transfer_learner(
+        self,
+        run_enrollment_id: int,
+        target_course_run_id: int,
+        transfer_date: date,
+        *,
+        confirmed_start_session_number: int,
+        capacity_override_reason: str | None = None,
+    ) -> CommandResult:
         """Close source membership/enrollment and create target records atomically."""
         def op(cur):
             proposal = self._propose_transfer_start_session_in_tx(cur, target_course_run_id)
@@ -536,16 +564,28 @@ class BusinessService:
             employee_id, source_membership_id, source_cohort_id, source_course_run_id = source
             if not source_membership_id:
                 raise CommandError("invalid_state", "active enrollment must be linked to its cohort membership before transfer")
-            cur.execute("SELECT cr.cohort_id,c.capacity FROM course_runs cr JOIN cohorts c ON c.cohort_id=cr.cohort_id WHERE cr.course_run_id=%s FOR UPDATE", (target_course_run_id,))
+            cur.execute("""SELECT cr.cohort_id,c.capacity,cr.status
+                           FROM course_runs cr
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           WHERE cr.course_run_id=%s FOR UPDATE""", (target_course_run_id,))
             target = cur.fetchone()
             if not target: raise CommandError("not_found", "target course run not found")
-            target_cohort_id, capacity = target
+            target_cohort_id, capacity, target_status = target
+            if target_status not in {"planned", "active"}:
+                raise CommandError("invalid_state", "transfer target must be a planned or active course run")
             if target_course_run_id == source_course_run_id: raise CommandError("invalid_input", "target course run must differ from source")
+            if target_cohort_id == source_cohort_id:
+                raise CommandError("invalid_input", "move learner requires a different class; use continuation after course completion")
             cur.execute("SELECT business_unit_id,job_role_id FROM employee_org_history WHERE employee_id=%s AND is_current", (employee_id,))
             org = cur.fetchone()
             if not org or org[0] is None or org[1] is None: raise CommandError("invalid_state", "current employee BU and role are required for transfer")
             cur.execute("SELECT count(*) FROM cohort_memberships WHERE cohort_id=%s AND status='active'", (target_cohort_id,))
-            if capacity is not None and cur.fetchone()[0] >= capacity: raise CommandError("capacity_exceeded", "target cohort is at capacity")
+            target_active_count = cur.fetchone()[0]
+            resulting_count = target_active_count + 1
+            override_reason = _normalize_label(capacity_override_reason)
+            needs_override = capacity is not None and resulting_count > capacity
+            if needs_override and not override_reason:
+                raise CommandError("capacity_exceeded", "target cohort is at capacity; an HR override reason is required")
             cur.execute("UPDATE run_enrollments SET status='transferred' WHERE run_enrollment_id=%s", (run_enrollment_id,))
             cur.execute("UPDATE cohort_memberships SET end_date=%s,status='transferred' WHERE cohort_membership_id=%s", (transfer_date, source_membership_id))
             cur.execute("""INSERT INTO cohort_memberships(cohort_id,employee_id,start_date,status)
@@ -556,9 +596,32 @@ class BusinessService:
                            VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING run_enrollment_id""",
                         (target_course_run_id, employee_id, target_membership_id, proposal, org[0], org[1], run_enrollment_id))
             new_enrollment_id = cur.fetchone()[0]
+            override_id = None
+            if needs_override:
+                cur.execute("""INSERT INTO cohort_capacity_overrides(
+                                   cohort_id,employee_id,course_run_id,previous_capacity,
+                                   resulting_active_learner_count,reason,actor_user_id
+                               ) VALUES(%s,%s,%s,%s,%s,%s,%s)
+                               RETURNING cohort_capacity_override_id""",
+                            (target_cohort_id, employee_id, target_course_run_id, capacity,
+                             resulting_count, override_reason, self.actor_user_id))
+                override_id = cur.fetchone()[0]
+                self._audit(cur, "cohort.capacity.override", "cohort_capacity_override", override_id, {
+                    "cohort_id": target_cohort_id,
+                    "previous_capacity": capacity,
+                    "resulting_active_learner_count": resulting_count,
+                    "reason": override_reason,
+                })
             self._audit(cur, "learner.transfer", "run_enrollment", new_enrollment_id,
-                        {"from_enrollment_id": run_enrollment_id, "from_cohort_id": source_cohort_id, "start_session_number": proposal})
-            return CommandResult("run_enrollment", new_enrollment_id, {"from_enrollment_id": run_enrollment_id, "membership_id": target_membership_id, "start_session_number": proposal})
+                        {"from_enrollment_id": run_enrollment_id, "from_cohort_id": source_cohort_id,
+                         "to_cohort_id": target_cohort_id, "start_session_number": proposal,
+                         "capacity_override_id": override_id})
+            return CommandResult("run_enrollment", new_enrollment_id, {
+                "from_enrollment_id": run_enrollment_id,
+                "membership_id": target_membership_id,
+                "start_session_number": proposal,
+                "capacity_override_id": override_id,
+            })
         return self._run({"admin", "editor"}, op)
 
     @staticmethod

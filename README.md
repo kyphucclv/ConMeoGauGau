@@ -9,6 +9,10 @@ specified in `docs/reviews/phase-11-operations-workspace-spec.md`. Production
 rollout validation is approved for the current workbook checksum and operational
 issue snapshot after owner decisions for high-severity legacy data issues.
 
+Phase 13.2 now provides HR-first learner start, continuation, rejoin, profile,
+history, and transfer journeys while preserving the canonical service and audit
+boundaries.
+
 Do not run legacy `schema.sql`, `views.sql`, `admin_schema.sql`, or `etl.py` for
 the canonical app.  Use the versioned migrations, staging loader, canonical ETL,
 and `streamlit_app.py`.

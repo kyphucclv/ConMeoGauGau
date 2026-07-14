@@ -88,7 +88,8 @@ def workflow_reference_data(pool) -> dict[str, list[dict]]:
             LIMIT 200
         """),
         "course_runs": fetch_all(pool, """
-            SELECT cr.course_run_id, c.class_code, co.course_code, co.course_name, cr.run_number, cr.status
+            SELECT cr.course_run_id, cr.cohort_id, c.class_code, co.course_code,
+                   co.course_name, cr.run_number, cr.status
             FROM course_runs cr
             JOIN cohorts c ON c.cohort_id=cr.cohort_id
             JOIN courses co ON co.course_id=cr.course_id
@@ -138,7 +139,8 @@ def learner_directory_rows(pool) -> list[dict]:
                bu.business_unit_name, jr.job_role_name,
                c.class_code, co.course_name, co.course_code, re.run_enrollment_id,
                re.status AS enrollment_status, re.start_session_number,
-               l.level_name AS entrance_level, attendance.attendance_ratio,
+               l.level_id AS entrance_level_id, l.level_name AS entrance_level,
+               attendance.attendance_ratio,
                COALESCE(cpa.pic_label, pic.full_name) AS pic
         FROM employees e
         LEFT JOIN employee_org_history eoh ON eoh.employee_id=e.employee_id AND eoh.is_current
@@ -158,6 +160,84 @@ def learner_directory_rows(pool) -> list[dict]:
     """)
 
 
+def learner_journey_context(pool, employee_id: int) -> dict | None:
+    rows = fetch_all(pool, """
+        SELECT e.employee_id, e.emp_code, e.full_name, e.employment_status,
+               eoh.business_unit_id, bu.business_unit_name,
+               eoh.job_role_id, jr.job_role_name,
+               p.placement_id, p.level_id AS entrance_level_id,
+               level.level_name AS entrance_level,
+               active_run.run_enrollment_id AS active_enrollment_id,
+               active_run.course_run_id AS active_course_run_id,
+               active_run.cohort_id AS active_cohort_id,
+               active_run.class_code AS active_class_code,
+               active_run.course_name AS active_course_name,
+               active_membership.cohort_membership_id AS active_membership_id,
+               active_membership.cohort_id AS membership_cohort_id,
+               active_membership.class_code AS membership_class_code,
+               latest_run.status AS latest_enrollment_status,
+               latest_run.class_code AS latest_class_code,
+               latest_run.course_name AS latest_course_name,
+               membership_history.membership_count
+        FROM employees e
+        LEFT JOIN employee_org_history eoh
+          ON eoh.employee_id=e.employee_id AND eoh.is_current
+        LEFT JOIN business_units bu ON bu.business_unit_id=eoh.business_unit_id
+        LEFT JOIN job_roles jr ON jr.job_role_id=eoh.job_role_id
+        LEFT JOIN placements p
+          ON p.employee_id=e.employee_id AND p.placement_kind='business'
+        LEFT JOIN levels level ON level.level_id=p.level_id
+        LEFT JOIN LATERAL (
+            SELECT re.run_enrollment_id, re.course_run_id, cr.cohort_id,
+                   c.class_code, course.course_name
+            FROM run_enrollments re
+            JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses course ON course.course_id=cr.course_id
+            WHERE re.employee_id=e.employee_id AND re.status='active'
+            LIMIT 1
+        ) active_run ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT cm.cohort_membership_id, cm.cohort_id, c.class_code
+            FROM cohort_memberships cm
+            JOIN cohorts c ON c.cohort_id=cm.cohort_id
+            WHERE cm.employee_id=e.employee_id AND cm.status='active'
+            LIMIT 1
+        ) active_membership ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT re.status, c.class_code, course.course_name
+            FROM run_enrollments re
+            JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+            JOIN cohorts c ON c.cohort_id=cr.cohort_id
+            JOIN courses course ON course.course_id=cr.course_id
+            WHERE re.employee_id=e.employee_id
+            ORDER BY re.created_at DESC, re.run_enrollment_id DESC
+            LIMIT 1
+        ) latest_run ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT count(*)::integer AS membership_count
+            FROM cohort_memberships cm
+            WHERE cm.employee_id=e.employee_id
+        ) membership_history ON TRUE
+        WHERE e.employee_id=%s
+    """, (employee_id,))
+    if not rows:
+        return None
+    context = dict(rows[0])
+    if context["active_enrollment_id"] is not None:
+        lifecycle = "active"
+    elif context["active_membership_id"] is not None:
+        lifecycle = "continuation"
+    elif context["membership_count"]:
+        lifecycle = "rejoin"
+    elif context["placement_id"] is not None:
+        lifecycle = "returning"
+    else:
+        lifecycle = "first_time"
+    context["lifecycle"] = lifecycle
+    return context
+
+
 def course_run_capacity(pool, course_run_id: int) -> dict | None:
     rows = fetch_all(pool, """
         SELECT c.class_code, c.capacity,
@@ -174,14 +254,14 @@ def course_run_capacity(pool, course_run_id: int) -> dict | None:
 def learner_course_history(pool, employee_id: int) -> list[dict]:
     return fetch_all(pool, """
         SELECT cr.start_date, c.class_code, co.course_name, re.status, re.start_session_number,
-               rea.attendance_ratio, lev.final_level_id, ev.passed
+               rea.attendance_ratio, final_level.level_name AS final_level, ev.passed
         FROM run_enrollments re
         JOIN course_runs cr ON cr.course_run_id=re.course_run_id
         JOIN cohorts c ON c.cohort_id=cr.cohort_id
         JOIN courses co ON co.course_id=cr.course_id
         LEFT JOIN v_run_enrollment_attendance rea ON rea.run_enrollment_id=re.run_enrollment_id
         LEFT JOIN v_latest_evaluation_versions ev ON ev.run_enrollment_id=re.run_enrollment_id
-        LEFT JOIN evaluation_versions lev ON lev.evaluation_version_id=ev.evaluation_version_id
+        LEFT JOIN levels final_level ON final_level.level_id=ev.final_level_id
         WHERE re.employee_id=%s
         ORDER BY re.created_at DESC
     """, (employee_id,))

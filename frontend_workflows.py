@@ -24,6 +24,39 @@ HR_TASK_AREAS = [
     "Admin records",
 ]
 
+EMPLOYMENT_OPTIONS = {
+    "Employed": "active",
+    "Not active": "inactive",
+    "Needs confirmation": "unknown",
+}
+
+ENROLLMENT_STATUS_LABELS = {
+    "active": "Learning",
+    "completed": "Completed",
+    "transferred": "Transferred",
+    "dropped": "Withdrawn",
+    "cancelled": "Cancelled",
+}
+
+LEARNER_CHANGE_LABELS = {
+    "employee.upsert": "Profile saved",
+    "learner.onboard": "Learning started",
+    "learner.transfer": "Moved to another class",
+    "enrollment.create": "Course started",
+    "enrollment.transfer": "Course changed",
+    "membership.create": "Joined class",
+    "membership.close": "Left class",
+    "membership.transfer": "Class changed",
+}
+
+LIFECYCLE_LABELS = {
+    "active": ("Currently learning", "blue"),
+    "continuation": ("Ready for next course", "green"),
+    "rejoin": ("Returning to a class", "orange"),
+    "returning": ("Returning learner", "orange"),
+    "first_time": ("First learning record", "gray"),
+}
+
 
 def render_operations(pool, actor: AppUser) -> None:
     st.subheader("HR workspace")
@@ -149,6 +182,20 @@ def safe_submit(pool, actor: AppUser, fn) -> bool:
     return True
 
 
+def submit_values(pool, actor: AppUser, fn) -> dict | None:
+    """Run one command and return its receipt without exposing SQL errors."""
+    conn_ctx, svc = service(pool, actor)
+    try:
+        return fn(svc).values
+    except CommandError as error:
+        st.error(error.message)
+    except Exception:
+        st.error("Unable to complete this operation.")
+    finally:
+        conn_ctx.__exit__(None, None, None)
+    return None
+
+
 def service_values(pool, actor: AppUser, fn) -> dict | None:
     try:
         with pooled_connection(pool) as conn:
@@ -206,19 +253,22 @@ def _next_attendance_sequence(pool, actor: AppUser, course_run_id: int | None) -
 
 
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
-    """Desktop-first learner search, onboarding, correction, and transfer workspace."""
-    st.session_state.setdefault("learner_workspace_mode", "Find learner")
+    """HR-first learner search and lifecycle journeys."""
+    if st.session_state.pop("learner_redirect_to_list", False):
+        st.session_state["learner_workspace_mode"] = "Learner list"
+    if st.session_state.get("learner_workspace_mode") not in {"Learner list", "Start learning"}:
+        st.session_state["learner_workspace_mode"] = "Learner list"
+    notice = st.session_state.pop("learner_notice", None)
+    if notice:
+        st.success(notice)
     mode = st.segmented_control(
-        "Learner workflow",
-        ["Find learner", "Add learner", "Create class"],
+        "Learner task",
+        ["Learner list", "Start learning"],
         key="learner_workspace_mode",
     )
 
-    if mode == "Add learner":
+    if mode == "Start learning":
         render_learner_onboarding(pool, actor, refs)
-        return
-    if mode == "Create class":
-        render_class_course_run_creator(pool, actor, refs)
         return
 
     rows = _learner_rows(pool)
@@ -229,18 +279,28 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     pic_names = sorted({row["pic"] for row in rows if row["pic"]})
 
     with st.form("learner_filters", border=False):
-        search = st.text_input("Search by employee code or name", value=st.session_state.get("learner_search", ""))
-        filter_row = st.container(horizontal=True)
-        with filter_row:
-            class_filter = st.selectbox("Class", ["All"] + class_codes)
-            course_filter = st.selectbox("Course", ["All"] + course_names)
-            pic_filter = st.selectbox("PIC", ["All"] + pic_names)
-            active_filter = st.segmented_control("Enrollment", ["All", "Active", "Inactive"], default="All")
-        org_filter_row = st.container(horizontal=True)
-        with org_filter_row:
-            bu_filter = st.selectbox("Business unit", ["All"] + bu_names)
-            role_filter = st.selectbox("Role", ["All"] + role_names)
-            submitted = st.form_submit_button("Apply filters", icon=":material/search:")
+        with st.container(horizontal=True, vertical_alignment="bottom"):
+            search = st.text_input(
+                "Search by employee code or name",
+                value=st.session_state.get("learner_search", ""),
+                placeholder="Employee code or name",
+            )
+            submitted = st.form_submit_button("Search", icon=":material/search:")
+        with st.expander("More filters"):
+            filter_row = st.container(horizontal=True)
+            with filter_row:
+                class_filter = st.selectbox("Class", ["All"] + class_codes)
+                course_filter = st.selectbox("Course", ["All"] + course_names)
+                pic_filter = st.selectbox("PIC", ["All"] + pic_names)
+                active_filter = st.segmented_control(
+                    "Learning status",
+                    ["All", "Currently learning", "Not currently learning"],
+                    default="All",
+                )
+            org_filter_row = st.container(horizontal=True)
+            with org_filter_row:
+                bu_filter = st.selectbox("Business unit", ["All"] + bu_names)
+                role_filter = st.selectbox("Role", ["All"] + role_names)
     if submitted:
         st.session_state["learner_search"] = search
 
@@ -253,7 +313,10 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
             and (pic_filter == "All" or row["pic"] == pic_filter)
             and (bu_filter == "All" or row["business_unit_name"] == bu_filter)
             and (role_filter == "All" or row["job_role_name"] == role_filter)
-            and (active_filter == "All" or (active_filter == "Active") == (row["enrollment_status"] == "active"))
+            and (
+                active_filter == "All"
+                or (active_filter == "Currently learning") == (row["enrollment_status"] == "active")
+            )
         )
 
     filtered = [row for row in rows if matches(row)]
@@ -261,63 +324,186 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     missing_placement_count = sum(1 for row in filtered if not row["entrance_level"])
     with st.container(horizontal=True):
         st.metric("Results", len(filtered), border=True)
-        st.metric("Active", active_count, border=True)
+        st.metric("Currently learning", active_count, border=True)
         st.metric("Missing placement", missing_placement_count, border=True)
     with st.container(horizontal=True):
-        st.button("Add learner", icon=":material/person_add:", on_click=_set_learner_workspace_mode, args=("Add learner",))
-        st.button("Create class", icon=":material/add_circle:", on_click=_set_learner_workspace_mode, args=("Create class",))
-    event = st.dataframe(filtered, hide_index=True, key="learner_results", on_select="rerun", selection_mode="single-row", column_config={
-        "employee_id": None, "run_enrollment_id": None,
-        "attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent"),
-        "start_session_number": st.column_config.NumberColumn("Start session"),
-    })
+        st.button(
+            "Start learning",
+            type="primary",
+            icon=":material/person_add:",
+            on_click=_set_learner_workspace_mode,
+            args=("Start learning", None),
+        )
+        st.button(
+            "Create class",
+            icon=":material/group_add:",
+            on_click=_open_operation_section,
+            args=("Class setup",),
+        )
+
+    display_rows = [
+        {
+            "Employee code": row["emp_code"],
+            "Name": row["full_name"],
+            "Learning status": "Currently learning" if row["enrollment_status"] == "active" else "Not currently learning",
+            "Class": row["class_code"],
+            "Course": row["course_name"],
+            "Attendance": row["attendance_ratio"],
+            "Business unit": row["business_unit_name"],
+            "Role": row["job_role_name"],
+            "PIC": row["pic"],
+        }
+        for row in filtered
+    ]
+    event = st.dataframe(
+        display_rows,
+        hide_index=True,
+        key="learner_results_v2",
+        on_select="rerun",
+        selection_mode="single-row",
+        column_config={
+            "Attendance": st.column_config.NumberColumn("Attendance", format="percent"),
+        },
+    )
     selected = filtered[event.selection.rows[0]] if event.selection.rows else None
     if selected:
         render_learner_detail(pool, actor, refs, selected)
 
 
-def _set_learner_workspace_mode(mode: str) -> None:
+def _set_learner_workspace_mode(mode: str, employee_id: int | None = None) -> None:
     st.session_state["learner_workspace_mode"] = mode
+    st.session_state["learner_start_employee_id"] = employee_id
+    st.session_state["learner_start_requested"] = True
+
+
+def _open_learner_transfer(enrollment_id: int) -> None:
+    st.session_state["learner_transfer_enrollment_id"] = enrollment_id
 
 
 def render_learner_detail(pool, actor: AppUser, refs: dict[str, list[dict]], learner: dict) -> None:
-    st.subheader(f"{learner['full_name']} · {learner['emp_code']}")
-    metrics = st.columns(4)
-    metrics[0].metric("Current class", learner["class_code"] or "Not enrolled")
-    metrics[1].metric("Course", learner["course_name"] or "—")
-    metrics[2].metric("Entrance level", learner["entrance_level"] or "Not set")
-    metrics[3].metric("Attendance", f"{learner['attendance_ratio']:.0%}" if learner["attendance_ratio"] is not None else "No sessions")
+    context = queries.learner_journey_context(pool, learner["employee_id"])
+    if not context:
+        st.error("This employee record is no longer available.")
+        return
+    st.subheader(f"{learner['full_name']} | {learner['emp_code']}")
+    lifecycle_label, lifecycle_color = LIFECYCLE_LABELS[context["lifecycle"]]
+    st.badge(lifecycle_label, icon=":material/school:", color=lifecycle_color)
+    with st.container(horizontal=True):
+        st.metric("Current class", learner["class_code"] or "Not currently learning", border=True)
+        st.metric("Course", learner["course_name"] or context["latest_course_name"] or "No course", border=True)
+        st.metric("Entrance level", learner["entrance_level"] or "Not set", border=True)
+        st.metric(
+            "Attendance",
+            f"{learner['attendance_ratio']:.0%}" if learner["attendance_ratio"] is not None else "No sessions",
+            border=True,
+        )
+
+    with st.container(horizontal=True):
+        if context["active_enrollment_id"]:
+            st.button(
+                "Move learner",
+                type="primary",
+                icon=":material/swap_horiz:",
+                on_click=_open_learner_transfer,
+                args=(context["active_enrollment_id"],),
+            )
+        else:
+            action_label = "Continue learning" if context["lifecycle"] == "continuation" else "Start learning"
+            st.button(
+                action_label,
+                type="primary",
+                icon=":material/play_circle:",
+                on_click=_set_learner_workspace_mode,
+                args=("Start learning", learner["employee_id"]),
+            )
+
+    if st.session_state.get("learner_transfer_enrollment_id") == context["active_enrollment_id"]:
+        render_learner_transfer(pool, actor, refs, context)
 
     bu = options(refs["business_units"], "business_unit_id", "business_unit_name")
     roles = options(refs["job_roles"], "job_role_id", "job_role_name")
     current_bu = next((label for label, item_id in bu.items() if item_id and label == learner["business_unit_name"]), "")
     current_role = next((label for label, item_id in roles.items() if item_id and label == learner["job_role_name"]), "")
-    with st.form(f"learner_edit_{learner['employee_id']}"):
-        st.markdown("Employee identity and current organization")
-        st.text_input("Employee code", value=learner["emp_code"], disabled=True)
-        full_name = st.text_input("Full name", value=learner["full_name"])
-        status = st.selectbox("Employment status", ["active", "inactive", "unknown"], index=["active", "inactive", "unknown"].index(learner["employment_status"]))
-        business_unit = st.selectbox("Business unit", [""] + list(bu), index=([""] + list(bu)).index(current_bu) if current_bu else 0)
-        job_role = st.selectbox("Job role", [""] + list(roles), index=([""] + list(roles)).index(current_role) if current_role else 0)
-        submitted = st.form_submit_button("Save employee changes", icon=":material/save:")
-    if submitted:
-        if safe_submit(pool, actor, lambda svc: svc.create_or_update_employee(
-            learner["emp_code"], full_name, employment_status=status,
-            business_unit_id=bu.get(business_unit), job_role_id=roles.get(job_role), valid_from=date.today(),
-        )):
-            st.rerun()
+    with st.expander("Profile and organization"):
+        with st.form(f"learner_edit_{learner['employee_id']}"):
+            st.text_input("Employee code", value=learner["emp_code"], disabled=True)
+            full_name = st.text_input("Full name", value=learner["full_name"])
+            employment_labels = list(EMPLOYMENT_OPTIONS)
+            current_employment_label = next(
+                label for label, value in EMPLOYMENT_OPTIONS.items() if value == learner["employment_status"]
+            )
+            employment_label = st.selectbox(
+                "Employment status",
+                employment_labels,
+                index=employment_labels.index(current_employment_label),
+            )
+            business_unit = st.selectbox(
+                "Business unit",
+                [""] + list(bu),
+                index=([""] + list(bu)).index(current_bu) if current_bu else 0,
+            )
+            job_role = st.selectbox(
+                "Role",
+                [""] + list(roles),
+                index=([""] + list(roles)).index(current_role) if current_role else 0,
+            )
+            submitted = st.form_submit_button("Save profile", icon=":material/save:")
+        if submitted:
+            if not business_unit or not job_role:
+                st.error("Business unit and role are required.")
+            else:
+                result = submit_values(pool, actor, lambda svc: svc.create_or_update_employee(
+                    learner["emp_code"],
+                    full_name,
+                    employment_status=EMPLOYMENT_OPTIONS[employment_label],
+                    business_unit_id=bu[business_unit],
+                    job_role_id=roles[job_role],
+                    valid_from=date.today(),
+                ))
+                if result is not None:
+                    st.session_state["learner_notice"] = "Learner profile saved."
+                    st.rerun()
 
     history = queries.learner_course_history(pool, learner["employee_id"])
     st.markdown("Course history")
-    st.dataframe(history, hide_index=True, column_config={"attendance_ratio": st.column_config.NumberColumn("Attendance", format="percent")})
+    history_rows = [
+        {
+            "Started": row["start_date"],
+            "Class": row["class_code"],
+            "Course": row["course_name"],
+            "Status": ENROLLMENT_STATUS_LABELS[row["status"]],
+            "First session": row["start_session_number"],
+            "Attendance": row["attendance_ratio"],
+            "Final level": row["final_level"],
+            "Passed": row["passed"],
+        }
+        for row in history
+    ]
+    st.dataframe(
+        history_rows,
+        hide_index=True,
+        column_config={
+            "Attendance": st.column_config.NumberColumn("Attendance", format="percent"),
+            "Passed": st.column_config.CheckboxColumn("Passed"),
+        },
+    )
 
     audit = queries.employee_audit_rows(pool, learner["employee_id"])
-    with st.expander("Audit history"):
-        st.dataframe(audit, hide_index=True)
-
-    active_enrollment_id = learner["run_enrollment_id"]
-    if active_enrollment_id:
-        render_learner_transfer(pool, actor, refs, active_enrollment_id)
+    with st.expander("Change history"):
+        st.dataframe(
+            [
+                {
+                    "When": row["created_at"],
+                    "Changed by": row["actor_username"],
+                    "Change": LEARNER_CHANGE_LABELS.get(
+                        row["action"],
+                        row["action"].replace(".", " ").replace("_", " ").title(),
+                    ),
+                }
+                for row in audit
+            ],
+            hide_index=True,
+        )
 
 
 def render_class_course_run_creator(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
@@ -370,89 +556,276 @@ def render_class_course_run_creator(pool, actor: AppUser, refs: dict[str, list[d
 
 
 def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
-    st.subheader("Add learner")
-    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
+    st.subheader("Start learning")
+    available_run_rows = [row for row in refs["course_runs"] if row["status"] in {"planned", "active"}]
+    runs = options(
+        available_run_rows,
+        "course_run_id",
+        "class_code",
+        "course_name",
+        "run_number",
+        "status",
+    )
     bu = options(refs["business_units"], "business_unit_id", "business_unit_name")
     roles = options(refs["job_roles"], "job_role_id", "job_role_name")
     levels = options(refs["levels"], "level_id", "level_name")
-    directory = {"Create a new employee": None}
-    directory.update({f"{row['emp_code']} | {row['full_name']}": row for row in _learner_rows(pool)})
-    known_label = st.selectbox("Employee directory lookup", list(directory), key="onboard_employee_lookup")
-    known_employee = directory[known_label]
-    run_label = st.selectbox("Class and course run", [""] + list(runs), key="onboard_run")
+    directory_rows = _learner_rows(pool)
+    directory = {f"{row['emp_code']} | {row['full_name']}": row for row in directory_rows}
+
+    requested = st.session_state.pop("learner_start_requested", False)
+    requested_employee_id = st.session_state.get("learner_start_employee_id")
+    if requested:
+        st.session_state["start_learning_person_mode"] = (
+            "Existing employee" if requested_employee_id is not None else "New employee"
+        )
+        if requested_employee_id is not None:
+            requested_label = next(
+                (label for label, row in directory.items() if row["employee_id"] == requested_employee_id),
+                None,
+            )
+            if requested_label:
+                st.session_state["start_learning_employee_lookup"] = requested_label
+
+    person_mode = st.segmented_control(
+        "Employee",
+        ["Existing employee", "New employee"],
+        key="start_learning_person_mode",
+    )
+    known_employee = None
+    context = None
+    if person_mode == "Existing employee":
+        if not directory:
+            st.info("No employees are available.")
+            return
+        known_label = st.selectbox(
+            "Find employee",
+            list(directory),
+            key="start_learning_employee_lookup",
+        )
+        known_employee = directory[known_label]
+        context = queries.learner_journey_context(pool, known_employee["employee_id"])
+        if not context:
+            st.error("This employee record is no longer available.")
+            return
+        lifecycle_label, lifecycle_color = LIFECYCLE_LABELS[context["lifecycle"]]
+        st.badge(lifecycle_label, icon=":material/badge:", color=lifecycle_color)
+        if context["active_enrollment_id"]:
+            with st.container(horizontal=True):
+                st.metric("Current class", context["active_class_code"], border=True)
+                st.metric("Current course", context["active_course_name"], border=True)
+            render_learner_transfer(pool, actor, refs, context)
+            return
+
+    if not runs:
+        st.info("No planned or active course runs are available.")
+        st.button(
+            "Create class",
+            icon=":material/group_add:",
+            on_click=_open_operation_section,
+            args=("Class setup",),
+        )
+        return
+
+    run_label = st.selectbox(
+        "Destination class and course",
+        [""] + list(runs),
+        key="start_learning_run",
+    )
     course_run_id = runs.get(run_label)
+    target_run = next(
+        (row for row in available_run_rows if row["course_run_id"] == course_run_id),
+        None,
+    )
     capacity = _capacity_context(pool, course_run_id)
-    if capacity:
-        limit = str(capacity["capacity"]) if capacity["capacity"] is not None else "Not set"
-        st.info(f"{capacity['class_code']}: {capacity['active_learners']} active learner(s) / capacity {limit}")
     start_session_proposal = _onboarding_start_proposal(pool, actor, course_run_id)
-    if start_session_proposal is not None:
-        st.info(f"First applicable session starts at {start_session_proposal} for this run.")
-    default_bu = known_employee["business_unit_name"] if known_employee else ""
-    default_role = known_employee["job_role_name"] if known_employee else ""
-    default_level = known_employee["entrance_level"] if known_employee else ""
+    default_bu = context["business_unit_name"] if context else ""
+    default_role = context["job_role_name"] if context else ""
+    default_level = context["entrance_level"] if context else ""
     bu_labels = [""] + list(bu)
     role_labels = [""] + list(roles)
     level_labels = [""] + list(levels)
-    if known_employee and known_employee["enrollment_status"] == "active":
-        st.warning("This employee already has an active course. Use Transfer learner to move classes.")
-    elif default_level:
-        st.info(f"Existing entrance placement will be retained: {default_level}.")
-    with st.form("learner_onboarding"):
-        emp_code = st.text_input("Employee code", value=known_employee["emp_code"] if known_employee else "", disabled=bool(known_employee))
-        full_name = st.text_input("Full name", value=known_employee["full_name"] if known_employee else "")
+
+    projected_count = None
+    needs_override = False
+    if capacity and target_run:
+        reuses_membership = bool(
+            context
+            and context["active_membership_id"]
+            and context["membership_cohort_id"] == target_run["cohort_id"]
+        )
+        projected_count = capacity["active_learners"] + (0 if reuses_membership else 1)
+        needs_override = capacity["capacity"] is not None and projected_count > capacity["capacity"]
+
+    with st.form("learner_onboarding", border=False):
+        emp_code = st.text_input(
+            "Employee code",
+            value=known_employee["emp_code"] if known_employee else "",
+            disabled=bool(known_employee),
+        )
+        full_name = st.text_input(
+            "Full name",
+            value=known_employee["full_name"] if known_employee else "",
+        )
         business_unit = st.selectbox("Business unit", bu_labels, index=bu_labels.index(default_bu) if default_bu in bu_labels else 0)
-        job_role = st.selectbox("Job role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
-        entrance_level = st.selectbox(
-            "Entrance placement",
-            level_labels,
-            index=level_labels.index(default_level) if default_level in level_labels else 0,
+        job_role = st.selectbox("Role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
+        if context and context["placement_id"]:
+            st.text_input("Entrance placement", value=default_level, disabled=True)
+            entrance_level_id = context["entrance_level_id"]
+        else:
+            entrance_level = st.selectbox("Entrance placement", level_labels)
+            entrance_level_id = levels.get(entrance_level)
+        joined_on = st.date_input("Start date", value=date.today())
+
+        if target_run and start_session_proposal is not None:
+            with st.container(horizontal=True):
+                st.metric("Class", target_run["class_code"], border=True)
+                st.metric("Course", target_run["course_name"], border=True)
+                st.metric("First session", start_session_proposal, border=True)
+                if capacity:
+                    capacity_label = capacity["capacity"] if capacity["capacity"] is not None else "Not set"
+                    st.metric("Class size", f"{projected_count} / {capacity_label}", border=True)
+
+        approve_override = False
+        override_reason = ""
+        if needs_override:
+            st.warning("This start exceeds the class capacity.")
+            approve_override = st.checkbox("Approve capacity exception")
+            override_reason = st.text_input("Exception reason", disabled=not approve_override)
+        confirmed = st.checkbox("I confirm this learner, class, course, and first session")
+        if context and context["lifecycle"] == "continuation":
+            submit_label = "Continue learning"
+        elif context:
+            submit_label = "Restart learning"
+        else:
+            submit_label = "Add and start learning"
+        submitted = st.form_submit_button(
+            submit_label,
+            type="primary",
+            icon=":material/play_circle:",
         )
-        joined_on = st.date_input("Joined on", value=date.today())
-        start_session = st.number_input(
-            "First applicable session",
-            min_value=1,
-            value=start_session_proposal or 1,
-            step=1,
-            key=f"onboard_start_session_{course_run_id or 'none'}",
-        )
-        allow_override = st.checkbox("Approve capacity override")
-        override_reason = st.text_input("Override reason", disabled=not allow_override)
-        submitted = st.form_submit_button("Add learner", type="primary", icon=":material/person_add:")
     if submitted:
         if not course_run_id:
-            st.error("Select a class and course run.")
-        elif not business_unit or not job_role or not entrance_level:
+            st.error("Select a destination class and course.")
+        elif not emp_code.strip() or not full_name.strip():
+            st.error("Employee code and full name are required.")
+        elif not business_unit or not job_role or not entrance_level_id:
             st.error("Business unit, role, and entrance level are required.")
-        elif safe_submit(pool, actor, lambda svc: svc.onboard_learner(
-            emp_code=emp_code, full_name=full_name, business_unit_id=bu[business_unit], job_role_id=roles[job_role],
-            entrance_level_id=levels[entrance_level], course_run_id=course_run_id, joined_on=joined_on,
-            start_session_number=int(start_session), capacity_override_reason=override_reason if allow_override else None,
-        )):
-            st.rerun()
+        elif start_session_proposal is None:
+            st.error("The first session could not be calculated.")
+        elif needs_override and (not approve_override or not override_reason.strip()):
+            st.error("Confirm the capacity exception and enter a reason.")
+        elif not confirmed:
+            st.error("Confirm the summary before starting learning.")
+        else:
+            result = submit_values(pool, actor, lambda svc: svc.onboard_learner(
+                emp_code=emp_code,
+                full_name=full_name,
+                business_unit_id=bu[business_unit],
+                job_role_id=roles[job_role],
+                entrance_level_id=entrance_level_id,
+                course_run_id=course_run_id,
+                joined_on=joined_on,
+                start_session_number=int(start_session_proposal),
+                capacity_override_reason=override_reason if needs_override else None,
+            ))
+            if result is not None:
+                completion_messages = {
+                    "first_time": "Learner added and learning started.",
+                    "returning": "Returning learner started learning.",
+                    "continuation": "Learner continued to the next course.",
+                    "rejoin": "Learner rejoined and started learning.",
+                }
+                st.session_state["learner_notice"] = completion_messages[result["lifecycle"]]
+                st.session_state["learner_search"] = emp_code.strip()
+                st.session_state["learner_redirect_to_list"] = True
+                st.rerun()
 
 
-def render_learner_transfer(pool, actor: AppUser, refs: dict[str, list[dict]], enrollment_id: int) -> None:
-    st.markdown("Transfer learner")
-    runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
-    target_label = st.selectbox("Target class and course run", [""] + list(runs), key=f"transfer_target_{enrollment_id}")
+def render_learner_transfer(pool, actor: AppUser, refs: dict[str, list[dict]], context: dict) -> None:
+    st.markdown("Move learner")
+    enrollment_id = context["active_enrollment_id"]
+    available_run_rows = [
+        row for row in refs["course_runs"]
+        if row["status"] in {"planned", "active"}
+        and row["course_run_id"] != context["active_course_run_id"]
+        and row["cohort_id"] != context["active_cohort_id"]
+    ]
+    runs = options(
+        available_run_rows,
+        "course_run_id",
+        "class_code",
+        "course_name",
+        "run_number",
+        "status",
+    )
+    if not runs:
+        st.info("No other planned or active course runs are available.")
+        return
+    target_label = st.selectbox(
+        "Destination class and course",
+        [""] + list(runs),
+        key=f"transfer_target_{enrollment_id}",
+    )
     target_run_id = runs.get(target_label)
+    target_run = next(
+        (row for row in available_run_rows if row["course_run_id"] == target_run_id),
+        None,
+    )
     proposal = _transfer_start_proposal(pool, actor, target_run_id)
-    if proposal is not None:
-        st.info(f"Attendance will start at target logical session {proposal}.")
-    with st.form(f"learner_transfer_{enrollment_id}"):
+    capacity = _capacity_context(pool, target_run_id)
+    projected_count = None
+    needs_override = False
+    if capacity and target_run:
+        projected_count = capacity["active_learners"] + 1
+        needs_override = (
+            capacity["capacity"] is not None
+            and projected_count > capacity["capacity"]
+        )
+    with st.form(f"learner_transfer_{enrollment_id}", border=False):
         transfer_date = st.date_input("Transfer date", value=date.today())
-        confirm = st.checkbox("I confirm the proposed target start session")
-        submitted = st.form_submit_button("Transfer learner", icon=":material/swap_horiz:")
+        if target_run and proposal is not None:
+            with st.container(horizontal=True):
+                st.metric("From", context["active_class_code"], border=True)
+                st.metric("To", target_run["class_code"], border=True)
+                st.metric("Course", target_run["course_name"], border=True)
+            with st.container(horizontal=True):
+                st.metric("First session", proposal, border=True)
+                if capacity:
+                    capacity_label = capacity["capacity"] if capacity["capacity"] is not None else "Not set"
+                    st.metric("Class size", f"{projected_count} / {capacity_label}", border=True)
+        approve_override = False
+        override_reason = ""
+        if needs_override:
+            st.warning("This move exceeds the destination class capacity.")
+            approve_override = st.checkbox("Approve capacity exception")
+            override_reason = st.text_input("Exception reason", disabled=not approve_override)
+        confirm = st.checkbox("I confirm the destination and first session")
+        submitted = st.form_submit_button(
+            "Move learner",
+            type="primary",
+            icon=":material/swap_horiz:",
+        )
     if submitted:
         if not target_run_id or proposal is None:
-            st.error("Select a target course run.")
+            st.error("Select a destination class and course.")
+        elif needs_override and (not approve_override or not override_reason.strip()):
+            st.error("Confirm the capacity exception and enter a reason.")
         elif not confirm:
-            st.error("Confirm the proposed start session before transferring.")
-        elif safe_submit(pool, actor, lambda svc: svc.transfer_learner(
-            enrollment_id, target_run_id, transfer_date, confirmed_start_session_number=proposal,
-        )):
-            st.rerun()
+            st.error("Confirm the destination before moving the learner.")
+        else:
+            result = submit_values(pool, actor, lambda svc: svc.transfer_learner(
+                enrollment_id,
+                target_run_id,
+                transfer_date,
+                confirmed_start_session_number=proposal,
+                capacity_override_reason=override_reason if needs_override else None,
+            ))
+            if result is not None:
+                st.session_state["learner_notice"] = "Learner moved to the destination class."
+                st.session_state["learner_search"] = context["emp_code"]
+                st.session_state["learner_transfer_enrollment_id"] = None
+                st.session_state["learner_redirect_to_list"] = True
+                st.rerun()
 
 
 def render_employee_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:

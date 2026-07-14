@@ -91,7 +91,7 @@ def run(database_url):
             entrance_level_id=level_id, course_run_id=target_run, joined_on=date(2026, 7, 3),
         ))
 
-        midrun_cohort = svc.create_cohort('EL003', 'Mid-run intake', status='active', capacity=5).entity_id
+        midrun_cohort = svc.create_cohort('EL003', 'Mid-run intake', status='active', capacity=1).entity_id
         midrun_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 7, 1)).entity_id
         completed_units = []
         for seq in (1, 2):
@@ -125,6 +125,11 @@ def run(database_url):
         with conn:
             with conn.cursor() as cur:
                 cur.execute("UPDATE run_enrollments SET status='completed' WHERE run_enrollment_id=%s", (midrun_learner.entity_id,))
+        employee_updated_at = scalar(
+            conn,
+            'SELECT updated_at FROM employees WHERE employee_id=%s',
+            (midrun_learner.values['employee_id'],),
+        )
         continuation_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 7, 10)).entity_id
         continuation = svc.onboard_learner(
             emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
@@ -133,11 +138,33 @@ def run(database_url):
         assert continuation.values['lifecycle'] == 'continuation'
         assert continuation.values['placement_id'] == midrun_learner.values['placement_id']
         assert continuation.values['membership_id'] == midrun_learner.values['membership_id']
+        assert continuation.values['employee_action'] == 'unchanged'
+        assert scalar(
+            conn,
+            'SELECT updated_at FROM employees WHERE employee_id=%s',
+            (midrun_learner.values['employee_id'],),
+        ) == employee_updated_at
+        assert scalar(
+            conn,
+            'SELECT count(*) FROM cohort_capacity_overrides WHERE employee_id=%s',
+            (midrun_learner.values['employee_id'],),
+        ) == 0
+        same_class_move_run = svc.create_course_run(
+            midrun_cohort,
+            course_id,
+            start_date=date(2026, 8, 1),
+        ).entity_id
+        expect_error('invalid_input', lambda: svc.transfer_learner(
+            continuation.entity_id,
+            same_class_move_run,
+            date(2026, 7, 15),
+            confirmed_start_session_number=1,
+        ))
         with conn:
             with conn.cursor() as cur:
                 cur.execute("UPDATE run_enrollments SET status='completed' WHERE run_enrollment_id=%s", (continuation.entity_id,))
         svc.close_membership(continuation.values['membership_id'], date(2026, 7, 20))
-        rejoin_run = svc.create_course_run(midrun_cohort, course_id, start_date=date(2026, 8, 1)).entity_id
+        rejoin_run = same_class_move_run
         rejoin = svc.onboard_learner(
             emp_code='P11-MIDRUN', full_name='Midrun Learner', business_unit_id=bu_id, job_role_id=role_id,
             entrance_level_id=level_id, course_run_id=rejoin_run, joined_on=date(2026, 8, 1),
@@ -213,6 +240,56 @@ def run(database_url):
         assert returning.values['placement_action'] == 'reused'
         assert returning.values['membership_action'] == 'created'
         assert scalar(conn, 'SELECT count(*) FROM placements WHERE employee_id=%s', (returning_employee,)) == 1
+
+        # Cross-class transfer above capacity requires one reasoned override and
+        # rolls back the source transition when approval is absent.
+        transfer_source_cohort = svc.create_cohort('EL004', 'Transfer source', status='active', capacity=2).entity_id
+        transfer_target_cohort = svc.create_cohort('EL005', 'Transfer full target', status='active', capacity=1).entity_id
+        transfer_source_run = svc.create_course_run(transfer_source_cohort, course_id, start_date=date(2026, 9, 1)).entity_id
+        transfer_target_run = svc.create_course_run(transfer_target_cohort, course_id, start_date=date(2026, 9, 1)).entity_id
+        transfer_mover = svc.onboard_learner(
+            emp_code='P11-MOVE', full_name='Capacity Mover', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=transfer_source_run, joined_on=date(2026, 9, 1),
+        )
+        svc.onboard_learner(
+            emp_code='P11-FILL', full_name='Capacity Filler', business_unit_id=bu_id, job_role_id=role_id,
+            entrance_level_id=level_id, course_run_id=transfer_target_run, joined_on=date(2026, 9, 1),
+        )
+        expect_error('capacity_exceeded', lambda: svc.transfer_learner(
+            transfer_mover.entity_id,
+            transfer_target_run,
+            date(2026, 9, 2),
+            confirmed_start_session_number=1,
+        ))
+        assert scalar(
+            conn,
+            'SELECT status FROM run_enrollments WHERE run_enrollment_id=%s',
+            (transfer_mover.entity_id,),
+        ) == 'active'
+        capacity_move = svc.transfer_learner(
+            transfer_mover.entity_id,
+            transfer_target_run,
+            date(2026, 9, 2),
+            confirmed_start_session_number=1,
+            capacity_override_reason='HR approved one temporary transfer seat',
+        )
+        assert capacity_move.values['capacity_override_id'] is not None
+        assert scalar(
+            conn,
+            'SELECT count(*) FROM cohort_capacity_overrides WHERE cohort_capacity_override_id=%s',
+            (capacity_move.values['capacity_override_id'],),
+        ) == 1
+
+        closed_cohort = svc.create_cohort('EL006', 'Closed run class', status='active', capacity=2).entity_id
+        closed_run = svc.create_course_run(closed_cohort, course_id, start_date=date(2026, 10, 1)).entity_id
+        svc.change_course_run_status(closed_run, 'cancelled')
+        expect_error('invalid_state', lambda: svc.propose_onboarding_start_session(closed_run))
+        expect_error('invalid_state', lambda: svc.onboard_learner(
+            emp_code='P11-CLOSED', full_name='Closed Run Learner', business_unit_id=bu_id,
+            job_role_id=role_id, entrance_level_id=level_id, course_run_id=closed_run,
+            joined_on=date(2026, 10, 1),
+        ))
+        assert scalar(conn, "SELECT count(*) FROM employees WHERE emp_code='P11-CLOSED'") == 0
         expect_error('invalid_state', lambda: svc.save_attendance_roster(target_run, roster.entity_id, []))
         try:
             with conn:
