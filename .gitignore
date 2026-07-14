@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.pytest_cache/
 
 # Local credentials and machine-specific runtime state.
 .streamlit/secrets.toml
