@@ -137,10 +137,10 @@ def render_learner_onboarding(pool, actor: AppUser, refs: dict[str, list[dict]])
         business_unit = st.selectbox("Business unit", bu_labels, index=bu_labels.index(default_bu) if default_bu in bu_labels else 0)
         job_role = st.selectbox("Role", role_labels, index=role_labels.index(default_role) if default_role in role_labels else 0)
         if context and context["placement_id"]:
-            st.text_input("Entrance placement", value=default_level, disabled=True)
+            st.text_input("Entrance level", value=default_level, disabled=True)
             entrance_level_id = context["entrance_level_id"]
         else:
-            entrance_level = st.selectbox("Entrance placement", level_labels)
+            entrance_level = st.selectbox("Entrance level", level_labels)
             entrance_level_id = levels.get(entrance_level)
         joined_on = st.date_input("Start date", value=date.today())
 

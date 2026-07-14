@@ -11,7 +11,7 @@ import streamlit as st
 
 from auth import AppUser
 import frontend_queries as queries
-from frontend_workflows.shared import options, safe_submit, selected_id
+from frontend_workflows.shared import UNIT_TYPE_LABELS, options, safe_submit, selected_id
 
 
 def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
@@ -22,15 +22,17 @@ def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     open_meetings = {label: item_id for label, item_id in meetings.items() if item_id in open_meeting_ids}
 
     with st.form("meeting_create_with_units"):
-        st.markdown("Create meeting and credited units")
-        run_id = selected_id("Course run", runs, key="meeting_run")
+        st.markdown("Create meeting and credited sessions")
+        st.caption("A meeting is one gathering; a long meeting can count as one or two sessions.")
+        run_id = selected_id("Class and course", runs, key="meeting_run")
         starts_on = st.date_input("Meeting date", value=date.today())
         starts_time = st.time_input("Start time", value=time(9, 0))
         duration = st.number_input("Duration minutes", min_value=1, value=120, step=15)
         status = st.selectbox("Meeting status", ["planned", "completed"])
         first_sequence = st.number_input("First session number", min_value=1, value=1, step=1)
-        units_to_add = st.segmented_control("Credited units", [1, 2], default=1)
-        unit_type = st.selectbox("Unit type", ["normal", "final_test", "makeup", "admin"])
+        units_to_add = st.segmented_control("Sessions counted", [1, 2], default=1)
+        unit_type_label = st.selectbox("Session type", list(UNIT_TYPE_LABELS))
+        unit_type = UNIT_TYPE_LABELS[unit_type_label]
         submitted = st.form_submit_button("Create meeting", icon=":material/event:")
     if submitted and run_id:
         starts_at = datetime.combine(starts_on, starts_time)
@@ -88,13 +90,14 @@ def render_schedule_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) 
                 st.rerun()
 
     with st.form("session_units_add"):
-        st.markdown("Add credited units to an existing meeting")
-        run_id = selected_id("Course run", runs, key="unit_run")
+        st.markdown("Add credited sessions to an existing meeting")
+        run_id = selected_id("Class and course", runs, key="unit_run")
         meeting_id = selected_id("Meeting", open_meetings, key="unit_meeting")
-        first_sequence = st.number_input("First sequence in run", min_value=1, value=1, step=1)
-        units_to_add = st.segmented_control("Units to add", [1, 2], default=1)
-        unit_type = st.selectbox("Unit type", ["normal", "final_test", "makeup", "admin"])
-        submitted = st.form_submit_button("Add units", icon=":material/add_circle:")
+        first_sequence = st.number_input("First session number", min_value=1, value=1, step=1)
+        units_to_add = st.segmented_control("Sessions to add", [1, 2], default=1)
+        unit_type_label = st.selectbox("Session type", list(UNIT_TYPE_LABELS), key="unit_add_type")
+        unit_type = UNIT_TYPE_LABELS[unit_type_label]
+        submitted = st.form_submit_button("Add sessions", icon=":material/add_circle:")
     if submitted and run_id and meeting_id:
         if safe_submit(pool, actor, lambda svc: svc.add_session_units(
             run_id,

@@ -37,23 +37,23 @@ def render_app_header(pool, user: AppUser) -> None:
     with st.sidebar:
         st.badge(user.role.title(), icon=":material/verified_user:", color="blue")
         st.caption(user.full_name)
-        st.caption("Baseline: phase-11-ready")
         if st.button("Sign out", icon=":material/logout:"):
             st.session_state.pop("actor_user_id", None)
             st.rerun()
 
-    with st.container(horizontal=True, vertical_alignment="center"):
-        st.title("English class HR workspace")
-        st.badge("Phase 13", icon=":material/accessibility_new:", color="green")
+    st.title("English class HR workspace")
 
     snapshot = operations_snapshot(pool)
     with st.container(horizontal=True):
-        st.metric("People in scope", snapshot["active_employees"], border=True)
+        st.metric("Employees", snapshot["active_employees"], border=True)
         st.metric("Currently learning", snapshot["active_learners"], border=True)
         st.metric("Open classes", snapshot["open_course_runs"], border=True)
-        st.metric("Needs review", snapshot["operational_issues"], border=True)
-        st.metric("Urgent review", snapshot["high_issues"], border=True, delta_color="inverse")
-        st.metric("Open follow-ups", snapshot["open_quality_issues"], border=True)
+        st.metric("Items to check", snapshot["operational_issues"], border=True,
+                  help="Data that needs an HR look — open the Follow-ups area.")
+        st.metric("Urgent", snapshot["high_issues"], border=True, delta_color="inverse",
+                  help="High-priority items inside 'Items to check'.")
+        st.metric("Logged issues", snapshot["open_quality_issues"], border=True,
+                  help="Imported or manually logged data-quality issues still open.")
 
 
 def render_reports(pool) -> None:

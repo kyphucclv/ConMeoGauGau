@@ -103,18 +103,18 @@ def render_cohort_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) ->
     employees = options(refs["employees"], "employee_id", "emp_code", "full_name")
 
     with st.form("cohort_create"):
-        st.markdown("Create cohort")
+        st.markdown("Create class record only (no course)")
         class_code = st.text_input("Class code")
         display_name = st.text_input("Display name")
         status = st.selectbox("Status", ["planned", "active", "completed", "archived"])
-        submitted = st.form_submit_button("Create cohort", icon=":material/groups:")
+        submitted = st.form_submit_button("Create class record", icon=":material/groups:")
     if submitted and safe_submit(pool, actor, lambda svc: svc.create_cohort(class_code, display_name, status=status)):
         st.rerun()
 
     pic_mode = st.segmented_control("PIC type", ["Team label", "Employee"], default="Team label")
     with st.form(f"cohort_pic_{pic_mode}"):
         st.markdown("Assign PIC")
-        cohort_id = selected_id("Cohort", cohorts, key="pic_cohort")
+        cohort_id = selected_id("Class", cohorts, key="pic_cohort")
         pic_employee_id = None
         pic_label = None
         if pic_mode == "Employee":
@@ -139,18 +139,18 @@ def render_course_run_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "run_number", "status")
 
     with st.form("course_run_create"):
-        st.markdown("Create course run")
-        cohort_id = selected_id("Cohort", cohorts, key="run_cohort")
+        st.markdown("Add a course to an existing class")
+        cohort_id = selected_id("Class", cohorts, key="run_cohort")
         course_id = selected_id("Course", courses, key="run_course")
-        start_date = st.date_input("Run start date", value=date.today())
-        submitted = st.form_submit_button("Create run", icon=":material/play_lesson:")
+        start_date = st.date_input("Course start date", value=date.today())
+        submitted = st.form_submit_button("Add course", icon=":material/play_lesson:")
     if submitted and cohort_id and course_id:
         if safe_submit(pool, actor, lambda svc: svc.create_course_run(cohort_id, course_id, start_date=start_date)):
             st.rerun()
 
     with st.form("course_run_status"):
-        st.markdown("Change course-run status")
-        run_id = selected_id("Course run", runs, key="status_run")
+        st.markdown("Change course status")
+        run_id = selected_id("Class and course", runs, key="status_run")
         status = st.selectbox("New status", ["planned", "active", "completed", "cancelled", "archived"])
         end_date = st.date_input("End date", value=date.today())
         apply_end_date = st.checkbox("Apply end date")

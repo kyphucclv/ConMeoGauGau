@@ -546,7 +546,7 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     app.run(timeout=10)
     assert not app.exception
     learner_task = next(control for control in app.segmented_control if control.label == "Learner task")
-    assert learner_task.value == "Learner list"
+    assert learner_task.value == "Find learners"
     assert any(button.label == "Start learning" for button in app.button)
     assert any(frame.key == "learner_results_v2" for frame in app.dataframe)
 

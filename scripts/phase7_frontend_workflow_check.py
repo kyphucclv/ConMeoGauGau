@@ -115,7 +115,6 @@ def assert_static_ui_contract() -> None:
         "render_app_header",
         "render_sign_in",
         "active_user_by_id",
-        "phase-11-ready",
         ":material/home_work: HR workspace",
     ]
     for pattern in app_patterns:
@@ -143,14 +142,16 @@ def assert_static_ui_contract() -> None:
         "propose_onboarding_start_session",
         "learner_workspace_mode",
         "_set_learner_workspace_mode",
-        "Learner list",
+        "Find learners",
         "Start learning",
         "Continue learning",
         "Move learner",
         "I confirm this learner, class, course, and first session",
-        "Missing placement",
+        "No entrance level",
         "attendance_workspace_mode",
         "_set_attendance_workspace_mode",
+        "Mark attendance",
+        "Record make-up",
         "render_attendance_makeup",
         "data_issues_mode",
         "render_operational_decision_actions",
@@ -163,9 +164,10 @@ def assert_static_ui_contract() -> None:
         "render_evaluation_record",
         "render_completion_action",
         "HR_TASK_AREAS",
+        "Follow-ups",
         "render_hr_start",
         "render_class_setup_workspace",
-        "render_admin_records_workspace",
+        "render_employee_workflow",
     ]
     for pattern in required_patterns:
         if pattern not in workflow_text:

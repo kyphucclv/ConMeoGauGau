@@ -22,15 +22,15 @@ from frontend_workflows.shared import (
 
 def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     runs = options(refs["course_runs"], "course_run_id", "class_code", "course_code", "course_name", "run_number", "status")
-    st.session_state.setdefault("attendance_workspace_mode", "Record roster")
+    st.session_state.setdefault("attendance_workspace_mode", "Mark attendance")
     mode = st.segmented_control(
         "Attendance workflow",
-        ["Record roster", "Create session", "Correct absence"],
+        ["Mark attendance", "Create session", "Record make-up"],
         key="attendance_workspace_mode",
     )
 
     if mode == "Create session":
-        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_create_run")
+        run_label = st.selectbox("Class and course", [""] + list(runs), key="attendance_create_run")
         course_run_id = runs.get(run_label)
         st.subheader("Create session")
         with st.form("attendance_session_create", border=False):
@@ -40,28 +40,29 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
                 starts_time = st.time_input("Session time", value=time(9, 0), key="attendance_session_time")
                 duration = st.number_input("Duration minutes", min_value=1, value=60, step=15, key="attendance_session_duration")
                 sequence = st.number_input(
-                    "Logical session number",
+                    "Session number",
                     min_value=1,
                     value=_next_attendance_sequence(pool, actor, course_run_id),
                     step=1,
+                    help="Position of this session in the course, starting at 1.",
                     key=f"attendance_session_sequence_{course_run_id or 'none'}",
                 )
                 submitted = st.form_submit_button("Create session", icon=":material/add_circle:")
         if submitted:
             if not course_run_id:
-                st.error("Select a class and course run first.")
+                st.error("Select a class and course first.")
             elif safe_submit(pool, actor, lambda svc: svc.create_attendance_session(
                 course_run_id, datetime.combine(starts_on, starts_time), int(duration), int(sequence),
             )):
                 st.rerun()
         return
 
-    if mode == "Correct absence":
+    if mode == "Record make-up":
         render_attendance_makeup(pool, actor, refs)
         return
 
     with st.container(horizontal=True, vertical_alignment="bottom"):
-        run_label = st.selectbox("Class and course run", [""] + list(runs), key="attendance_run")
+        run_label = st.selectbox("Class and course", [""] + list(runs), key="attendance_run")
         course_run_id = runs.get(run_label)
         run_units = [
             row for row in refs["session_units"]
@@ -73,15 +74,15 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
 
     with st.container(horizontal=True):
         st.button("Create session", icon=":material/add_circle:", on_click=_set_attendance_workspace_mode, args=("Create session",))
-        st.button("Correct absence", icon=":material/healing:", on_click=_set_attendance_workspace_mode, args=("Correct absence",))
+        st.button("Record make-up", icon=":material/healing:", on_click=_set_attendance_workspace_mode, args=("Record make-up",))
 
     roster = None
     if course_run_id and session_unit_id:
         roster = service_values(pool, actor, lambda svc: svc.attendance_roster(course_run_id, session_unit_id))
     if course_run_id and not run_units:
-        st.info("No sessions exist for the selected run.")
+        st.info("This class has no sessions yet. Use 'Create session' first.")
     elif not course_run_id or not session_unit_id:
-        st.info("Select a class run and session.")
+        st.info("Select a class and a session to mark attendance.")
     if roster is not None:
         roster_rows = roster["rows"]
         saved_rows = sum(row["attendance_id"] is not None for row in roster_rows)
@@ -111,12 +112,14 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
                 column_config={
                     "run_enrollment_id": None,
                     "employee": st.column_config.TextColumn("Learner", pinned=True),
-                    "start_session_number": st.column_config.NumberColumn("Starts at"),
+                    "start_session_number": st.column_config.NumberColumn(
+                        "Joined at session", help="The learner's first applicable session in this course."
+                    ),
                     "effective_status": st.column_config.SelectboxColumn("Attendance", options=["Present", "Absent"], required=True),
                 },
                 key=f"attendance_editor_{session_unit_id}",
             )
-            submitted = st.form_submit_button("Save full roster", type="primary", icon=":material/checklist:")
+            submitted = st.form_submit_button("Save attendance", type="primary", icon=":material/checklist:")
         if submitted:
             records = edited.to_dict("records") if hasattr(edited, "to_dict") else edited
             if safe_submit(pool, actor, lambda svc: svc.save_attendance_roster(course_run_id, session_unit_id, records)):

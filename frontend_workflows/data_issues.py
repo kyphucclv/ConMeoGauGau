@@ -9,7 +9,13 @@ import streamlit as st
 
 from auth import AppUser
 import frontend_queries as queries
-from frontend_workflows.shared import _open_operation_section, options, safe_submit, selected_id
+from frontend_workflows.shared import (
+    ISSUE_WORKFLOW_AREAS,
+    _open_operation_section,
+    options,
+    safe_submit,
+    selected_id,
+)
 
 
 def _operational_issue_rows(pool) -> list[dict]:
@@ -30,24 +36,25 @@ def _filtered_operational_issues(rows: list[dict], severity: str, workflow: str,
 
 
 def render_data_issues_workspace(pool, actor: AppUser) -> None:
-    st.subheader("Data issues")
+    st.subheader("Follow-ups")
+    st.caption("Data the app flagged for an HR check. Nothing here blocks daily work.")
     rows = _operational_issue_rows(pool)
     high_count = sum(1 for row in rows if row["severity"] == "high")
     warning_count = sum(1 for row in rows if row["severity"] == "warning")
     workflow_count = len({row["workflow"] for row in rows})
     with st.container(horizontal=True):
-        st.metric("Total issues", len(rows), border=True)
-        st.metric("High severity", high_count, border=True)
+        st.metric("Total items", len(rows), border=True)
+        st.metric("Urgent", high_count, border=True)
         st.metric("Warnings", warning_count, border=True)
-        st.metric("Workflows", workflow_count, border=True)
+        st.metric("Areas involved", workflow_count, border=True)
 
-    st.session_state.setdefault("data_issues_mode", "Issue inbox")
+    st.session_state.setdefault("data_issues_mode", "To check")
     mode = st.segmented_control(
         "Data issue workflow",
-        ["Issue inbox", "Owner decisions", "Logged issues"],
+        ["To check", "Bulk fixes (admin)", "Logged issues"],
         key="data_issues_mode",
     )
-    if mode == "Owner decisions":
+    if mode == "Bulk fixes (admin)":
         render_operational_decision_actions(pool, actor, rows)
         return
     if mode == "Logged issues":
@@ -93,7 +100,7 @@ def render_data_issues_workspace(pool, actor: AppUser) -> None:
                         icon=":material/open_in_new:",
                         key=f"selected_issue_workflow_{selected_issue['workflow']}_{selected_issue['entity_type']}_{selected_issue['entity_key']}",
                         on_click=_open_operation_section,
-                        args=(selected_issue["workflow"],),
+                        args=(ISSUE_WORKFLOW_AREAS.get(selected_issue["workflow"], selected_issue["workflow"]),),
                     )
         else:
             st.info("No issues match the selected filters.")
@@ -102,9 +109,10 @@ def render_data_issues_workspace(pool, actor: AppUser) -> None:
         with st.container(horizontal=True):
             for workflow in workflows:
                 st.button(f"Open {workflow}", icon=":material/open_in_new:", key=f"issue_workflow_{workflow}",
-                          on_click=_open_operation_section, args=(workflow,))
+                          on_click=_open_operation_section,
+                          args=(ISSUE_WORKFLOW_AREAS.get(workflow, workflow),))
     else:
-        st.success("No operational data issues are currently detected.")
+        st.success("Nothing to check right now.")
 
 
 def render_operational_decision_actions(pool, actor: AppUser, rows: list[dict]) -> None:

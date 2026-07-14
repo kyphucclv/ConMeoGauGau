@@ -27,15 +27,15 @@ from frontend_workflows.shared import (
 def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
     """HR-first learner search and lifecycle journeys."""
     if st.session_state.pop("learner_redirect_to_list", False):
-        st.session_state["learner_workspace_mode"] = "Learner list"
-    if st.session_state.get("learner_workspace_mode") not in {"Learner list", "Start learning"}:
-        st.session_state["learner_workspace_mode"] = "Learner list"
+        st.session_state["learner_workspace_mode"] = "Find learners"
+    if st.session_state.get("learner_workspace_mode") not in {"Find learners", "Start learning"}:
+        st.session_state["learner_workspace_mode"] = "Find learners"
     notice = st.session_state.pop("learner_notice", None)
     if notice:
         st.success(notice)
     mode = st.segmented_control(
         "Learner task",
-        ["Learner list", "Start learning"],
+        ["Find learners", "Start learning"],
         key="learner_workspace_mode",
     )
 
@@ -97,7 +97,8 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     with st.container(horizontal=True):
         st.metric("Results", len(filtered), border=True)
         st.metric("Currently learning", active_count, border=True)
-        st.metric("Missing placement", missing_placement_count, border=True)
+        st.metric("No entrance level", missing_placement_count, border=True,
+                  help="Learners without an entrance level on record yet.")
     with st.container(horizontal=True):
         st.button(
             "Start learning",

@@ -19,10 +19,25 @@ HR_TASK_AREAS = [
     "Attendance",
     "Final results",
     "Monthly review",
-    "Data follow-up",
+    "Follow-ups",
     "Class setup",
-    "Admin records",
 ]
+
+# Operational issues name the workflow that fixes them; map those names to
+# the task area that actually hosts the workflow.
+ISSUE_WORKFLOW_AREAS = {
+    "Learners": "Learners",
+    "Attendance": "Attendance",
+    "Schedule": "Class setup",
+}
+
+# Plain display labels for the credited-unit types stored in the database.
+UNIT_TYPE_LABELS = {
+    "Regular session": "normal",
+    "Final test": "final_test",
+    "Make-up session": "makeup",
+    "Admin unit": "admin",
+}
 
 EMPLOYMENT_OPTIONS = {
     "Employed": "active",

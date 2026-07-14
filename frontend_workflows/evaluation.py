@@ -17,16 +17,16 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
     enrollments = options(refs["enrollments"], "run_enrollment_id", "class_code", "course_code", "run_number", "emp_code", "status")
     levels = options(refs["levels"], "level_id", "level_name")
     courses = options(refs["courses"], "course_id", "course_code", "course_name")
-    st.session_state.setdefault("evaluation_workspace_mode", "Review outcomes")
+    st.session_state.setdefault("evaluation_workspace_mode", "Overview")
     mode = st.segmented_control(
         "Evaluation workflow",
-        ["Review outcomes", "Eligibility override", "Record evaluation", "Completion"],
+        ["Overview", "Record result", "Exam exception", "Completion"],
         key="evaluation_workspace_mode",
     )
 
-    if mode == "Review outcomes":
+    if mode == "Overview":
         with st.container(horizontal=True):
-            st.metric("Visible enrollments", len(rows), border=True)
+            st.metric("Learner courses", len(rows), border=True)
             st.metric("Exam eligible", sum(1 for row in rows if row["effective_exam_eligible"]), border=True)
             st.metric("Evaluated", sum(1 for row in rows if row["version_number"] is not None), border=True)
             st.metric("Passed", sum(1 for row in rows if row["passed"]), border=True)
@@ -37,10 +37,10 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
         })
         return
 
-    if mode == "Eligibility override":
+    if mode == "Exam exception":
         render_eligibility_override(pool, actor, enrollments)
         return
-    if mode == "Record evaluation":
+    if mode == "Record result":
         render_evaluation_record(pool, actor, enrollments, levels, courses)
         return
     render_completion_action(pool, actor, enrollments)
@@ -48,11 +48,12 @@ def render_evaluation_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
 
 def render_eligibility_override(pool, actor: AppUser, enrollments: dict[str, int]) -> None:
     with st.form("eligibility_override"):
-        st.subheader("Override exam eligibility")
-        enrollment_id = selected_id("Enrollment", enrollments, key="eligibility_enrollment")
+        st.subheader("Exam eligibility exception")
+        st.caption("Use when a learner should (or should not) sit the exam regardless of the attendance rule. Admin only; a reason is required.")
+        enrollment_id = selected_id("Learner and course", enrollments, key="eligibility_enrollment")
         eligible = st.checkbox("Eligible for exam", value=True)
-        reason = st.text_input("Override reason")
-        submitted = st.form_submit_button("Save override", icon=":material/rule:")
+        reason = st.text_input("Reason for the exception")
+        submitted = st.form_submit_button("Save exception", icon=":material/rule:")
     if submitted and enrollment_id:
         if actor.role != "admin":
             st.error("Only admins can override eligibility.")
@@ -61,7 +62,7 @@ def render_eligibility_override(pool, actor: AppUser, enrollments: dict[str, int
 
 
 def render_evaluation_record(pool, actor: AppUser, enrollments: dict[str, int], levels: dict[str, int], courses: dict[str, int]) -> None:
-    enrollment_id = selected_id("Enrollment", enrollments, key="evaluation_enrollment")
+    enrollment_id = selected_id("Learner and course", enrollments, key="evaluation_enrollment")
     eligibility = service_values(
         pool,
         actor,
@@ -81,7 +82,7 @@ def render_evaluation_record(pool, actor: AppUser, enrollments: dict[str, int], 
                 border=True,
             )
     with st.form("evaluation_record"):
-        st.subheader("Record or correct final evaluation")
+        st.subheader("Record or correct the final result")
         level_label = st.selectbox("Final level", [""] + list(levels.keys()))
         passed = st.checkbox("Passed", value=True)
         next_course_label = st.selectbox("Next course", [""] + list(courses.keys()))
@@ -104,8 +105,8 @@ def render_evaluation_record(pool, actor: AppUser, enrollments: dict[str, int], 
 
 def render_completion_action(pool, actor: AppUser, enrollments: dict[str, int]) -> None:
     with st.form("completion"):
-        st.subheader("Suggest or confirm completion")
-        enrollment_id = selected_id("Enrollment", enrollments, key="completion_enrollment")
+        st.subheader("Suggest or confirm course completion")
+        enrollment_id = selected_id("Learner and course", enrollments, key="completion_enrollment")
         action = st.segmented_control("Action", ["Suggest", "Confirm", "Reject"], default="Suggest")
         rejection_reason = st.text_input("Rejection reason")
         submitted = st.form_submit_button("Apply completion action", icon=":material/task_alt:")
