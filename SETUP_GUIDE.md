@@ -10,7 +10,7 @@ spreadsheet. Follow this on the new machine.
 
 | File | Purpose |
 |---|---|
-| `setup.ps1` | Legacy helper; do not use for the canonical application. |
+| `legacy/setup.ps1` | Legacy helper (archived); do not use for the canonical application. |
 | `migrations/`, `migrate.py` | Canonical v3 schema and reporting migrations. |
 | `scripts/stage_workbook.py` | Raw workbook staging and profiling. |
 | `scripts/canonical_etl_v3.py` | Canonical v3 ETL. |

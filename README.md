@@ -13,9 +13,10 @@ Phase 13.2 now provides HR-first learner start, continuation, rejoin, profile,
 history, and transfer journeys while preserving the canonical service and audit
 boundaries.
 
-Do not run legacy `schema.sql`, `views.sql`, `admin_schema.sql`, or `etl.py` for
-the canonical app.  Use the versioned migrations, staging loader, canonical ETL,
-and `streamlit_app.py`.
+The pre-canonical prototype (old `app.py`, `etl.py`, `schema.sql`, `views.sql`,
+`admin_schema.sql`, `setup.ps1`, `quality_checks.sql`) is archived under
+`legacy/` and must not be run against the canonical database.  Use the
+versioned migrations, staging loader, canonical ETL, and `streamlit_app.py`.
 
 ## Developer handoff
 
@@ -284,12 +285,14 @@ is defined in `TARGET_ARCHITECTURE.md`.
 
 ## Legacy commands - archived, do not run for canonical v3
 
+The referenced files now live in `legacy/`.
+
 ```bash
-psql "$DATABASE_URL" -f schema.sql
-psql "$DATABASE_URL" -f views.sql
-psql "$DATABASE_URL" -f admin_schema.sql
+psql "$DATABASE_URL" -f legacy/schema.sql
+psql "$DATABASE_URL" -f legacy/views.sql
+psql "$DATABASE_URL" -f legacy/admin_schema.sql
 python3 -m pip install -r requirements.txt
-python3 etl.py okok_FIXED_v2.xlsx "$DATABASE_URL"
+python3 legacy/etl.py okok_FIXED_v2.xlsx "$DATABASE_URL"
 python3 migrate.py "$DATABASE_URL"
 ```
 
