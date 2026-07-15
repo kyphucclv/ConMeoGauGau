@@ -438,3 +438,168 @@ def test_profile_org_change_preserves_enrollment_snapshots(database_url, seed_id
         assert after["audit_summary"][0]["action"] == "employee.upsert"
     finally:
         pool.closeall()
+
+
+def test_editor_starts_a_first_time_learner_from_authoritative_options(database_url, seed_ids, factory):
+    _, course_run_id = factory.cohort_run(capacity=3)
+    factory.meeting_unit(course_run_id, 3, status="planned")
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            auth = _login(client, "pytest_editor", "editor-pass")
+            options = client.get("/api/learners/start-options")
+            destination = next(item for item in options.json()["course_runs"] if item["course_run_id"] == course_run_id)
+            response = client.post(
+                "/api/learners/start",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "emp_code": "API-START-001",
+                    "expected_employee_id": None,
+                    "full_name": "API First Learner",
+                    "employment_status": "active",
+                    "business_unit_id": seed_ids["bu"],
+                    "job_role_id": seed_ids["role"],
+                    "entrance_level_id": seed_ids["entrance_level"],
+                    "course_run_id": course_run_id,
+                    "joined_on": "2026-08-03",
+                    "confirmed_start_session_number": destination["proposed_start_session_number"],
+                },
+            )
+            detail = client.get(f"/api/learners/{response.json()['employee_id']}")
+            duplicate_identity = client.post(
+                "/api/learners/start",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "emp_code": "API-START-001",
+                    "expected_employee_id": None,
+                    "full_name": "Wrong Existing Learner",
+                    "business_unit_id": seed_ids["bu"],
+                    "job_role_id": seed_ids["role"],
+                    "entrance_level_id": seed_ids["entrance_level"],
+                    "course_run_id": course_run_id,
+                    "joined_on": "2026-08-03",
+                    "confirmed_start_session_number": destination["proposed_start_session_number"],
+                },
+            )
+
+        assert options.status_code == 200
+        assert destination["proposed_start_session_number"] == 3
+        assert destination["active_learners"] == 0
+        assert response.status_code == 200
+        assert response.json()["lifecycle"] == "first_time"
+        assert response.json()["placement_action"] == "created"
+        assert detail.json()["learner"]["active_course_run_id"] == course_run_id
+        assert detail.json()["course_history"][0]["start_session_number"] == 3
+        assert detail.json()["audit_summary"][0]["actor_username"] == "pytest_editor"
+        assert detail.json()["audit_summary"][0]["action"] == "learner.onboard"
+        assert duplicate_identity.status_code == 409
+        assert duplicate_identity.json()["code"] == "identity_conflict"
+        assert factory.one("SELECT full_name FROM employees WHERE emp_code='API-START-001'")[0] == "API First Learner"
+    finally:
+        pool.closeall()
+
+
+def test_start_rejects_a_changed_session_proposal_and_rolls_back(database_url, seed_ids, factory):
+    _, course_run_id = factory.cohort_run()
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            auth = _login(client, "pytest_admin", "admin-pass")
+            options = client.get("/api/learners/start-options").json()
+            stale = next(item for item in options["course_runs"] if item["course_run_id"] == course_run_id)
+            factory.meeting_unit(course_run_id, 1, status="completed")
+            response = client.post(
+                "/api/learners/start",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "emp_code": "API-STALE-001",
+                    "expected_employee_id": None,
+                    "full_name": "Stale Proposal",
+                    "business_unit_id": seed_ids["bu"],
+                    "job_role_id": seed_ids["role"],
+                    "entrance_level_id": seed_ids["entrance_level"],
+                    "course_run_id": course_run_id,
+                    "joined_on": "2026-08-03",
+                    "confirmed_start_session_number": stale["proposed_start_session_number"],
+                },
+            )
+
+        assert response.status_code == 409
+        assert response.json()["code"] == "stale_proposal"
+        assert factory.one("SELECT count(*) FROM employees WHERE emp_code='API-STALE-001'")[0] == 0
+    finally:
+        pool.closeall()
+
+
+def test_start_requires_a_reasoned_capacity_override_and_audits_it(database_url, seed_ids, factory):
+    cohort_id, course_run_id = factory.cohort_run(capacity=1)
+    factory.onboard(course_run_id)
+    pool, client = client_for(database_url)
+    body = {
+        "emp_code": "API-CAPACITY-001",
+        "expected_employee_id": None,
+        "full_name": "Capacity Learner",
+        "business_unit_id": seed_ids["bu"],
+        "job_role_id": seed_ids["role"],
+        "entrance_level_id": seed_ids["entrance_level"],
+        "course_run_id": course_run_id,
+        "joined_on": "2026-08-03",
+        "confirmed_start_session_number": 1,
+    }
+    try:
+        with client:
+            auth = _login(client, "pytest_editor", "editor-pass")
+            rejected = client.post("/api/learners/start", headers={"X-CSRF-Token": auth["csrf_token"]}, json=body)
+            approved = client.post(
+                "/api/learners/start",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={**body, "capacity_override_reason": "HR approved overflow"},
+            )
+
+        assert rejected.status_code == 409
+        assert rejected.json()["code"] == "capacity_exceeded"
+        assert approved.status_code == 200
+        override = factory.one(
+            "SELECT reason, actor_user_id, resulting_active_learner_count FROM cohort_capacity_overrides WHERE cohort_id=%s",
+            (cohort_id,),
+        )
+        assert override == ("HR approved overflow", seed_ids["editor"], 2)
+    finally:
+        pool.closeall()
+
+
+def test_start_forbids_viewer_bad_csrf_and_non_input_fields(database_url, seed_ids, factory):
+    _, course_run_id = factory.cohort_run()
+    body = {
+        "emp_code": "API-PROTECTED-START",
+        "expected_employee_id": None,
+        "full_name": "Protected Start",
+        "business_unit_id": seed_ids["bu"],
+        "job_role_id": seed_ids["role"],
+        "entrance_level_id": seed_ids["entrance_level"],
+        "course_run_id": course_run_id,
+        "joined_on": "2026-08-03",
+        "confirmed_start_session_number": 1,
+    }
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            _login(client, "pytest_viewer", "viewer-pass")
+            viewer_options = client.get("/api/learners/start-options")
+            viewer_save = client.post("/api/learners/start", json=body)
+            client.post("/api/auth/logout", headers={"X-CSRF-Token": client.get("/api/auth/me").json()["csrf_token"]})
+            _login(client, "pytest_admin", "admin-pass")
+            bad_csrf = client.post("/api/learners/start", json=body)
+            protected = client.post(
+                "/api/learners/start",
+                headers={"X-CSRF-Token": client.get("/api/auth/me").json()["csrf_token"]},
+                json={**body, "run_enrollment_id": 999, "audit_actor": "forged"},
+            )
+
+        assert viewer_options.status_code == 403
+        assert viewer_save.status_code == 403
+        assert bad_csrf.status_code == 403 and bad_csrf.json()["code"] == "csrf_rejected"
+        assert protected.status_code == 422 and protected.json()["code"] == "invalid_input"
+        assert factory.one("SELECT count(*) FROM employees WHERE emp_code='API-PROTECTED-START'")[0] == 0
+    finally:
+        pool.closeall()

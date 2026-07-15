@@ -660,6 +660,186 @@
         "title": "LearnerPage",
         "type": "object"
       },
+      "LearnerStartBody": {
+        "additionalProperties": false,
+        "properties": {
+          "business_unit_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Business Unit Id",
+            "type": "integer"
+          },
+          "capacity_override_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Override Reason"
+          },
+          "confirmed_start_session_number": {
+            "exclusiveMinimum": 0.0,
+            "title": "Confirmed Start Session Number",
+            "type": "integer"
+          },
+          "course_run_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "emp_code": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "employment_status": {
+            "default": "active",
+            "enum": [
+              "active",
+              "inactive",
+              "unknown"
+            ],
+            "title": "Employment Status",
+            "type": "string"
+          },
+          "entrance_level_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Entrance Level Id",
+            "type": "integer"
+          },
+          "expected_employee_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Employee Id"
+          },
+          "full_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "job_role_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Job Role Id",
+            "type": "integer"
+          },
+          "joined_on": {
+            "format": "date",
+            "title": "Joined On",
+            "type": "string"
+          }
+        },
+        "required": [
+          "emp_code",
+          "expected_employee_id",
+          "full_name",
+          "business_unit_id",
+          "job_role_id",
+          "entrance_level_id",
+          "course_run_id",
+          "joined_on",
+          "confirmed_start_session_number"
+        ],
+        "title": "LearnerStartBody",
+        "type": "object"
+      },
+      "LearnerStartOptions": {
+        "properties": {
+          "business_units": {
+            "items": {
+              "$ref": "#/components/schemas/StartReferenceOption"
+            },
+            "title": "Business Units",
+            "type": "array"
+          },
+          "course_runs": {
+            "items": {
+              "$ref": "#/components/schemas/StartCourseRunOption"
+            },
+            "title": "Course Runs",
+            "type": "array"
+          },
+          "entrance_levels": {
+            "items": {
+              "$ref": "#/components/schemas/StartReferenceOption"
+            },
+            "title": "Entrance Levels",
+            "type": "array"
+          },
+          "job_roles": {
+            "items": {
+              "$ref": "#/components/schemas/StartReferenceOption"
+            },
+            "title": "Job Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "business_units",
+          "job_roles",
+          "entrance_levels",
+          "course_runs"
+        ],
+        "title": "LearnerStartOptions",
+        "type": "object"
+      },
+      "LearnerStartResult": {
+        "properties": {
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "lifecycle": {
+            "enum": [
+              "first_time",
+              "returning",
+              "continuation",
+              "rejoin"
+            ],
+            "title": "Lifecycle",
+            "type": "string"
+          },
+          "membership_action": {
+            "enum": [
+              "created",
+              "reused"
+            ],
+            "title": "Membership Action",
+            "type": "string"
+          },
+          "placement_action": {
+            "enum": [
+              "created",
+              "reused"
+            ],
+            "title": "Placement Action",
+            "type": "string"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "employee_id",
+          "lifecycle",
+          "placement_action",
+          "membership_action"
+        ],
+        "title": "LearnerStartResult",
+        "type": "object"
+      },
       "LoginBody": {
         "properties": {
           "password": {
@@ -842,6 +1022,104 @@
           "name"
         ],
         "title": "ReferenceOption",
+        "type": "object"
+      },
+      "StartCourseRunOption": {
+        "properties": {
+          "active_learners": {
+            "title": "Active Learners",
+            "type": "integer"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "cohort_id": {
+            "title": "Cohort Id",
+            "type": "integer"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "proposed_start_session_number": {
+            "title": "Proposed Start Session Number",
+            "type": "integer"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          },
+          "run_status": {
+            "enum": [
+              "planned",
+              "active"
+            ],
+            "title": "Run Status",
+            "type": "string"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          }
+        },
+        "required": [
+          "course_run_id",
+          "cohort_id",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "run_status",
+          "active_learners",
+          "proposed_start_session_number"
+        ],
+        "title": "StartCourseRunOption",
+        "type": "object"
+      },
+      "StartReferenceOption": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "StartReferenceOption",
         "type": "object"
       },
       "ValidationError": {
@@ -1333,6 +1611,124 @@
           }
         },
         "summary": "Learner Profile Options"
+      }
+    },
+    "/api/learners/start": {
+      "post": {
+        "operationId": "learner_start_confirm_api_learners_start_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LearnerStartBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearnerStartResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Start Confirm"
+      }
+    },
+    "/api/learners/start-options": {
+      "get": {
+        "operationId": "learner_start_option_list_api_learners_start_options_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearnerStartOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Start Option List"
       }
     },
     "/api/learners/{employee_id}": {

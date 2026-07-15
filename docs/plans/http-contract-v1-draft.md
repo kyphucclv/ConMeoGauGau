@@ -146,6 +146,30 @@ Issue #3 freezes the employee-profile subset as follows:
   refetches the selected learner detail and invalidates dashboard data without
   refetching the directory.
 
+Issue #4 freezes the learner-start subset as follows:
+
+- `GET /api/learners/start-options` is admin/editor only. It returns active
+  organization and entrance-level references plus only planned/active course
+  runs, with class/course labels, capacity, current active membership count,
+  and the calculated first applicable session.
+- `POST /api/learners/start` is admin/editor only and requires the session CSRF
+  token. The request accepts a required nullable canonical employee
+  precondition, employee/profile inputs, destination run, join date,
+  confirmed start-session proposal, and an optional capacity-override
+  reason. Enrollment IDs/snapshots, lifecycle, derived counts, and audit actor
+  are forbidden input.
+- The server recalculates the proposal while holding the destination lock. A
+  changed proposal returns `409 stale_proposal`; active enrollment/membership,
+  placement, lifecycle, and capacity conflicts use the stable command-error
+  envelope and roll back the whole event.
+- One successful confirmation invokes `onboard_learner` once. The command owns
+  employee/org changes, placement reuse/creation, membership reuse/creation,
+  immutable enrollment snapshots, any reasoned capacity override, and the
+  named-user `learner.onboard` audit event in one transaction.
+- Success returns the run-enrollment and employee IDs plus lifecycle,
+  placement action, and membership action. React refetches the affected learner
+  and invalidates dashboard data.
+
 Start/transfer returns `409` when authoritative destination state or proposed
 start session changed after the user loaded the form.
 

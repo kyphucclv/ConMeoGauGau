@@ -138,6 +138,8 @@ class EmployeeOnboardingCommands:
         employment_status: str = "active",
         start_session_number: int = 1,
         capacity_override_reason: str | None = None,
+        expected_start_session_number: int | None = None,
+        expected_employee_id: int | None | object = _UNSET,
     ) -> CommandResult:
         """Atomically start first-time, returning, continuing, or rejoining learning."""
         def op(cur):
@@ -156,6 +158,11 @@ class EmployeeOnboardingCommands:
             if run_status not in {"planned", "active"}:
                 raise CommandError("invalid_state", "learning can start only in a planned or active course run")
             proposed_start_session = self._propose_course_run_start_session_in_tx(cur, course_run_id)
+            if expected_start_session_number is not None and expected_start_session_number != proposed_start_session:
+                raise CommandError(
+                    "stale_proposal",
+                    "first applicable session changed; reload the destination before saving",
+                )
             if start_session_number < proposed_start_session:
                 raise CommandError(
                     "invalid_input",
@@ -169,6 +176,13 @@ class EmployeeOnboardingCommands:
                 (emp_code.strip(),),
             )
             row = cur.fetchone()
+            if expected_employee_id is not _UNSET:
+                actual_employee_id = row[0] if row else None
+                if actual_employee_id != expected_employee_id:
+                    raise CommandError(
+                        "identity_conflict",
+                        "employee identity changed; select the canonical learner before saving",
+                    )
             employee_created = row is None
             if row:
                 employee_id = row[0]

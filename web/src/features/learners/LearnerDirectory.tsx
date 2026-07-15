@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { apiJson, type LearnerDetail, type LearnerPage, type ProfileOptions, type ProfileUpdateBody, type ProfileUpdateResult } from '../../api/client'
+import { apiJson, type LearnerDetail, type LearnerPage, type LearnerStartBody, type LearnerStartOptions, type LearnerStartResult, type ProfileOptions, type ProfileUpdateBody, type ProfileUpdateResult } from '../../api/client'
+import './learner-start.css'
 
 type Filters = {
   q: string
@@ -28,6 +29,7 @@ export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: str
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [starting, setStarting] = useState(false)
 
   const load = useCallback(async (nextPage: number, activeFilters: Filters) => {
     setLoading(true); setError('')
@@ -60,10 +62,19 @@ export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: str
     onProfileSaved()
   }
 
-  if (detail) return <LearnerDetailView detail={detail} csrfToken={csrfToken} notice={notice} onBack={() => { setDetail(null); setNotice('') }} onProfileSaved={profileSaved} />
+  async function learnerStarted(employeeId: number) {
+    const updated = await apiJson<LearnerDetail>(`/api/learners/${employeeId}`)
+    setDetail(updated)
+    setStarting(false)
+    setNotice('Learning started.')
+    onProfileSaved()
+  }
+
+  if (detail) return <LearnerDetailView detail={detail} csrfToken={csrfToken} notice={notice} onBack={() => { setDetail(null); setNotice('') }} onProfileSaved={profileSaved} onLearnerStarted={learnerStarted} />
+  if (starting) return <LearnerStartForm csrfToken={csrfToken} onCancel={() => setStarting(false)} onStarted={learnerStarted} />
 
   return <section>
-    <div className="section-heading"><div><p className="eyebrow">HR workspace</p><h2>Learners</h2></div></div>
+    <div className="section-heading"><div><p className="eyebrow">HR workspace</p><h2>Learners</h2></div><button onClick={() => setStarting(true)}>Start learner</button></div>
     <form className="filters" onSubmit={search}>
       <label className="search-field">Search by employee code or name<input value={draft.q} onChange={event => setDraft({...draft,q:event.target.value})} /></label>
       <label>Learning status<select value={draft.learning_status} onChange={event => setDraft({...draft,learning_status:event.target.value as Filters['learning_status']})}><option value="all">All</option><option value="current">Currently learning</option><option value="not_current">Not currently learning</option></select></label>
@@ -85,12 +96,13 @@ export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: str
   </section>
 }
 
-function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved}:{detail:LearnerDetail;csrfToken:string;notice:string;onBack:()=>void;onProfileSaved:(employeeId:number)=>Promise<void>}) {
+function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved,onLearnerStarted}:{detail:LearnerDetail;csrfToken:string;notice:string;onBack:()=>void;onProfileSaved:(employeeId:number)=>Promise<void>;onLearnerStarted:(employeeId:number)=>Promise<void>}) {
   const learner = detail.learner
   const [editing, setEditing] = useState(false)
   const [options, setOptions] = useState<ProfileOptions | null>(null)
   const [formError, setFormError] = useState('')
   const [saving, setSaving] = useState(false)
+  const [starting, setStarting] = useState(false)
 
   async function editProfile() {
     setEditing(true); setFormError('')
@@ -124,8 +136,9 @@ function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved}:{deta
 
   return <section><button className="back-button" onClick={onBack}>← Back to learners</button>
     {notice && <p className="success-notice" role="status">{notice}</p>}
-    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><div className="heading-actions"><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span><button onClick={() => void editProfile()}>Edit profile</button></div></div>
+    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><div className="heading-actions"><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span>{!learner.active_enrollment_id && <button onClick={() => setStarting(true)}>Start learning</button>}<button onClick={() => void editProfile()}>Edit profile</button></div></div>
     <div className="detail-grid"><article><span>Current class</span><strong>{display(learner.active_class_code)}</strong></article><article><span>Course</span><strong>{display(learner.active_course_name ?? learner.latest_course_name)}</strong></article><article><span>Entrance level</span><strong>{display(learner.entrance_level)}</strong></article><article><span>Business unit</span><strong>{display(learner.business_unit_name)}</strong></article></div>
+    {starting && <LearnerStartForm csrfToken={csrfToken} learner={learner} onCancel={() => setStarting(false)} onStarted={onLearnerStarted} />}
     {editing && <section className="profile-editor"><h3>Edit profile</h3>{formError && <p role="alert">{formError}</p>}{!options && !formError ? <p aria-live="polite">Loading profile options…</p> : options && <form onSubmit={saveProfile}>
       <label>Employee code<input value={learner.emp_code} disabled /></label>
       <label>Full name<input name="full_name" defaultValue={learner.full_name} required /></label>
@@ -140,4 +153,59 @@ function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved}:{deta
     <h3>Change history</h3>
     {detail.audit_summary.length === 0 ? <p>No recorded changes.</p> : <ul className="timeline">{detail.audit_summary.map((row,index) => <li key={`${row.created_at}-${index}`}><strong>{row.action}</strong><span>{row.actor_username} · {new Date(row.created_at).toLocaleString()}</span></li>)}</ul>}
   </section>
+}
+
+function LearnerStartForm({csrfToken,learner,onCancel,onStarted}:{csrfToken:string;learner?:LearnerDetail['learner'];onCancel:()=>void;onStarted:(employeeId:number)=>Promise<void>}) {
+  const [options, setOptions] = useState<LearnerStartOptions | null>(null)
+  const [selectedRunId, setSelectedRunId] = useState('')
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    apiJson<LearnerStartOptions>('/api/learners/start-options').then(setOptions).catch(error => setError(error instanceof Error ? error.message : 'Could not load start options'))
+  }, [])
+
+  const destination = options?.course_runs.find(option => option.course_run_id === Number(selectedRunId))
+  const reusesMembership = Boolean(learner?.active_membership_id && learner.membership_cohort_id === destination?.cohort_id)
+  const projectedLearners = destination ? destination.active_learners + (reusesMembership ? 0 : 1) : 0
+  const needsOverride = Boolean(destination?.capacity != null && projectedLearners > destination.capacity)
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setSaving(true); setError('')
+    const form = new FormData(event.currentTarget)
+    const body: LearnerStartBody = {
+      emp_code: String(form.get('emp_code') ?? ''),
+      expected_employee_id: learner?.employee_id ?? null,
+      full_name: String(form.get('full_name') ?? ''),
+      employment_status: String(form.get('employment_status')) as LearnerStartBody['employment_status'],
+      business_unit_id: Number(form.get('business_unit_id')),
+      job_role_id: Number(form.get('job_role_id')),
+      entrance_level_id: Number(form.get('entrance_level_id')),
+      course_run_id: Number(form.get('course_run_id')),
+      joined_on: String(form.get('joined_on') ?? ''),
+      confirmed_start_session_number: destination?.proposed_start_session_number ?? 0,
+      capacity_override_reason: needsOverride ? String(form.get('capacity_override_reason') ?? '') : null,
+    }
+    try {
+      const result = await apiJson<LearnerStartResult>('/api/learners/start', {
+        method:'POST', headers:{'Content-Type':'application/json','X-CSRF-Token':csrfToken}, body:JSON.stringify(body),
+      })
+      await onStarted(result.employee_id)
+    } catch (error) { setError(error instanceof Error ? error.message : 'Could not start learning') }
+    finally { setSaving(false) }
+  }
+
+  return <section className="profile-editor learner-start"><h3>Start learning</h3>{error && <p role="alert">{error}</p>}{!options && !error ? <p aria-live="polite">Loading start options…</p> : options && <form onSubmit={save}>
+    <label>Employee code<input name="emp_code" defaultValue={learner?.emp_code ?? ''} readOnly={Boolean(learner)} required /></label>
+    <label>Full name<input name="full_name" defaultValue={learner?.full_name ?? ''} required /></label>
+    <label>Employment status<select name="employment_status" defaultValue={learner?.employment_status ?? 'active'}><option value="active">Active</option><option value="inactive">Inactive</option><option value="unknown">Unknown</option></select></label>
+    <label>Business unit<select name="business_unit_id" defaultValue={String(learner?.business_unit_id ?? '')} required><option value="" disabled>Select business unit</option>{options.business_units.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></label>
+    <label>Role<select name="job_role_id" defaultValue={String(learner?.job_role_id ?? '')} required><option value="" disabled>Select role</option>{options.job_roles.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></label>
+    <label>Entrance level<select name="entrance_level_id" defaultValue={String(learner?.entrance_level_id ?? '')} required><option value="" disabled>Select entrance level</option>{options.entrance_levels.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></label>
+    <label>Destination<select name="course_run_id" value={selectedRunId} onChange={event => setSelectedRunId(event.target.value)} required><option value="" disabled>Select class and course</option>{options.course_runs.map(option => <option key={option.course_run_id} value={option.course_run_id}>{option.class_code} · {option.course_name} · Run {option.run_number}</option>)}</select></label>
+    <label>Join date<input name="joined_on" type="date" defaultValue={new Date().toISOString().slice(0,10)} required /></label>
+    {destination && <div className="confirmation-summary" aria-live="polite"><strong>Confirm destination</strong><span>{destination.class_code} · {destination.course_name}</span><span>First applicable session: {destination.proposed_start_session_number}</span><span>Projected class size: {projectedLearners}{destination.capacity == null ? '' : ` / ${destination.capacity}`}</span></div>}
+    {needsOverride && <label className="wide-field">Capacity override reason<textarea name="capacity_override_reason" required /></label>}
+    <div className="form-actions"><button type="submit" disabled={saving || !destination}>{saving?'Starting…':'Confirm start'}</button><button type="button" className="secondary" onClick={onCancel}>Cancel</button></div>
+  </form>}</section>
 }

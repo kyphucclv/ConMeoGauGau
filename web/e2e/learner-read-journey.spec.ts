@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('admin completes the read-only learner journey without a full page reload', async ({ page }) => {
+test('admin edits a profile and starts a learner without a full page reload', async ({ page }) => {
   await page.goto('/')
   await page.getByLabel('Username').fill('pytest_admin')
   await page.getByLabel('Password').fill('admin-pass')
@@ -21,6 +21,24 @@ test('admin completes the read-only learner journey without a full page reload',
   await expect(page.getByRole('heading', { name: 'Directory Alpha Updated' })).toBeVisible()
   await expect(page.getByText('Profile saved.')).toBeVisible()
   await expect(page.getByText('employee.upsert')).toBeVisible()
+
+  await page.getByRole('button', { name: /Back to learners/ }).click()
+  await page.getByRole('button', { name: 'Start learner' }).click()
+  await page.getByLabel('Employee code').fill('PW-START-001')
+  await page.getByLabel('Full name').fill('Playwright Start Learner')
+  await page.getByLabel('Business unit').selectOption({ index: 1 })
+  await page.getByLabel('Role').selectOption({ index: 1 })
+  await page.getByLabel('Entrance level').selectOption({ index: 1 })
+  await page.getByLabel('Destination').selectOption({ index: 1 })
+  await page.getByLabel('Join date').fill('2026-08-03')
+  await expect(page.getByText(/First applicable session:/)).toBeVisible()
+  await expect(page.getByText(/Projected class size:/)).toBeVisible()
+  const overrideReason = page.getByLabel('Capacity override reason')
+  if (await overrideReason.isVisible()) await overrideReason.fill('Playwright approved overflow')
+  await page.getByRole('button', { name: 'Confirm start' }).click()
+  await expect(page.getByRole('heading', { name: 'Playwright Start Learner' })).toBeVisible()
+  await expect(page.getByText('Learning started.')).toBeVisible()
+  await expect(page.getByText('learner.onboard')).toBeVisible()
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {

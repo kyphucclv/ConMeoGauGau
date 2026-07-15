@@ -140,6 +140,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/learners/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Learner Start Confirm */
+        post: operations["learner_start_confirm_api_learners_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/learners/start-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Learner Start Option List */
+        get: operations["learner_start_option_list_api_learners_start_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/learners/{employee_id}": {
         parameters: {
             query?: never;
@@ -364,6 +398,71 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** LearnerStartBody */
+        LearnerStartBody: {
+            /** Business Unit Id */
+            business_unit_id: number;
+            /** Capacity Override Reason */
+            capacity_override_reason?: string | null;
+            /** Confirmed Start Session Number */
+            confirmed_start_session_number: number;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Emp Code */
+            emp_code: string;
+            /**
+             * Employment Status
+             * @default active
+             * @enum {string}
+             */
+            employment_status: "active" | "inactive" | "unknown";
+            /** Entrance Level Id */
+            entrance_level_id: number;
+            /** Expected Employee Id */
+            expected_employee_id: number | null;
+            /** Full Name */
+            full_name: string;
+            /** Job Role Id */
+            job_role_id: number;
+            /**
+             * Joined On
+             * Format: date
+             */
+            joined_on: string;
+        };
+        /** LearnerStartOptions */
+        LearnerStartOptions: {
+            /** Business Units */
+            business_units: components["schemas"]["StartReferenceOption"][];
+            /** Course Runs */
+            course_runs: components["schemas"]["StartCourseRunOption"][];
+            /** Entrance Levels */
+            entrance_levels: components["schemas"]["StartReferenceOption"][];
+            /** Job Roles */
+            job_roles: components["schemas"]["StartReferenceOption"][];
+        };
+        /** LearnerStartResult */
+        LearnerStartResult: {
+            /** Employee Id */
+            employee_id: number;
+            /**
+             * Lifecycle
+             * @enum {string}
+             */
+            lifecycle: "first_time" | "returning" | "continuation" | "rejoin";
+            /**
+             * Membership Action
+             * @enum {string}
+             */
+            membership_action: "created" | "reused";
+            /**
+             * Placement Action
+             * @enum {string}
+             */
+            placement_action: "created" | "reused";
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+        };
         /** LoginBody */
         LoginBody: {
             /** Password */
@@ -427,6 +526,41 @@ export interface components {
         };
         /** ReferenceOption */
         ReferenceOption: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** StartCourseRunOption */
+        StartCourseRunOption: {
+            /** Active Learners */
+            active_learners: number;
+            /** Capacity */
+            capacity?: number | null;
+            /** Class Code */
+            class_code: string;
+            /** Cohort Id */
+            cohort_id: number;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Proposed Start Session Number */
+            proposed_start_session_number: number;
+            /** Run Number */
+            run_number: number;
+            /**
+             * Run Status
+             * @enum {string}
+             */
+            run_status: "planned" | "active";
+            /** Start Date */
+            start_date?: string | null;
+        };
+        /** StartReferenceOption */
+        StartReferenceOption: {
             /** Id */
             id: number;
             /** Name */
@@ -679,6 +813,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileOptions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    learner_start_confirm_api_learners_start_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LearnerStartBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LearnerStartResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    learner_start_option_list_api_learners_start_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LearnerStartOptions"];
                 };
             };
             /** @description Validation Error */

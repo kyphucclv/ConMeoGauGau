@@ -28,7 +28,7 @@ Current visibility is preserved unless an owner approves a product change:
 | Course history | `learner_course_history` | none | admin/editor | none | Read-only shell | Verified in Issue #2; stable newest-first order |
 | Learner audit summary | `employee_audit_rows` | none | admin/editor | none | Read-only shell | Verified in Issue #2; only when/actor/action exposed, no details JSON |
 | Create/update employee profile | Learner context, business-unit/job-role refs | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile slice | Verified in Issue #3; React owns profile edit with identity/org stale preconditions |
-| First-time/returning learner start | Journey/capacity/start-session context | `onboard_learner` | admin/editor | `learner.onboard` plus owned related events | Learner start slice | Inventoried |
+| First-time/returning learner start | Journey/capacity/start-session context | `onboard_learner` | admin/editor | `learner.onboard` plus owned related events | Learner start slice | Verified in Issue #4; React confirms destination, capacity, and exact start-session proposal before one atomic command |
 | Cross-class learner transfer | Journey/capacity/start-session context | `transfer_learner` | admin/editor | `learner.transfer`, capacity override when applicable | Transfer slice | Inventoried |
 
 ## Attendance

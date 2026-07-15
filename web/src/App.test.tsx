@@ -69,3 +69,39 @@ test('admin navigates, edits a profile, and refetches only affected reads', asyn
   expect(fetchMock.mock.calls.filter(([url]) => String(url) === '/api/learners/41')).toHaveLength(2)
   await waitFor(() => expect(fetchMock.mock.calls.filter(([url]) => String(url) === '/api/dashboard')).toHaveLength(2))
 })
+
+test('editor confirms authoritative destination details before starting a learner', async () => {
+  const jsonResponse = (body: unknown) => new Response(JSON.stringify(body), {status:200,headers:{'Content-Type':'application/json'}})
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+    if (url === '/api/auth/me') return jsonResponse({user:{user_id:2,username:'editor',full_name:'HR Editor',role:'editor'},csrf_token:'start-csrf'})
+    if (url === '/api/dashboard') return jsonResponse({summary:{active_employees:1,active_learners:0,open_course_runs:1,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:1,current_learners:0,open_classes:1,review_items:0,urgent_items:0,follow_ups:0}})
+    if (url.startsWith('/api/learners?')) return jsonResponse({items:[],page:1,page_size:20,total:0,sort:'full_name_asc_emp_code_asc'})
+    if (url === '/api/learners/start-options') return jsonResponse({business_units:[{id:1,name:'People'}],job_roles:[{id:2,name:'Specialist'}],entrance_levels:[{id:3,name:'Entrance'}],course_runs:[{course_run_id:4,cohort_id:5,class_code:'EL101',course_code:'ENG1',course_name:'English One',run_number:1,run_status:'active',start_date:'2026-08-01',capacity:10,active_learners:7,proposed_start_session_number:3}]})
+    if (url === '/api/learners/start') {
+      expect(init).toMatchObject({method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':'start-csrf'}})
+      expect(JSON.parse(String(init?.body))).toMatchObject({emp_code:'E-NEW',expected_employee_id:null,course_run_id:4,confirmed_start_session_number:3,capacity_override_reason:null})
+      return jsonResponse({run_enrollment_id:8,employee_id:9,lifecycle:'first_time',placement_action:'created',membership_action:'created'})
+    }
+    if (url === '/api/learners/9') return jsonResponse({learner:{employee_id:9,emp_code:'E-NEW',full_name:'New Learner',employment_status:'active',business_unit_id:1,business_unit_name:'People',job_role_id:2,job_role_name:'Specialist',current_org_valid_from:'2026-08-03',placement_id:6,entrance_level_id:3,entrance_level:'Entrance',active_enrollment_id:8,active_course_run_id:4,active_cohort_id:5,active_class_code:'EL101',active_course_name:'English One',active_membership_id:7,membership_cohort_id:5,membership_class_code:'EL101',latest_enrollment_status:'active',latest_class_code:'EL101',latest_course_name:'English One',membership_count:1,lifecycle:'active'},course_history:[{start_date:'2026-08-01',class_code:'EL101',course_name:'English One',status:'active',start_session_number:3,attendance_ratio:null,final_level:null,passed:null}],audit_summary:[{created_at:'2026-08-03T00:00:00Z',actor_username:'editor',action:'learner.onboard'}]})
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Learners'}))
+  fireEvent.click(await screen.findByRole('button',{name:'Start learner'}))
+  fireEvent.change(await screen.findByLabelText('Employee code'), {target:{value:'E-NEW'}})
+  fireEvent.change(screen.getByLabelText('Full name'), {target:{value:'New Learner'}})
+  fireEvent.change(screen.getByLabelText('Business unit'), {target:{value:'1'}})
+  fireEvent.change(screen.getByLabelText('Role'), {target:{value:'2'}})
+  fireEvent.change(screen.getByLabelText('Entrance level'), {target:{value:'3'}})
+  fireEvent.change(screen.getByLabelText('Destination'), {target:{value:'4'}})
+  expect(screen.getByText('First applicable session: 3')).toBeTruthy()
+  expect(screen.getByText('Projected class size: 8 / 10')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Confirm start'}))
+
+  expect(await screen.findByRole('heading',{name:'New Learner'})).toBeTruthy()
+  expect(screen.getByText('Learning started.')).toBeTruthy()
+  expect(screen.getByText('learner.onboard')).toBeTruthy()
+})

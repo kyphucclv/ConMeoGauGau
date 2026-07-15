@@ -22,6 +22,7 @@ from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
+from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
 from api.profile_commands import ProfileOptions, ProfileUpdateBody, ProfileUpdateResult, profile_options, update_profile
 from services.base import CommandError
 
@@ -229,6 +230,21 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
         session: AuthenticatedSession = Depends(require_hr_session),
     ):
         return profile_options(request.app.state.pool)
+
+    @app.get("/api/learners/start-options", response_model=LearnerStartOptions)
+    def learner_start_option_list(
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return learner_start_options(request.app.state.pool)
+
+    @app.post("/api/learners/start", response_model=LearnerStartResult)
+    def learner_start_confirm(
+        body: LearnerStartBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_csrf),
+    ):
+        return start_learner(request.app.state.pool, session.user.user_id, body)
 
     @app.get("/api/learners/{employee_id}", response_model=LearnerDetail)
     def learner_detail(
