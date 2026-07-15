@@ -840,6 +840,98 @@
         "title": "LearnerStartResult",
         "type": "object"
       },
+      "LearnerTransferBody": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity_override_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Override Reason"
+          },
+          "confirmed_start_session_number": {
+            "exclusiveMinimum": 0.0,
+            "title": "Confirmed Start Session Number",
+            "type": "integer"
+          },
+          "target_course_run_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Target Course Run Id",
+            "type": "integer"
+          },
+          "transfer_date": {
+            "format": "date",
+            "title": "Transfer Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_course_run_id",
+          "transfer_date",
+          "confirmed_start_session_number"
+        ],
+        "title": "LearnerTransferBody",
+        "type": "object"
+      },
+      "LearnerTransferOptions": {
+        "properties": {
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/TransferDestination"
+            },
+            "title": "Destinations",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/TransferSource"
+          }
+        },
+        "required": [
+          "source",
+          "destinations"
+        ],
+        "title": "LearnerTransferOptions",
+        "type": "object"
+      },
+      "LearnerTransferResult": {
+        "properties": {
+          "capacity_override_applied": {
+            "title": "Capacity Override Applied",
+            "type": "boolean"
+          },
+          "from_enrollment_id": {
+            "title": "From Enrollment Id",
+            "type": "integer"
+          },
+          "membership_id": {
+            "title": "Membership Id",
+            "type": "integer"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          },
+          "start_session_number": {
+            "title": "Start Session Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "from_enrollment_id",
+          "membership_id",
+          "start_session_number",
+          "capacity_override_applied"
+        ],
+        "title": "LearnerTransferResult",
+        "type": "object"
+      },
       "LoginBody": {
         "properties": {
           "password": {
@@ -1120,6 +1212,144 @@
           "name"
         ],
         "title": "StartReferenceOption",
+        "type": "object"
+      },
+      "TransferDestination": {
+        "properties": {
+          "active_learners": {
+            "title": "Active Learners",
+            "type": "integer"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "cohort_id": {
+            "title": "Cohort Id",
+            "type": "integer"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "proposed_start_session_number": {
+            "title": "Proposed Start Session Number",
+            "type": "integer"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          },
+          "run_status": {
+            "enum": [
+              "planned",
+              "active"
+            ],
+            "title": "Run Status",
+            "type": "string"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          }
+        },
+        "required": [
+          "course_run_id",
+          "cohort_id",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "run_status",
+          "active_learners",
+          "proposed_start_session_number"
+        ],
+        "title": "TransferDestination",
+        "type": "object"
+      },
+      "TransferSource": {
+        "properties": {
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "cohort_id": {
+            "title": "Cohort Id",
+            "type": "integer"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "emp_code": {
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          },
+          "start_session_number": {
+            "title": "Start Session Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "employee_id",
+          "emp_code",
+          "full_name",
+          "course_run_id",
+          "cohort_id",
+          "class_code",
+          "course_code",
+          "course_name",
+          "start_session_number"
+        ],
+        "title": "TransferSource",
         "type": "object"
       },
       "ValidationError": {
@@ -1865,6 +2095,142 @@
           }
         },
         "summary": "Learner Profile Update"
+      }
+    },
+    "/api/run-enrollments/{run_enrollment_id}/transfer": {
+      "post": {
+        "operationId": "learner_transfer_confirm_api_run_enrollments__run_enrollment_id__transfer_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LearnerTransferBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearnerTransferResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Transfer Confirm"
+      }
+    },
+    "/api/run-enrollments/{run_enrollment_id}/transfer-options": {
+      "get": {
+        "operationId": "learner_transfer_option_list_api_run_enrollments__run_enrollment_id__transfer_options_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearnerTransferOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Transfer Option List"
       }
     }
   }

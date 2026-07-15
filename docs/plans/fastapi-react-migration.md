@@ -569,8 +569,10 @@ Implementation status (2026-07-15): Issue #3 delivers profile edit from learner
 detail. Issue #4 delivers first-time, returning, continuation, and rejoin starts
 through authoritative destination options, an exact start-session precondition,
 one atomic onboarding command, reasoned capacity override, named-user audit,
-and targeted learner/dashboard refresh. Transfer remains on Streamlit until
-Issue #5.
+and targeted learner/dashboard refresh. Issue #5 delivers cross-class transfer
+addressed by active run enrollment, with authoritative destination capacity,
+exact start-session confirmation, atomic history links, optional reasoned
+override, named-user audit, and targeted learner/dashboard refresh.
 
 Deliver:
 

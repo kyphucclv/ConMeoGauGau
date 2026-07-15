@@ -63,17 +63,6 @@ class MembershipTransferCommands:
     ) -> CommandResult:
         """Close source membership/enrollment and create target records atomically."""
         def op(cur):
-            proposal = self._propose_transfer_start_session_in_tx(cur, target_course_run_id)
-            if confirmed_start_session_number != proposal:
-                raise CommandError("invalid_input", "confirmed start session must match the current transfer proposal")
-            cur.execute("""SELECT re.employee_id,re.cohort_membership_id,cr.cohort_id,re.course_run_id
-                           FROM run_enrollments re JOIN course_runs cr ON cr.course_run_id=re.course_run_id
-                           WHERE re.run_enrollment_id=%s AND re.status='active' FOR UPDATE""", (run_enrollment_id,))
-            source = cur.fetchone()
-            if not source: raise CommandError("invalid_state", "enrollment is not active or does not exist")
-            employee_id, source_membership_id, source_cohort_id, source_course_run_id = source
-            if not source_membership_id:
-                raise CommandError("invalid_state", "active enrollment must be linked to its cohort membership before transfer")
             cur.execute("""SELECT cr.cohort_id,c.capacity,cr.status
                            FROM course_runs cr
                            JOIN cohorts c ON c.cohort_id=cr.cohort_id
@@ -83,6 +72,21 @@ class MembershipTransferCommands:
             target_cohort_id, capacity, target_status = target
             if target_status not in {"planned", "active"}:
                 raise CommandError("invalid_state", "transfer target must be a planned or active course run")
+            proposal = self._propose_transfer_start_session_in_tx(cur, target_course_run_id)
+            if confirmed_start_session_number != proposal:
+                raise CommandError("stale_proposal", "first applicable session changed; reload the destination before saving")
+            cur.execute("""SELECT re.employee_id,re.cohort_membership_id,cr.cohort_id,re.course_run_id,
+                                  cm.status,cm.cohort_id
+                           FROM run_enrollments re
+                           JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           JOIN cohort_memberships cm ON cm.cohort_membership_id=re.cohort_membership_id
+                           WHERE re.run_enrollment_id=%s AND re.status='active'
+                           FOR UPDATE OF re,cm""", (run_enrollment_id,))
+            source = cur.fetchone()
+            if not source: raise CommandError("invalid_state", "enrollment is not active or does not exist")
+            employee_id, source_membership_id, source_cohort_id, source_course_run_id, membership_status, membership_cohort_id = source
+            if not source_membership_id or membership_status != "active" or membership_cohort_id != source_cohort_id:
+                raise CommandError("invalid_state", "active enrollment must be linked to its active class membership")
             if target_course_run_id == source_course_run_id: raise CommandError("invalid_input", "target course run must differ from source")
             if target_cohort_id == source_cohort_id:
                 raise CommandError("invalid_input", "move learner requires a different class; use continuation after course completion")
@@ -117,13 +121,14 @@ class MembershipTransferCommands:
                              resulting_count, override_reason, self.actor_user_id))
                 override_id = cur.fetchone()[0]
                 self._audit(cur, "cohort.capacity.override", "cohort_capacity_override", override_id, {
+                    "employee_id": employee_id,
                     "cohort_id": target_cohort_id,
                     "previous_capacity": capacity,
                     "resulting_active_learner_count": resulting_count,
                     "reason": override_reason,
                 })
             self._audit(cur, "learner.transfer", "run_enrollment", new_enrollment_id,
-                        {"from_enrollment_id": run_enrollment_id, "from_cohort_id": source_cohort_id,
+                        {"employee_id": employee_id, "from_enrollment_id": run_enrollment_id, "from_cohort_id": source_cohort_id,
                          "to_cohort_id": target_cohort_id, "start_session_number": proposal,
                          "capacity_override_id": override_id})
             return CommandResult("run_enrollment", new_enrollment_id, {

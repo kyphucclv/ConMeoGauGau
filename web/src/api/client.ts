@@ -12,6 +12,9 @@ export type ProfileUpdateResult = Schemas['ProfileUpdateResult']
 export type LearnerStartOptions = Schemas['LearnerStartOptions']
 export type LearnerStartBody = Schemas['LearnerStartBody']
 export type LearnerStartResult = Schemas['LearnerStartResult']
+export type LearnerTransferOptions = Schemas['LearnerTransferOptions']
+export type LearnerTransferBody = Schemas['LearnerTransferBody']
+export type LearnerTransferResult = Schemas['LearnerTransferResult']
 
 type ErrorEnvelope = { message?: string }
 

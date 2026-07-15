@@ -173,6 +173,29 @@ Issue #4 freezes the learner-start subset as follows:
 Start/transfer returns `409` when authoritative destination state or proposed
 start session changed after the user loaded the form.
 
+Issue #5 freezes the learner-transfer subset as follows:
+
+- `GET /api/run-enrollments/{run_enrollment_id}/transfer-options` is
+  admin/editor only and accepts only an active enrollment linked to its active
+  source membership. It returns the canonical source employee/run/class plus
+  planned/active destination runs from different cohorts, including capacity,
+  active membership count, and calculated first applicable session.
+- `POST /api/run-enrollments/{run_enrollment_id}/transfer` is admin/editor only
+  and requires CSRF. The body accepts target run, transfer date, confirmed
+  proposal, and optional capacity reason; employee IDs, snapshots, lifecycle,
+  membership IDs, derived counts, and audit attribution are forbidden input.
+- The command locks and revalidates target proposal and active source state.
+  Changed proposal returns `409 stale_proposal`; inactive/retried source,
+  same-class destination, closed destination, capacity, and duplicate-active
+  conflicts use the stable safe error envelope.
+- One successful confirmation closes and links the source enrollment/membership,
+  creates the target membership/enrollment with current immutable organization
+  snapshots, writes any reasoned capacity override, and records the named-user
+  `learner.transfer` audit event in one transaction.
+- Success returns only target/source enrollment identity, target membership,
+  first session, and whether an override was applied. React refetches the
+  affected learner and invalidates dashboard data.
+
 ## Attendance
 
 | Method and path | Read/command seam | Notes |

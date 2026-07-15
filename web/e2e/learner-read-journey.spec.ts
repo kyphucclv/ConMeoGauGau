@@ -39,6 +39,17 @@ test('admin edits a profile and starts a learner without a full page reload', as
   await expect(page.getByRole('heading', { name: 'Playwright Start Learner' })).toBeVisible()
   await expect(page.getByText('Learning started.')).toBeVisible()
   await expect(page.getByText('learner.onboard')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Transfer learner' }).click()
+  await page.getByLabel('Target class and course').selectOption({ index: 1 })
+  await page.getByLabel('Transfer date').fill('2026-08-15')
+  await expect(page.getByText(/First applicable session:/)).toBeVisible()
+  await expect(page.getByText(/Projected class size:/)).toBeVisible()
+  const transferOverrideReason = page.getByLabel('Capacity override reason')
+  if (await transferOverrideReason.isVisible()) await transferOverrideReason.fill('Playwright approved transfer seat')
+  await page.getByRole('button', { name: 'Confirm transfer' }).click()
+  await expect(page.getByText('Learner transferred.')).toBeVisible()
+  await expect(page.getByText('learner.transfer')).toBeVisible()
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {

@@ -23,6 +23,7 @@ from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
+from api.learner_transfer import LearnerTransferBody, LearnerTransferOptions, LearnerTransferResult, learner_transfer_options, transfer_learner
 from api.profile_commands import ProfileOptions, ProfileUpdateBody, ProfileUpdateResult, profile_options, update_profile
 from services.base import CommandError
 
@@ -265,6 +266,23 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
         session: AuthenticatedSession = Depends(require_hr_csrf),
     ):
         return update_profile(request.app.state.pool, session.user.user_id, employee_id, body)
+
+    @app.get("/api/run-enrollments/{run_enrollment_id}/transfer-options", response_model=LearnerTransferOptions)
+    def learner_transfer_option_list(
+        run_enrollment_id: int,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return learner_transfer_options(request.app.state.pool, run_enrollment_id)
+
+    @app.post("/api/run-enrollments/{run_enrollment_id}/transfer", response_model=LearnerTransferResult)
+    def learner_transfer_confirm(
+        run_enrollment_id: int,
+        body: LearnerTransferBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_csrf),
+    ):
+        return transfer_learner(request.app.state.pool, session.user.user_id, run_enrollment_id, body)
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):

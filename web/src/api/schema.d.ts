@@ -208,6 +208,40 @@ export interface paths {
         patch: operations["learner_profile_update_api_learners__employee_id__profile_patch"];
         trace?: never;
     };
+    "/api/run-enrollments/{run_enrollment_id}/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Learner Transfer Confirm */
+        post: operations["learner_transfer_confirm_api_run_enrollments__run_enrollment_id__transfer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/run-enrollments/{run_enrollment_id}/transfer-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Learner Transfer Option List */
+        get: operations["learner_transfer_option_list_api_run_enrollments__run_enrollment_id__transfer_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -463,6 +497,39 @@ export interface components {
             /** Run Enrollment Id */
             run_enrollment_id: number;
         };
+        /** LearnerTransferBody */
+        LearnerTransferBody: {
+            /** Capacity Override Reason */
+            capacity_override_reason?: string | null;
+            /** Confirmed Start Session Number */
+            confirmed_start_session_number: number;
+            /** Target Course Run Id */
+            target_course_run_id: number;
+            /**
+             * Transfer Date
+             * Format: date
+             */
+            transfer_date: string;
+        };
+        /** LearnerTransferOptions */
+        LearnerTransferOptions: {
+            /** Destinations */
+            destinations: components["schemas"]["TransferDestination"][];
+            source: components["schemas"]["TransferSource"];
+        };
+        /** LearnerTransferResult */
+        LearnerTransferResult: {
+            /** Capacity Override Applied */
+            capacity_override_applied: boolean;
+            /** From Enrollment Id */
+            from_enrollment_id: number;
+            /** Membership Id */
+            membership_id: number;
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+            /** Start Session Number */
+            start_session_number: number;
+        };
         /** LoginBody */
         LoginBody: {
             /** Password */
@@ -565,6 +632,57 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** TransferDestination */
+        TransferDestination: {
+            /** Active Learners */
+            active_learners: number;
+            /** Capacity */
+            capacity?: number | null;
+            /** Class Code */
+            class_code: string;
+            /** Cohort Id */
+            cohort_id: number;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Proposed Start Session Number */
+            proposed_start_session_number: number;
+            /** Run Number */
+            run_number: number;
+            /**
+             * Run Status
+             * @enum {string}
+             */
+            run_status: "planned" | "active";
+            /** Start Date */
+            start_date?: string | null;
+        };
+        /** TransferSource */
+        TransferSource: {
+            /** Class Code */
+            class_code: string;
+            /** Cohort Id */
+            cohort_id: number;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Emp Code */
+            emp_code: string;
+            /** Employee Id */
+            employee_id: number;
+            /** Full Name */
+            full_name: string;
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+            /** Start Session Number */
+            start_session_number: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -953,6 +1071,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileUpdateResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    learner_transfer_confirm_api_run_enrollments__run_enrollment_id__transfer_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LearnerTransferBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LearnerTransferResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    learner_transfer_option_list_api_run_enrollments__run_enrollment_id__transfer_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LearnerTransferOptions"];
                 };
             };
             /** @description Validation Error */

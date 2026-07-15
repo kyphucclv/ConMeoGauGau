@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { apiJson, type LearnerDetail, type LearnerPage, type LearnerStartBody, type LearnerStartOptions, type LearnerStartResult, type ProfileOptions, type ProfileUpdateBody, type ProfileUpdateResult } from '../../api/client'
+import { apiJson, type LearnerDetail, type LearnerPage, type LearnerStartBody, type LearnerStartOptions, type LearnerStartResult, type LearnerTransferBody, type LearnerTransferOptions, type LearnerTransferResult, type ProfileOptions, type ProfileUpdateBody, type ProfileUpdateResult } from '../../api/client'
 import './learner-start.css'
 
 type Filters = {
@@ -70,7 +70,14 @@ export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: str
     onProfileSaved()
   }
 
-  if (detail) return <LearnerDetailView detail={detail} csrfToken={csrfToken} notice={notice} onBack={() => { setDetail(null); setNotice('') }} onProfileSaved={profileSaved} onLearnerStarted={learnerStarted} />
+  async function learnerTransferred(employeeId: number) {
+    const updated = await apiJson<LearnerDetail>(`/api/learners/${employeeId}`)
+    setDetail(updated)
+    setNotice('Learner transferred.')
+    onProfileSaved()
+  }
+
+  if (detail) return <LearnerDetailView detail={detail} csrfToken={csrfToken} notice={notice} onBack={() => { setDetail(null); setNotice('') }} onProfileSaved={profileSaved} onLearnerStarted={learnerStarted} onLearnerTransferred={learnerTransferred} />
   if (starting) return <LearnerStartForm csrfToken={csrfToken} onCancel={() => setStarting(false)} onStarted={learnerStarted} />
 
   return <section>
@@ -96,13 +103,14 @@ export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: str
   </section>
 }
 
-function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved,onLearnerStarted}:{detail:LearnerDetail;csrfToken:string;notice:string;onBack:()=>void;onProfileSaved:(employeeId:number)=>Promise<void>;onLearnerStarted:(employeeId:number)=>Promise<void>}) {
+function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved,onLearnerStarted,onLearnerTransferred}:{detail:LearnerDetail;csrfToken:string;notice:string;onBack:()=>void;onProfileSaved:(employeeId:number)=>Promise<void>;onLearnerStarted:(employeeId:number)=>Promise<void>;onLearnerTransferred:(employeeId:number)=>Promise<void>}) {
   const learner = detail.learner
   const [editing, setEditing] = useState(false)
   const [options, setOptions] = useState<ProfileOptions | null>(null)
   const [formError, setFormError] = useState('')
   const [saving, setSaving] = useState(false)
   const [starting, setStarting] = useState(false)
+  const [transferring, setTransferring] = useState(false)
 
   async function editProfile() {
     setEditing(true); setFormError('')
@@ -136,9 +144,10 @@ function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved,onLear
 
   return <section><button className="back-button" onClick={onBack}>← Back to learners</button>
     {notice && <p className="success-notice" role="status">{notice}</p>}
-    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><div className="heading-actions"><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span>{!learner.active_enrollment_id && <button onClick={() => setStarting(true)}>Start learning</button>}<button onClick={() => void editProfile()}>Edit profile</button></div></div>
+    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><div className="heading-actions"><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span>{learner.active_enrollment_id ? <button onClick={() => setTransferring(true)}>Transfer learner</button> : <button onClick={() => setStarting(true)}>Start learning</button>}<button onClick={() => void editProfile()}>Edit profile</button></div></div>
     <div className="detail-grid"><article><span>Current class</span><strong>{display(learner.active_class_code)}</strong></article><article><span>Course</span><strong>{display(learner.active_course_name ?? learner.latest_course_name)}</strong></article><article><span>Entrance level</span><strong>{display(learner.entrance_level)}</strong></article><article><span>Business unit</span><strong>{display(learner.business_unit_name)}</strong></article></div>
     {starting && <LearnerStartForm csrfToken={csrfToken} learner={learner} onCancel={() => setStarting(false)} onStarted={onLearnerStarted} />}
+    {transferring && learner.active_enrollment_id && <LearnerTransferForm csrfToken={csrfToken} runEnrollmentId={learner.active_enrollment_id} onCancel={() => setTransferring(false)} onTransferred={onLearnerTransferred} />}
     {editing && <section className="profile-editor"><h3>Edit profile</h3>{formError && <p role="alert">{formError}</p>}{!options && !formError ? <p aria-live="polite">Loading profile options…</p> : options && <form onSubmit={saveProfile}>
       <label>Employee code<input value={learner.emp_code} disabled /></label>
       <label>Full name<input name="full_name" defaultValue={learner.full_name} required /></label>
@@ -207,5 +216,50 @@ function LearnerStartForm({csrfToken,learner,onCancel,onStarted}:{csrfToken:stri
     {destination && <div className="confirmation-summary" aria-live="polite"><strong>Confirm destination</strong><span>{destination.class_code} · {destination.course_name}</span><span>First applicable session: {destination.proposed_start_session_number}</span><span>Projected class size: {projectedLearners}{destination.capacity == null ? '' : ` / ${destination.capacity}`}</span></div>}
     {needsOverride && <label className="wide-field">Capacity override reason<textarea name="capacity_override_reason" required /></label>}
     <div className="form-actions"><button type="submit" disabled={saving || !destination}>{saving?'Starting…':'Confirm start'}</button><button type="button" className="secondary" onClick={onCancel}>Cancel</button></div>
+  </form>}</section>
+}
+
+function LearnerTransferForm({csrfToken,runEnrollmentId,onCancel,onTransferred}:{csrfToken:string;runEnrollmentId:number;onCancel:()=>void;onTransferred:(employeeId:number)=>Promise<void>}) {
+  const [options, setOptions] = useState<LearnerTransferOptions | null>(null)
+  const [selectedRunId, setSelectedRunId] = useState('')
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    apiJson<LearnerTransferOptions>(`/api/run-enrollments/${runEnrollmentId}/transfer-options`).then(setOptions).catch(error => setError(error instanceof Error ? error.message : 'Could not load transfer options'))
+  }, [runEnrollmentId])
+
+  const destination = options?.destinations.find(option => option.course_run_id === Number(selectedRunId))
+  const projectedLearners = destination ? destination.active_learners + 1 : 0
+  const needsOverride = Boolean(destination?.capacity != null && projectedLearners > destination.capacity)
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setSaving(true); setError('')
+    const form = new FormData(event.currentTarget)
+    const body: LearnerTransferBody = {
+      target_course_run_id: Number(form.get('target_course_run_id')),
+      transfer_date: String(form.get('transfer_date') ?? ''),
+      confirmed_start_session_number: destination?.proposed_start_session_number ?? 0,
+      capacity_override_reason: needsOverride ? String(form.get('capacity_override_reason') ?? '') : null,
+    }
+    try {
+      await apiJson<LearnerTransferResult>(`/api/run-enrollments/${runEnrollmentId}/transfer`, {
+        method:'POST', headers:{'Content-Type':'application/json','X-CSRF-Token':csrfToken}, body:JSON.stringify(body),
+      })
+      if (options) {
+        await onTransferred(options.source.employee_id)
+        onCancel()
+      }
+    } catch (error) { setError(error instanceof Error ? error.message : 'Could not transfer learner') }
+    finally { setSaving(false) }
+  }
+
+  return <section className="profile-editor learner-transfer"><h3>Transfer learner</h3>{error && <p role="alert">{error}</p>}{!options && !error ? <p aria-live="polite">Loading transfer options…</p> : options && <form onSubmit={save}>
+    <div className="confirmation-summary"><strong>Current enrollment</strong><span>{options.source.class_code} · {options.source.course_name}</span><span>{options.source.full_name} · {options.source.emp_code}</span></div>
+    <label>Target class and course<select name="target_course_run_id" value={selectedRunId} onChange={event => setSelectedRunId(event.target.value)} required><option value="" disabled>Select destination</option>{options.destinations.map(option => <option key={option.course_run_id} value={option.course_run_id}>{option.class_code} · {option.course_name} · Run {option.run_number}</option>)}</select></label>
+    <label>Transfer date<input name="transfer_date" type="date" defaultValue={new Date().toISOString().slice(0,10)} required /></label>
+    {destination && <div className="confirmation-summary" aria-live="polite"><strong>Confirm destination</strong><span>{destination.class_code} · {destination.course_name}</span><span>First applicable session: {destination.proposed_start_session_number}</span><span>Projected class size: {projectedLearners}{destination.capacity == null ? '' : ` / ${destination.capacity}`}</span></div>}
+    {needsOverride && <label className="wide-field">Capacity override reason<textarea name="capacity_override_reason" required /></label>}
+    <div className="form-actions"><button type="submit" disabled={saving || !destination}>{saving?'Transferring…':'Confirm transfer'}</button><button type="button" className="secondary" onClick={onCancel}>Cancel</button></div>
   </form>}</section>
 }

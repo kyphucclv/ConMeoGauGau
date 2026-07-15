@@ -105,3 +105,40 @@ test('editor confirms authoritative destination details before starting a learne
   expect(screen.getByText('Learning started.')).toBeTruthy()
   expect(screen.getByText('learner.onboard')).toBeTruthy()
 })
+
+test('editor confirms target state and refetches the learner after transfer', async () => {
+  const jsonResponse = (body: unknown) => new Response(JSON.stringify(body), {status:200,headers:{'Content-Type':'application/json'}})
+  let transferred = false
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+    if (url === '/api/auth/me') return jsonResponse({user:{user_id:2,username:'editor',full_name:'HR Editor',role:'editor'},csrf_token:'transfer-csrf'})
+    if (url === '/api/dashboard') return jsonResponse({summary:{active_employees:1,active_learners:1,open_course_runs:2,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:1,current_learners:1,open_classes:2,review_items:0,urgent_items:0,follow_ups:0}})
+    if (url.startsWith('/api/learners?')) return jsonResponse({items:[{employee_id:41,emp_code:'E041',full_name:'Transfer Learner',employment_status:'active',business_unit_name:'People',job_role_name:'Specialist',class_code:'A1',course_name:'English One',course_code:'ENG1',enrollment_status:'active',attendance_ratio:null,entrance_level:'Entrance',pic:'Team'}],page:1,page_size:20,total:1,sort:'full_name_asc_emp_code_asc'})
+    if (url === '/api/learners/41') return jsonResponse({learner:{employee_id:41,emp_code:'E041',full_name:'Transfer Learner',employment_status:'active',business_unit_id:1,business_unit_name:'People',job_role_id:2,job_role_name:'Specialist',current_org_valid_from:'2026-08-01',placement_id:3,entrance_level_id:4,entrance_level:'Entrance',active_enrollment_id:transferred?61:51,active_course_run_id:transferred?7:6,active_cohort_id:transferred?9:8,active_class_code:transferred?'B1':'A1',active_course_name:transferred?'English Two':'English One',active_membership_id:transferred?71:70,membership_cohort_id:transferred?9:8,membership_class_code:transferred?'B1':'A1',latest_enrollment_status:'active',latest_class_code:transferred?'B1':'A1',latest_course_name:transferred?'English Two':'English One',membership_count:transferred?2:1,lifecycle:'active'},course_history:transferred?[{start_date:'2026-08-15',class_code:'B1',course_name:'English Two',status:'active',start_session_number:3,attendance_ratio:null,final_level:null,passed:null},{start_date:'2026-08-01',class_code:'A1',course_name:'English One',status:'transferred',start_session_number:1,attendance_ratio:0.8,final_level:null,passed:null}]:[{start_date:'2026-08-01',class_code:'A1',course_name:'English One',status:'active',start_session_number:1,attendance_ratio:0.8,final_level:null,passed:null}],audit_summary:[{created_at:'2026-08-15T00:00:00Z',actor_username:'editor',action:transferred?'learner.transfer':'learner.onboard'}]})
+    if (url === '/api/run-enrollments/51/transfer-options') return jsonResponse({source:{run_enrollment_id:51,employee_id:41,emp_code:'E041',full_name:'Transfer Learner',course_run_id:6,cohort_id:8,class_code:'A1',course_code:'ENG1',course_name:'English One',start_session_number:1},destinations:[{course_run_id:7,cohort_id:9,class_code:'B1',course_code:'ENG2',course_name:'English Two',run_number:1,run_status:'active',start_date:'2026-08-10',capacity:10,active_learners:4,proposed_start_session_number:3}]})
+    if (url === '/api/run-enrollments/51/transfer') {
+      expect(init).toMatchObject({method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':'transfer-csrf'}})
+      expect(JSON.parse(String(init?.body))).toMatchObject({target_course_run_id:7,confirmed_start_session_number:3,capacity_override_reason:null})
+      transferred = true
+      return jsonResponse({run_enrollment_id:61,from_enrollment_id:51,membership_id:71,start_session_number:3,capacity_override_applied:false})
+    }
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Learners'}))
+  fireEvent.click(await screen.findByRole('button',{name:/Transfer Learner/}))
+  fireEvent.click(await screen.findByRole('button',{name:'Transfer learner'}))
+  fireEvent.change(await screen.findByLabelText('Target class and course'), {target:{value:'7'}})
+  expect(screen.getByText('First applicable session: 3')).toBeTruthy()
+  expect(screen.getByText('Projected class size: 5 / 10')).toBeTruthy()
+  fireEvent.change(screen.getByLabelText('Transfer date'), {target:{value:'2026-08-15'}})
+  fireEvent.click(screen.getByRole('button',{name:'Confirm transfer'}))
+
+  expect(await screen.findByText('Learner transferred.')).toBeTruthy()
+  expect(screen.getAllByText('B1').length).toBeGreaterThan(0)
+  expect(screen.getByText('learner.transfer')).toBeTruthy()
+  expect(screen.queryByRole('heading',{name:'Transfer learner'})).toBeNull()
+  expect(fetchMock.mock.calls.filter(([url]) => String(url) === '/api/learners/41')).toHaveLength(2)
+})
