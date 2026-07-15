@@ -2,8 +2,9 @@ import { FormEvent, useEffect, useState } from 'react'
 import { apiJson, type Auth } from './api/client'
 import { Dashboard } from './features/dashboard/Dashboard'
 import { LearnerDirectory } from './features/learners/LearnerDirectory'
+import { AttendanceWorkspace } from './features/attendance/AttendanceWorkspace'
 
-type View = 'home' | 'learners'
+type View = 'home' | 'learners' | 'attendance'
 
 export function App() {
   const [auth, setAuth] = useState<Auth|null>(null)
@@ -32,10 +33,12 @@ export function App() {
   const canAccessHr = auth.user.role === 'admin' || auth.user.role === 'editor'
   return <div className="app-shell" data-testid="protected-content">
     <header><div><span className="brand-mark">EC</span><strong>English Class</strong></div><div className="user-menu"><span>{auth.user.full_name}<small>{auth.user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></header>
-    <div className="app-body"><nav aria-label="Main navigation"><button className={view==='home'?'active':''} onClick={() => setView('home')}>Home</button>{canAccessHr && <button className={view==='learners'?'active':''} onClick={() => setView('learners')}>Learners</button>}</nav>
+    <div className="app-body"><nav aria-label="Main navigation"><button className={view==='home'?'active':''} onClick={() => setView('home')}>Home</button>{canAccessHr && <><button className={view==='learners'?'active':''} onClick={() => setView('learners')}>Learners</button><button className={view==='attendance'?'active':''} onClick={() => setView('attendance')}>Attendance</button></>}</nav>
       <main className="workspace">{view === 'learners' && canAccessHr
         ? <LearnerDirectory csrfToken={auth.csrf_token} onProfileSaved={() => setDashboardRefreshToken(value => value + 1)} />
-        : <Dashboard canAccessHr={canAccessHr} refreshToken={dashboardRefreshToken} />}</main>
+        : view === 'attendance' && canAccessHr
+          ? <AttendanceWorkspace csrfToken={auth.csrf_token} onSaved={() => setDashboardRefreshToken(value => value + 1)} />
+          : <Dashboard canAccessHr={canAccessHr} refreshToken={dashboardRefreshToken} />}</main>
     </div>
   </div>
 }

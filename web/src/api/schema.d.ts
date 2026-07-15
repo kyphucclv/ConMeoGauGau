@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/attendance/course-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attendance Run List */
+        get: operations["attendance_run_list_api_attendance_course_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -48,6 +65,58 @@ export interface paths {
         /** Me */
         get: operations["me_api_auth_me_get"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/course-runs/{course_run_id}/attendance-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attendance Session Create */
+        post: operations["attendance_session_create_api_course_runs__course_run_id__attendance_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/course-runs/{course_run_id}/session-units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attendance Unit List */
+        get: operations["attendance_unit_list_api_course_runs__course_run_id__session_units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/course-runs/{course_run_id}/session-units/{session_unit_id}/roster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attendance Roster Read */
+        get: operations["attendance_roster_read_api_course_runs__course_run_id__session_units__session_unit_id__roster_get"];
+        /** Attendance Roster Save */
+        put: operations["attendance_roster_save_api_course_runs__course_run_id__session_units__session_unit_id__roster_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -260,6 +329,148 @@ export interface components {
             open_quality_issues: number;
             /** Operational Issues */
             operational_issues: number;
+        };
+        /** AttendanceCourseRun */
+        AttendanceCourseRun: {
+            /** Class Code */
+            class_code: string;
+            /** Cohort Id */
+            cohort_id: number;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Next Sequence In Run */
+            next_sequence_in_run: number;
+            /** Run Number */
+            run_number: number;
+            /**
+             * Run Status
+             * @enum {string}
+             */
+            run_status: "planned" | "active";
+        };
+        /** AttendanceCourseRuns */
+        AttendanceCourseRuns: {
+            /** Items */
+            items: components["schemas"]["AttendanceCourseRun"][];
+        };
+        /** AttendanceRecord */
+        AttendanceRecord: {
+            /**
+             * Effective Status
+             * @enum {string}
+             */
+            effective_status: "Present" | "Absent";
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+        };
+        /** AttendanceRoster */
+        AttendanceRoster: {
+            /** Course Run Id */
+            course_run_id: number;
+            /**
+             * Meeting Status
+             * @enum {string}
+             */
+            meeting_status: "planned" | "completed";
+            /** Roster Token */
+            roster_token: string;
+            /** Rows */
+            rows: components["schemas"]["AttendanceRosterRow"][];
+            /** Sequence In Run */
+            sequence_in_run: number;
+            /** Session Unit Id */
+            session_unit_id: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+        };
+        /** AttendanceRosterBody */
+        AttendanceRosterBody: {
+            /** Records */
+            records: components["schemas"]["AttendanceRecord"][];
+            /** Roster Token */
+            roster_token: string;
+        };
+        /** AttendanceRosterResult */
+        AttendanceRosterResult: {
+            /** Count */
+            count: number;
+            /** Created Count */
+            created_count: number;
+            /** Session Unit Id */
+            session_unit_id: number;
+            /** Unchanged Count */
+            unchanged_count: number;
+            /** Updated Count */
+            updated_count: number;
+        };
+        /** AttendanceRosterRow */
+        AttendanceRosterRow: {
+            /** Attendance Id */
+            attendance_id?: number | null;
+            /** Effective Status */
+            effective_status: ("Present" | "Absent") | null;
+            /** Emp Code */
+            emp_code: string;
+            /** Full Name */
+            full_name: string;
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+            /** Start Session Number */
+            start_session_number: number;
+        };
+        /** AttendanceSessionBody */
+        AttendanceSessionBody: {
+            /** Confirmed Sequence In Run */
+            confirmed_sequence_in_run: number;
+            /** Duration Minutes */
+            duration_minutes: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+        };
+        /** AttendanceSessionResult */
+        AttendanceSessionResult: {
+            /** Meeting Id */
+            meeting_id: number;
+            /** Sequence In Run */
+            sequence_in_run: number;
+            /** Session Unit Id */
+            session_unit_id: number;
+        };
+        /** AttendanceSessionUnit */
+        AttendanceSessionUnit: {
+            /** Duration Minutes */
+            duration_minutes: number;
+            /** Meeting Id */
+            meeting_id: number;
+            /**
+             * Meeting Status
+             * @enum {string}
+             */
+            meeting_status: "planned" | "completed" | "cancelled";
+            /** Sequence In Run */
+            sequence_in_run: number;
+            /** Session Unit Id */
+            session_unit_id: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+        };
+        /** AttendanceSessionUnits */
+        AttendanceSessionUnits: {
+            /** Items */
+            items: components["schemas"]["AttendanceSessionUnit"][];
         };
         /** AuthResponse */
         AuthResponse: {
@@ -706,6 +917,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    attendance_run_list_api_attendance_course_runs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceCourseRuns"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     login_api_auth_login_post: {
         parameters: {
             query?: never;
@@ -788,6 +1030,152 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_session_create_api_course_runs__course_run_id__attendance_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                course_run_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceSessionBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceSessionResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_unit_list_api_course_runs__course_run_id__session_units_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_run_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceSessionUnits"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_roster_read_api_course_runs__course_run_id__session_units__session_unit_id__roster_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_run_id: number;
+                session_unit_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRoster"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_roster_save_api_course_runs__course_run_id__session_units__session_unit_id__roster_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                course_run_id: number;
+                session_unit_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceRosterBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceRosterResult"];
                 };
             };
             /** @description Validation Error */

@@ -595,6 +595,12 @@ Acceptance:
 
 ### Phase 4: Attendance And Final Results
 
+Implementation status (2026-07-15): Issue #6 delivers attendance course-run and
+session-unit selection, atomic planned session creation with an exact sequence
+precondition, event-time roster reads, and atomic full-roster save protected by
+an opaque stale/concurrent token. Linked make-up remains on Streamlit until
+Issue #7.
+
 Deliver:
 
 - Implement session-unit list, event-time roster, atomic full-roster save, and

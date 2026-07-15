@@ -142,3 +142,48 @@ test('editor confirms target state and refetches the learner after transfer', as
   expect(screen.queryByRole('heading',{name:'Transfer learner'})).toBeNull()
   expect(fetchMock.mock.calls.filter(([url]) => String(url) === '/api/learners/41')).toHaveLength(2)
 })
+
+test('editor creates an attendance session and saves the complete roster once', async () => {
+  const jsonResponse = (body: unknown) => new Response(JSON.stringify(body), {status:200,headers:{'Content-Type':'application/json'}})
+  let created = false
+  let saved = false
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+    if (url === '/api/auth/me') return jsonResponse({user:{user_id:2,username:'editor',full_name:'HR Editor',role:'editor'},csrf_token:'attendance-csrf'})
+    if (url === '/api/dashboard') return jsonResponse({summary:{active_employees:2,active_learners:2,open_course_runs:1,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:2,current_learners:2,open_classes:1,review_items:0,urgent_items:0,follow_ups:0}})
+    if (url === '/api/attendance/course-runs') return jsonResponse({items:[{course_run_id:7,cohort_id:8,class_code:'A1',course_code:'ENG1',course_name:'English One',run_number:1,run_status:'active',next_sequence_in_run:1}]})
+    if (url === '/api/course-runs/7/session-units') return jsonResponse({items:created?[{session_unit_id:11,meeting_id:10,sequence_in_run:1,starts_at:'2026-08-10T09:00:00Z',duration_minutes:60,meeting_status:saved?'completed':'planned'}]:[]})
+    if (url === '/api/course-runs/7/attendance-sessions') {
+      expect(init).toMatchObject({method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':'attendance-csrf'}})
+      expect(JSON.parse(String(init?.body))).toMatchObject({duration_minutes:60,confirmed_sequence_in_run:1})
+      created = true
+      return jsonResponse({session_unit_id:11,meeting_id:10,sequence_in_run:1})
+    }
+    if (url === '/api/course-runs/7/session-units/11/roster' && init?.method === 'PUT') {
+      expect(init.headers).toMatchObject({'Content-Type':'application/json','X-CSRF-Token':'attendance-csrf'})
+      expect(JSON.parse(String(init.body))).toEqual({roster_token:'a'.repeat(64),records:[{run_enrollment_id:21,effective_status:'Present'},{run_enrollment_id:22,effective_status:'Absent'}]})
+      saved = true
+      return jsonResponse({session_unit_id:11,count:2,created_count:2,updated_count:0,unchanged_count:0})
+    }
+    if (url === '/api/course-runs/7/session-units/11/roster') return jsonResponse({course_run_id:7,session_unit_id:11,sequence_in_run:1,meeting_status:saved?'completed':'planned',starts_at:'2026-08-10T09:00:00Z',roster_token:saved?'b'.repeat(64):'a'.repeat(64),rows:[{run_enrollment_id:21,emp_code:'E021',full_name:'Attendance Alpha',start_session_number:1,effective_status:'Present',attendance_id:saved?31:null},{run_enrollment_id:22,emp_code:'E022',full_name:'Attendance Beta',start_session_number:1,effective_status:saved?'Absent':'Present',attendance_id:saved?32:null}]})
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Attendance'}))
+  fireEvent.change(await screen.findByLabelText('Class and course'),{target:{value:'7'}})
+  fireEvent.click(screen.getByRole('button',{name:'Create session'}))
+  fireEvent.change(await screen.findByLabelText('Session start'),{target:{value:'2026-08-10T09:00'}})
+  fireEvent.click(screen.getByRole('button',{name:'Confirm session'}))
+
+  expect(await screen.findByText('Attendance Alpha')).toBeTruthy()
+  expect(screen.getByText('2 present')).toBeTruthy()
+  fireEvent.change(screen.getByLabelText('Attendance for E022'),{target:{value:'Absent'}})
+  expect(screen.getByText('1 absent')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Save attendance'}))
+
+  expect(await screen.findByText('Attendance saved.')).toBeTruthy()
+  expect(screen.getByText('Completed')).toBeTruthy()
+  expect(fetchMock.mock.calls.filter(([url,init]) => String(url).endsWith('/roster') && init?.method === 'PUT')).toHaveLength(1)
+})

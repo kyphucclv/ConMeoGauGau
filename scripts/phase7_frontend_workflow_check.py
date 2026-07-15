@@ -285,6 +285,7 @@ def run_gate(database_url: str) -> dict[str, object]:
             created_run.entity_id,
             attendance_session.entity_id,
             [{"run_enrollment_id": attendance_learner.entity_id, "effective_status": "Absent"}],
+            roster_token=roster["roster_token"],
         )
         completed_session = one(
             conn,
@@ -297,9 +298,15 @@ def run_gate(database_url: str) -> dict[str, object]:
         )
         assert completed_session["status"] == "completed"
         assert completed_session["effective_status"] == "Absent"
+        refreshed_roster = editor.attendance_roster(created_run.entity_id, attendance_session.entity_id).values
         expect_command_error(
             "invalid_state",
-            lambda: editor.save_attendance_roster(created_run.entity_id, attendance_session.entity_id, []),
+            lambda: editor.save_attendance_roster(
+                created_run.entity_id,
+                attendance_session.entity_id,
+                [],
+                roster_token=refreshed_roster["roster_token"],
+            ),
         )
         membership = editor.add_membership(cohort, employee, date(2026, 7, 1)).entity_id
         membership_row = one(conn, "SELECT status FROM cohort_memberships WHERE cohort_membership_id=%s", (membership,))

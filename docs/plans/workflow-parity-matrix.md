@@ -35,9 +35,9 @@ Current visibility is preserved unless an owner approves a product change:
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Propose/create attendance session | Workflow refs and `propose_next_attendance_session` | `create_attendance_session` | admin/editor | `attendance.session.create` | Attendance roster slice | Inventoried |
-| Event-time roster | `attendance_roster(course_run_id, session_unit_id)` | none | admin/editor through current UI | none | Attendance roster slice | Session unit, not meeting, is identity |
-| Full-roster save | Event-time roster reload | `save_attendance_roster` | admin/editor | `attendance.roster.save` | Attendance roster slice | Must remain one transaction |
+| Propose/create attendance session | Workflow refs and `propose_next_attendance_session` | `create_attendance_session` | admin/editor | `attendance.session.create` | Attendance roster slice | Verified in Issue #6; React confirms the locked next sequence before one meeting/unit transaction |
+| Event-time roster | `attendance_roster(course_run_id, session_unit_id)` | none | admin/editor through current UI | none | Attendance roster slice | Verified in Issue #6; course run plus session unit is identity and historical unknowns remain blank |
+| Full-roster save | Event-time roster reload | `save_attendance_roster` | admin/editor | `attendance.roster.save` | Attendance roster slice | Verified in Issue #6; opaque roster precondition, exact membership, concurrent conflict, and atomic row-level audit covered |
 | Make-up options | `available_makeup_absences` plus session refs | none | admin/editor | none | Make-up slice | Inventoried |
 | Link make-up credit | Selected absence and makeup session unit | `correct_attendance_makeup` | admin/editor | `attendance.makeup` | Make-up slice | Original absence/denominator invariant required |
 

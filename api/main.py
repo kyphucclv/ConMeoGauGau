@@ -21,6 +21,7 @@ from auth import AppUser, authenticate
 from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
+from api.attendance import AttendanceCourseRuns, AttendanceRoster, AttendanceRosterBody, AttendanceRosterResult, AttendanceSessionBody, AttendanceSessionResult, AttendanceSessionUnits, attendance_course_runs, attendance_roster, attendance_session_units, create_attendance_session, save_attendance_roster
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
 from api.learner_transfer import LearnerTransferBody, LearnerTransferOptions, LearnerTransferResult, learner_transfer_options, transfer_learner
@@ -283,6 +284,26 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
         session: AuthenticatedSession = Depends(require_hr_csrf),
     ):
         return transfer_learner(request.app.state.pool, session.user.user_id, run_enrollment_id, body)
+
+    @app.get("/api/attendance/course-runs", response_model=AttendanceCourseRuns)
+    def attendance_run_list(request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        return attendance_course_runs(request.app.state.pool)
+
+    @app.get("/api/course-runs/{course_run_id}/session-units", response_model=AttendanceSessionUnits)
+    def attendance_unit_list(course_run_id: int, request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        return attendance_session_units(request.app.state.pool, course_run_id)
+
+    @app.post("/api/course-runs/{course_run_id}/attendance-sessions", response_model=AttendanceSessionResult)
+    def attendance_session_create(course_run_id: int, body: AttendanceSessionBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
+        return create_attendance_session(request.app.state.pool, session.user.user_id, course_run_id, body)
+
+    @app.get("/api/course-runs/{course_run_id}/session-units/{session_unit_id}/roster", response_model=AttendanceRoster)
+    def attendance_roster_read(course_run_id: int, session_unit_id: int, request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        return attendance_roster(request.app.state.pool, session.user.user_id, course_run_id, session_unit_id)
+
+    @app.put("/api/course-runs/{course_run_id}/session-units/{session_unit_id}/roster", response_model=AttendanceRosterResult)
+    def attendance_roster_save(course_run_id: int, session_unit_id: int, body: AttendanceRosterBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
+        return save_attendance_roster(request.app.state.pool, session.user.user_id, course_run_id, session_unit_id, body)
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):

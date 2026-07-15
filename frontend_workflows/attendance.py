@@ -122,7 +122,9 @@ def render_attendance_workflow(pool, actor: AppUser, refs: dict[str, list[dict]]
             submitted = st.form_submit_button("Save attendance", type="primary", icon=":material/checklist:")
         if submitted:
             records = edited.to_dict("records") if hasattr(edited, "to_dict") else edited
-            if safe_submit(pool, actor, lambda svc: svc.save_attendance_roster(course_run_id, session_unit_id, records)):
+            if safe_submit(pool, actor, lambda svc: svc.save_attendance_roster(
+                course_run_id, session_unit_id, records, roster_token=roster["roster_token"],
+            )):
                 st.rerun()
 
 

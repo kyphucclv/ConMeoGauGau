@@ -192,11 +192,12 @@ def run(database_url):
         assert historical.values['rows'][0]['effective_status'] is None
         first_save = svc.save_attendance_roster(source_run, source_unit, [{
             'run_enrollment_id': learner.entity_id, 'effective_status': 'Present',
-        }])
+        }], roster_token=historical.values['roster_token'])
         assert first_save.values['created_count'] == 1
+        after_first_save = svc.attendance_roster(source_run, source_unit)
         second_save = svc.save_attendance_roster(source_run, source_unit, [{
             'run_enrollment_id': learner.entity_id, 'effective_status': 'Absent',
-        }])
+        }], roster_token=after_first_save.values['roster_token'])
         assert second_save.values['updated_count'] == 1
         attendance_audit = scalar(
             conn,
@@ -213,7 +214,7 @@ def run(database_url):
         assert roster.values['rows'][0]['effective_status'] == 'Present'
         svc.save_attendance_roster(target_run, roster.entity_id, [{
             'run_enrollment_id': moved.entity_id, 'effective_status': 'Absent',
-        }])
+        }], roster_token=roster.values['roster_token'])
         assert scalar(conn, 'SELECT effective_status FROM attendance WHERE run_enrollment_id=%s', (moved.entity_id,)) == 'Absent'
         with conn:
             with conn.cursor() as cur:
@@ -290,7 +291,9 @@ def run(database_url):
             joined_on=date(2026, 10, 1),
         ))
         assert scalar(conn, "SELECT count(*) FROM employees WHERE emp_code='P11-CLOSED'") == 0
-        expect_error('invalid_state', lambda: svc.save_attendance_roster(target_run, roster.entity_id, []))
+        expect_error('invalid_state', lambda: svc.save_attendance_roster(
+            target_run, roster.entity_id, [], roster_token=completed_history.values['roster_token'],
+        ))
         try:
             with conn:
                 with conn.cursor() as cur:

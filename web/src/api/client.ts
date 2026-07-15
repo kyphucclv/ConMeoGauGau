@@ -15,6 +15,13 @@ export type LearnerStartResult = Schemas['LearnerStartResult']
 export type LearnerTransferOptions = Schemas['LearnerTransferOptions']
 export type LearnerTransferBody = Schemas['LearnerTransferBody']
 export type LearnerTransferResult = Schemas['LearnerTransferResult']
+export type AttendanceCourseRuns = Schemas['AttendanceCourseRuns']
+export type AttendanceSessionUnits = Schemas['AttendanceSessionUnits']
+export type AttendanceSessionBody = Schemas['AttendanceSessionBody']
+export type AttendanceSessionResult = Schemas['AttendanceSessionResult']
+export type AttendanceRoster = Schemas['AttendanceRoster']
+export type AttendanceRosterBody = Schemas['AttendanceRosterBody']
+export type AttendanceRosterResult = Schemas['AttendanceRosterResult']
 
 type ErrorEnvelope = { message?: string }
 

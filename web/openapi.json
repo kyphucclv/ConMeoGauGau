@@ -39,6 +39,372 @@
         "title": "ApplicationSummary",
         "type": "object"
       },
+      "AttendanceCourseRun": {
+        "properties": {
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "cohort_id": {
+            "title": "Cohort Id",
+            "type": "integer"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "next_sequence_in_run": {
+            "title": "Next Sequence In Run",
+            "type": "integer"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          },
+          "run_status": {
+            "enum": [
+              "planned",
+              "active"
+            ],
+            "title": "Run Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course_run_id",
+          "cohort_id",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "run_status",
+          "next_sequence_in_run"
+        ],
+        "title": "AttendanceCourseRun",
+        "type": "object"
+      },
+      "AttendanceCourseRuns": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceCourseRun"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AttendanceCourseRuns",
+        "type": "object"
+      },
+      "AttendanceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_status": {
+            "enum": [
+              "Present",
+              "Absent"
+            ],
+            "title": "Effective Status",
+            "type": "string"
+          },
+          "run_enrollment_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "effective_status"
+        ],
+        "title": "AttendanceRecord",
+        "type": "object"
+      },
+      "AttendanceRoster": {
+        "properties": {
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "meeting_status": {
+            "enum": [
+              "planned",
+              "completed"
+            ],
+            "title": "Meeting Status",
+            "type": "string"
+          },
+          "roster_token": {
+            "title": "Roster Token",
+            "type": "string"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceRosterRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "sequence_in_run": {
+            "title": "Sequence In Run",
+            "type": "integer"
+          },
+          "session_unit_id": {
+            "title": "Session Unit Id",
+            "type": "integer"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course_run_id",
+          "session_unit_id",
+          "sequence_in_run",
+          "meeting_status",
+          "starts_at",
+          "roster_token",
+          "rows"
+        ],
+        "title": "AttendanceRoster",
+        "type": "object"
+      },
+      "AttendanceRosterBody": {
+        "additionalProperties": false,
+        "properties": {
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "roster_token": {
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Roster Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "roster_token",
+          "records"
+        ],
+        "title": "AttendanceRosterBody",
+        "type": "object"
+      },
+      "AttendanceRosterResult": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "created_count": {
+            "title": "Created Count",
+            "type": "integer"
+          },
+          "session_unit_id": {
+            "title": "Session Unit Id",
+            "type": "integer"
+          },
+          "unchanged_count": {
+            "title": "Unchanged Count",
+            "type": "integer"
+          },
+          "updated_count": {
+            "title": "Updated Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_unit_id",
+          "count",
+          "created_count",
+          "updated_count",
+          "unchanged_count"
+        ],
+        "title": "AttendanceRosterResult",
+        "type": "object"
+      },
+      "AttendanceRosterRow": {
+        "properties": {
+          "attendance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendance Id"
+          },
+          "effective_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "Present",
+                  "Absent"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Status"
+          },
+          "emp_code": {
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          },
+          "start_session_number": {
+            "title": "Start Session Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "emp_code",
+          "full_name",
+          "start_session_number",
+          "effective_status"
+        ],
+        "title": "AttendanceRosterRow",
+        "type": "object"
+      },
+      "AttendanceSessionBody": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmed_sequence_in_run": {
+            "exclusiveMinimum": 0.0,
+            "title": "Confirmed Sequence In Run",
+            "type": "integer"
+          },
+          "duration_minutes": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1440.0,
+            "title": "Duration Minutes",
+            "type": "integer"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "starts_at",
+          "duration_minutes",
+          "confirmed_sequence_in_run"
+        ],
+        "title": "AttendanceSessionBody",
+        "type": "object"
+      },
+      "AttendanceSessionResult": {
+        "properties": {
+          "meeting_id": {
+            "title": "Meeting Id",
+            "type": "integer"
+          },
+          "sequence_in_run": {
+            "title": "Sequence In Run",
+            "type": "integer"
+          },
+          "session_unit_id": {
+            "title": "Session Unit Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_unit_id",
+          "meeting_id",
+          "sequence_in_run"
+        ],
+        "title": "AttendanceSessionResult",
+        "type": "object"
+      },
+      "AttendanceSessionUnit": {
+        "properties": {
+          "duration_minutes": {
+            "title": "Duration Minutes",
+            "type": "integer"
+          },
+          "meeting_id": {
+            "title": "Meeting Id",
+            "type": "integer"
+          },
+          "meeting_status": {
+            "enum": [
+              "planned",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Meeting Status",
+            "type": "string"
+          },
+          "sequence_in_run": {
+            "title": "Sequence In Run",
+            "type": "integer"
+          },
+          "session_unit_id": {
+            "title": "Session Unit Id",
+            "type": "integer"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_unit_id",
+          "meeting_id",
+          "sequence_in_run",
+          "starts_at",
+          "duration_minutes",
+          "meeting_status"
+        ],
+        "title": "AttendanceSessionUnit",
+        "type": "object"
+      },
+      "AttendanceSessionUnits": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceSessionUnit"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AttendanceSessionUnits",
+        "type": "object"
+      },
       "AuthResponse": {
         "properties": {
           "csrf_token": {
@@ -1400,6 +1766,52 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/attendance/course-runs": {
+      "get": {
+        "operationId": "attendance_run_list_api_attendance_course_runs_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceCourseRuns"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Run List"
+      }
+    },
     "/api/auth/login": {
       "post": {
         "operationId": "login_api_auth_login_post",
@@ -1537,6 +1949,294 @@
           }
         },
         "summary": "Me"
+      }
+    },
+    "/api/course-runs/{course_run_id}/attendance-sessions": {
+      "post": {
+        "operationId": "attendance_session_create_api_course_runs__course_run_id__attendance_sessions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_run_id",
+            "required": true,
+            "schema": {
+              "title": "Course Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceSessionBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSessionResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Session Create"
+      }
+    },
+    "/api/course-runs/{course_run_id}/session-units": {
+      "get": {
+        "operationId": "attendance_unit_list_api_course_runs__course_run_id__session_units_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_run_id",
+            "required": true,
+            "schema": {
+              "title": "Course Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSessionUnits"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Unit List"
+      }
+    },
+    "/api/course-runs/{course_run_id}/session-units/{session_unit_id}/roster": {
+      "get": {
+        "operationId": "attendance_roster_read_api_course_runs__course_run_id__session_units__session_unit_id__roster_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_run_id",
+            "required": true,
+            "schema": {
+              "title": "Course Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "session_unit_id",
+            "required": true,
+            "schema": {
+              "title": "Session Unit Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRoster"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Roster Read"
+      },
+      "put": {
+        "operationId": "attendance_roster_save_api_course_runs__course_run_id__session_units__session_unit_id__roster_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "course_run_id",
+            "required": true,
+            "schema": {
+              "title": "Course Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "session_unit_id",
+            "required": true,
+            "schema": {
+              "title": "Session Unit Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceRosterBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRosterResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Roster Save"
       }
     },
     "/api/dashboard": {

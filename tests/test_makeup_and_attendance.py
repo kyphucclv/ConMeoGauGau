@@ -14,8 +14,10 @@ from services import CommandError
 
 
 def _save_roster(admin_svc, run_id: int, unit_id: int, enrollment_id: int, status: str):
+    token = admin_svc.attendance_roster(run_id, unit_id).values["roster_token"]
     return admin_svc.save_attendance_roster(
-        run_id, unit_id, [{"run_enrollment_id": enrollment_id, "effective_status": status}]
+        run_id, unit_id, [{"run_enrollment_id": enrollment_id, "effective_status": status}],
+        roster_token=token,
     )
 
 

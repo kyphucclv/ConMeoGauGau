@@ -1,11 +1,10 @@
-"""Attendance roster entry and linked make-up credit commands.
-
-Split verbatim from the original services.py; behavior unchanged.
-"""
+"""Attendance roster entry and linked make-up credit commands."""
 
 from __future__ import annotations
 
 from datetime import date, datetime
+import hashlib
+import json
 from typing import Any, Iterable
 
 import psycopg2
@@ -20,11 +19,12 @@ class AttendanceMakeupCommands:
         def op(cur):
             unit, rows = self._attendance_roster_in_tx(cur, course_run_id, session_unit_id)
             return CommandResult("attendance_roster", session_unit_id, {
-                "sequence_in_run": unit[0], "meeting_status": unit[1], "starts_at": unit[3], "rows": rows,
+                "sequence_in_run": unit[0], "meeting_status": unit[1], "starts_at": unit[3],
+                "roster_token": self._roster_token(unit, rows), "rows": rows,
             })
         return self._run({"admin", "editor", "viewer"}, op)
 
-    def save_attendance_roster(self, course_run_id: int, session_unit_id: int, records: Iterable[dict[str, Any]]) -> CommandResult:
+    def save_attendance_roster(self, course_run_id: int, session_unit_id: int, records: Iterable[dict[str, Any]], *, roster_token: str) -> CommandResult:
         """Write exactly one selected session's full applicable roster in one transaction."""
         records = list(records)
         def op(cur):
@@ -37,7 +37,9 @@ class AttendanceMakeupCommands:
             unit = cur.fetchone()
             if not unit: raise CommandError("not_found", "session unit does not belong to the selected course run")
             if unit[1] == "cancelled": raise CommandError("invalid_state", "cancelled sessions cannot receive attendance")
-            _, roster_rows = self._attendance_roster_in_tx(cur, course_run_id, session_unit_id, lock_enrollments=True)
+            roster_unit, roster_rows = self._attendance_roster_in_tx(cur, course_run_id, session_unit_id, lock_enrollments=True)
+            if roster_token != self._roster_token(roster_unit, roster_rows):
+                raise CommandError("stale_roster", "attendance roster changed; reload it before saving")
             roster_ids = {row["run_enrollment_id"] for row in roster_rows}
             submitted_ids = [item.get("run_enrollment_id") for item in records]
             if len(submitted_ids) != len(set(submitted_ids)) or set(submitted_ids) != roster_ids:
@@ -84,6 +86,19 @@ class AttendanceMakeupCommands:
                 "unchanged_count": len(records) - len(changes),
             })
         return self._run({"admin", "editor"}, op)
+
+    @staticmethod
+    def _roster_token(unit, rows: list[dict[str, Any]]) -> str:
+        state = {
+            "meeting_id": unit[2],
+            "meeting_status": unit[1],
+            "starts_at": unit[3].isoformat(),
+            "rows": [
+                [row["run_enrollment_id"], row["attendance_id"], row["recorded_status"]]
+                for row in rows
+            ],
+        }
+        return hashlib.sha256(json.dumps(state, separators=(",", ":")).encode()).hexdigest()
 
     @staticmethod
     def _attendance_roster_in_tx(cur, course_run_id: int, session_unit_id: int, *, lock_enrollments: bool = False):

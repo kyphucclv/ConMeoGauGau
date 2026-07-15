@@ -50,6 +50,16 @@ test('admin edits a profile and starts a learner without a full page reload', as
   await page.getByRole('button', { name: 'Confirm transfer' }).click()
   await expect(page.getByText('Learner transferred.')).toBeVisible()
   await expect(page.getByText('learner.transfer')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Attendance' }).click()
+  await page.getByLabel('Class and course').selectOption({ index: 1 })
+  await page.getByRole('button', { name: 'Create session' }).click()
+  await page.getByLabel('Session start').fill('2030-09-01T09:00')
+  await page.getByRole('button', { name: 'Confirm session' }).click()
+  await expect(page.getByRole('button', { name: 'Save attendance' })).toBeEnabled()
+  await page.getByRole('button', { name: 'Save attendance' }).click()
+  await expect(page.getByText('Attendance saved.')).toBeVisible()
+  await expect(page.locator('.attendance-summary').getByText('Completed', { exact: true })).toBeVisible()
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {

@@ -226,6 +226,30 @@ The server ignores client attempts to set audit fields, original historical
 facts, applicability, employee identity, meeting completion, or denominator
 semantics. An incomplete, duplicate, or newly stale roster returns `409`.
 
+Issue #6 freezes the attendance-session and full-roster subset as follows:
+
+- `GET /api/attendance/course-runs` returns only planned/active runs and the
+  authoritative next non-cancelled logical sequence. `GET
+  /api/course-runs/{course_run_id}/session-units` returns non-make-up units with
+  meeting labels/status, but meeting identity is never a roster route key.
+- `POST /api/course-runs/{course_run_id}/attendance-sessions` is
+  admin/editor-only, requires CSRF, and accepts start time, duration, and the
+  confirmed next sequence. The command locks the run and rejects a changed
+  sequence as `409 stale_proposal` before creating one planned meeting and one
+  normal session unit atomically.
+- `GET /api/course-runs/{course_run_id}/session-units/{session_unit_id}/roster`
+  returns the event-time applicable roster plus an opaque `roster_token`.
+  Planned rows may propose Present; unknown historical facts remain `null`.
+- `PUT` on the same roster path requires that token and exactly one
+  Present/Absent record per authoritative enrollment. Employee identity,
+  original facts, applicability, meeting status, derived counts, and audit
+  attribution are forbidden input.
+- Changed membership or attendance, retry/double-submit, and concurrent saves
+  return `409 stale_roster`. Incomplete/duplicate rosters and cancelled sessions
+  also fail without partial attendance writes or meeting completion.
+- One successful save upserts the complete roster, marks a planned meeting
+  completed, and records row-level before/after audit detail in one transaction.
+
 ## Final results
 
 | Method and path | Read/command seam | Notes |

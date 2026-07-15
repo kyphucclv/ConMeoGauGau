@@ -1,7 +1,4 @@
-"""Meeting schedule and credited session-unit commands.
-
-Split verbatim from the original services.py; behavior unchanged.
-"""
+"""Meeting schedule and credited session-unit commands."""
 
 from __future__ import annotations
 
@@ -234,9 +231,18 @@ class MeetingsUnitsCommands:
             if duration_minutes <= 0 or sequence_in_run < 1:
                 raise CommandError("invalid_input", "duration and session number must be positive")
             self._advisory_lock(cur, f"attendance_session:{course_run_id}")
-            cur.execute("SELECT 1 FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
-            if not cur.fetchone():
+            cur.execute("SELECT status FROM course_runs WHERE course_run_id=%s FOR UPDATE", (course_run_id,))
+            run = cur.fetchone()
+            if not run:
                 raise CommandError("not_found", "course run not found")
+            if run[0] not in {"planned", "active"}:
+                raise CommandError("invalid_state", "attendance sessions require a planned or active course run")
+            cur.execute("""SELECT COALESCE(MAX(su.sequence_in_run), 0) + 1
+                           FROM session_units su
+                           JOIN meetings m ON m.meeting_id=su.meeting_id
+                           WHERE su.course_run_id=%s AND m.status <> 'cancelled'""", (course_run_id,))
+            if cur.fetchone()[0] != sequence_in_run:
+                raise CommandError("stale_proposal", "next session number changed; reload the course run before saving")
             cur.execute("""INSERT INTO meetings(course_run_id,starts_at,duration_minutes,status)
                            VALUES(%s,%s,%s,'planned') RETURNING meeting_id""", (course_run_id, starts_at, duration_minutes))
             meeting_id = cur.fetchone()[0]
