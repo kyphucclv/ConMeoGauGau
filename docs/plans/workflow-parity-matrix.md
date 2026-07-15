@@ -16,17 +16,17 @@ Current visibility is preserved unless an owner approves a product change:
 | Named sign-in | `streamlit_app.render_sign_in`, `auth.authenticate` | Session-state assignment only | all active users | none | Secure sign-in foundation | Inventoried |
 | Session revalidation | `active_user_by_id` on rerun | none | all active users | none | Secure sign-in foundation | Inventoried |
 | Sign out | sidebar session-state removal | none | all | none | Secure sign-in foundation | Inventoried |
-| Header summary | `application_snapshot` | none | admin/editor/viewer | none | Read-only shell | Inventoried |
-| HR home | `hr_home_snapshot` | none | admin/editor | none | Read-only shell | Inventoried |
+| Header summary | `application_snapshot` | none | admin/editor/viewer | none | Read-only shell | Verified in Issue #2; viewer receives summary and `hr_home=null` |
+| HR home | `hr_home_snapshot` | none | admin/editor | none | Read-only shell | Verified in Issue #2; React owns this read surface |
 
 ## Learners
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Directory/search | `learner_directory_rows` with client filtering | none | admin/editor | none | Read-only shell | Inventoried |
-| Learner detail/current journey | `learner_journey_context` | none | admin/editor | none | Read-only shell | Inventoried |
-| Course history | `learner_course_history` | none | admin/editor | none | Read-only shell | Inventoried |
-| Learner audit summary | `employee_audit_rows` | none | admin/editor | none | Read-only shell | Must retain current field visibility |
+| Directory/search | `learner_directory_rows` with client filtering | none | admin/editor | none | Read-only shell | Verified in Issue #2; React/API own read-only search, filters, sort, and paging |
+| Learner detail/current journey | `learner_journey_context` | none | admin/editor | none | Read-only shell | Verified in Issue #2; fixed-fixture API/UI/Playwright coverage |
+| Course history | `learner_course_history` | none | admin/editor | none | Read-only shell | Verified in Issue #2; stable newest-first order |
+| Learner audit summary | `employee_audit_rows` | none | admin/editor | none | Read-only shell | Verified in Issue #2; only when/actor/action exposed, no details JSON |
 | Create/update employee profile | Learner context, business-unit/job-role refs | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile slice | Inventoried |
 | First-time/returning learner start | Journey/capacity/start-session context | `onboard_learner` | admin/editor | `learner.onboard` plus owned related events | Learner start slice | Inventoried |
 | Cross-class learner transfer | Journey/capacity/start-session context | `transfer_learner` | admin/editor | `learner.transfer`, capacity override when applicable | Transfer slice | Inventoried |

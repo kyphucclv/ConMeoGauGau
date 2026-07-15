@@ -263,7 +263,7 @@ def learner_course_history(pool, employee_id: int) -> list[dict]:
         LEFT JOIN v_latest_evaluation_versions ev ON ev.run_enrollment_id=re.run_enrollment_id
         LEFT JOIN levels final_level ON final_level.level_id=ev.final_level_id
         WHERE re.employee_id=%s
-        ORDER BY re.created_at DESC
+        ORDER BY re.created_at DESC, re.run_enrollment_id DESC
     """, (employee_id,))
 
 
@@ -274,7 +274,7 @@ def employee_audit_rows(pool, employee_id: int) -> list[dict]:
         FROM audit_events
         WHERE (entity_type='employee' AND entity_key=%s)
            OR details->>'employee_id'=%s
-        ORDER BY created_at DESC
+        ORDER BY created_at DESC, audit_event_id DESC
         LIMIT 100
     """, (key, key))
 

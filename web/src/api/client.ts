@@ -1,0 +1,24 @@
+import type { components } from './schema'
+
+type Schemas = components['schemas']
+
+export type Auth = Schemas['AuthResponse']
+export type DashboardData = Schemas['DashboardResponse']
+export type LearnerPage = Schemas['LearnerPage']
+export type LearnerDetail = Schemas['LearnerDetail']
+
+type ErrorEnvelope = { message?: string }
+
+export async function apiJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, init)
+  if (!response.ok) {
+    let message = 'Request failed'
+    try {
+      message = ((await response.json()) as ErrorEnvelope).message || message
+    } catch {
+      // Non-JSON proxy errors still get a safe client message.
+    }
+    throw new Error(message)
+  }
+  return response.json() as Promise<T>
+}

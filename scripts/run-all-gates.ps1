@@ -28,11 +28,13 @@ function Invoke-Gate([string]$Name, [scriptblock]$Command) {
 }
 
 Invoke-Gate "pytest fast suite"        { python -m pytest tests/ -q }
+Invoke-Gate "openapi contract check"   { npm --prefix web run api:check }
 Invoke-Gate "react unit suite"         { npm --prefix web test }
 Invoke-Gate "react production build"   { npm --prefix web run build }
 Invoke-Gate "phase13 dictionary check" { python scripts/phase13_dictionary_check.py }
 
 if (-not $SkipHeavy) {
+    Invoke-Gate "playwright read journey"  { npm --prefix web run test:e2e }
     Invoke-Gate "phase8 automated UAT"     { python scripts/phase8_automated_uat.py }
     Invoke-Gate "phase9 cutover rehearsal" { python scripts/phase9_cutover_rehearsal.py }
     Invoke-Gate "phase10 sign-off gate"    { python scripts/phase10_quality_signoff.py --validate-decisions }

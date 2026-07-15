@@ -537,6 +537,12 @@ Acceptance:
 
 ### Phase 2: Read-Only React Slice
 
+Implementation status (2026-07-15): Issue #2 delivers the HR home and learner
+read journey. React is canonical for these read-only surfaces; Streamlit remains
+canonical for learner commands and reports until their later tracer slices.
+Viewer report access therefore remains on Streamlit during side-by-side
+operation and is not silently expanded into the HR workspace.
+
 Deliver:
 
 - Create the Vite React app and generated HTTP client.

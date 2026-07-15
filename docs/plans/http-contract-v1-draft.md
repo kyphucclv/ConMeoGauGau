@@ -103,6 +103,30 @@ Safe user representation:
 | `POST /api/learners/start` | `onboard_learner` | Includes confirmed current start-session proposal and optional authorized capacity reason. |
 | `POST /api/run-enrollments/{run_enrollment_id}/transfer` | `transfer_learner` | Includes destination run, transfer date, confirmed proposal, optional capacity reason. |
 
+Issue #2 freezes the read-only subset as follows:
+
+- `GET /api/dashboard` is available to every authenticated role. `summary`
+  contains the six `application_snapshot` counts. `hr_home` contains the six
+  `hr_home_snapshot` counts for admin/editor and is `null` for viewer.
+- `GET /api/learners` is admin/editor only. Parameters are `q`,
+  `learning_status=all|current|not_current`, `class_code`, `course`, `pic`,
+  `business_unit`, `job_role`, `page` (default 1), and `page_size` (default 50,
+  maximum 100). Blank optional filters are ignored.
+- Directory order is always case-insensitive full name, then employee code,
+  then `employee_id`. The response reports this as
+  `full_name_asc_emp_code_asc`; clients cannot submit an arbitrary SQL sort.
+- `GET /api/learners/{employee_id}` is admin/editor only and returns
+  `learner`, `course_history`, and `audit_summary`. Audit summary exposes only
+  `created_at`, `actor_username`, and `action`; the audit `details` JSON is not
+  part of this contract.
+- An empty directory query is `200` with an empty page, an unknown authorized
+  employee is `404`, an invalid filter/page is `422`, and a viewer request to a
+  learner route is `403` using the common error envelope.
+
+FastAPI OpenAPI is exported to `web/openapi.json`; `openapi-typescript`
+generates `web/src/api/schema.d.ts`. `npm run api:check` is the contract-drift
+gate.
+
 Start/transfer returns `409` when authoritative destination state or proposed
 start session changed after the user loaded the form.
 

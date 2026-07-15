@@ -8,8 +8,9 @@ import uuid
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from typing import Literal
 
-from fastapi import Cookie, Depends, FastAPI, Header, Request, Response
+from fastapi import Cookie, Depends, FastAPI, Header, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -19,6 +20,8 @@ from pathlib import Path
 from auth import AppUser, authenticate
 from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
+from api.dashboard_reads import DashboardResponse, dashboard_for
+from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 
 
 @dataclass(frozen=True)
@@ -42,8 +45,20 @@ class LoginBody(BaseModel):
     password: str = Field(min_length=1, max_length=500)
 
 
-def _user(user: AppUser) -> dict:
-    return {"user_id": user.user_id, "username": user.username, "full_name": user.full_name, "role": user.role}
+class PublicUser(BaseModel):
+    user_id: int
+    username: str
+    full_name: str
+    role: Literal["admin", "editor", "viewer"]
+
+
+class AuthResponse(BaseModel):
+    user: PublicUser
+    csrf_token: str
+
+
+def _user(user: AppUser) -> PublicUser:
+    return PublicUser(user_id=user.user_id, username=user.username, full_name=user.full_name, role=user.role)
 
 
 def _error(request: Request, status: int, code: str, message: str, field_errors=None):
@@ -92,9 +107,22 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
             raise AuthFailure()
         return session
 
+    def require_hr_session(session: AuthenticatedSession = Depends(require_session)):
+        if session.user.role not in {"admin", "editor"}:
+            raise ForbiddenFailure()
+        return session
+
     @app.exception_handler(AuthFailure)
     async def auth_error(request: Request, exc: "AuthFailure"):
         return _error(request, 401, "unauthenticated", "Sign in is required.")
+
+    @app.exception_handler(ForbiddenFailure)
+    async def forbidden_error(request: Request, exc: "ForbiddenFailure"):
+        return _error(request, 403, "forbidden", "You do not have access to this workspace.")
+
+    @app.exception_handler(NotFoundFailure)
+    async def not_found_error(request: Request, exc: "NotFoundFailure"):
+        return _error(request, 404, "not_found", "Learner was not found.")
 
     @app.get("/api/health/live")
     def live():
@@ -114,7 +142,7 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
             return _error(request, 503, "not_ready", "Database schema is not ready.")
         return {"status": "ready"}
 
-    @app.post("/api/auth/login")
+    @app.post("/api/auth/login", response_model=AuthResponse)
     def login(body: LoginBody, request: Request, response: Response):
         origin = request.headers.get("origin")
         referer = request.headers.get("referer", "")
@@ -136,9 +164,50 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
         response.set_cookie(settings.cookie_name, issued.token, max_age=12 * 60 * 60, httponly=True, secure=settings.secure_cookie, samesite="lax", path="/")
         return {"user": _user(user), "csrf_token": issued.csrf_token}
 
-    @app.get("/api/auth/me")
+    @app.get("/api/auth/me", response_model=AuthResponse)
     def me(session: AuthenticatedSession = Depends(require_session)):
         return {"user": _user(session.user), "csrf_token": session.csrf_token}
+
+    @app.get("/api/dashboard", response_model=DashboardResponse)
+    def dashboard(request: Request, session: AuthenticatedSession = Depends(require_session)):
+        return dashboard_for(request.app.state.pool, session.user.role)
+
+    @app.get("/api/learners", response_model=LearnerPage)
+    def learners(
+        request: Request,
+        q: str = Query(default="", max_length=200),
+        learning_status: Literal["all", "current", "not_current"] = "all",
+        class_code: str | None = Query(default=None, max_length=100),
+        course: str | None = Query(default=None, max_length=200),
+        pic: str | None = Query(default=None, max_length=200),
+        business_unit: str | None = Query(default=None, max_length=200),
+        job_role: str | None = Query(default=None, max_length=200),
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return LearnerReadService(request.app.state.pool).search(
+            q=q,
+            learning_status=learning_status,
+            class_code=class_code,
+            course=course,
+            pic=pic,
+            business_unit=business_unit,
+            job_role=job_role,
+            page=page,
+            page_size=page_size,
+        )
+
+    @app.get("/api/learners/{employee_id}", response_model=LearnerDetail)
+    def learner_detail(
+        employee_id: int,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        detail = LearnerReadService(request.app.state.pool).detail(employee_id)
+        if detail is None:
+            raise NotFoundFailure()
+        return detail
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):
@@ -156,4 +225,12 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
 
 
 class AuthFailure(Exception):
+    pass
+
+
+class ForbiddenFailure(Exception):
+    pass
+
+
+class NotFoundFailure(Exception):
     pass
