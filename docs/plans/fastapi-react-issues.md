@@ -80,7 +80,7 @@ demoable and crosses the necessary schema, HTTP, UI, test, and operational seams
       browser evidence.
 
 13. **Prove production readiness and perform controlled workflow cutover**
-    - Blocked by: 2-12.
+    - Blocked by: 2-12 and 15.
     - Covers: full parity matrix, accessibility/security/load tests, connection
       budget, TLS/service/runbook, backup/restore check, fallback rehearsal,
       HR UAT, dated stabilization window, and ownership switch.
@@ -90,6 +90,13 @@ demoable and crosses the necessary schema, HTTP, UI, test, and operational seams
     - Covers: archived compatible release, removal of Streamlit runtime/UI-only
       paths, replacement verification, documentation update, retained rollback
       artifacts, and clean full-gate evidence.
+
+15. **Make Phase 11 operational snapshot identity deterministic**
+    - Blocked by: none; must complete before 13.
+    - Covers: stable business identity across disposable rebuilds, detection of
+      changed issue membership with equal counts, exact owner-decision
+      provenance, and separation of rehearsal output from tracked sign-off
+      evidence.
 
 ## Proposed dependency shape
 
@@ -104,17 +111,21 @@ demoable and crosses the necessary schema, HTTP, UI, test, and operational seams
 ├── 11 classes/schedule
 └── 12 reports/audit
 
-2-12 -> 13 production cutover -> 14 Streamlit retirement
+15 snapshot determinism -----------+
+                                    |
+2-12 ------------------------------+-> 13 production cutover -> 14 retirement
 ```
 
 Issues 2, 6, 9, 10, 11, and 12 may proceed in parallel after issue 1 if separate
-owners are available. Issue 13 waits for every parity slice, not merely the
-nominal feature screens.
+owners are available. Issue 15 may also proceed independently. Issue 13 waits
+for every parity slice and deterministic evidence, not merely the nominal
+feature screens.
 
 ## Published issues
 
-All issues are classified as `enhancement` and use the human-led triage state
-`ready-for-human`. No `ready-for-agent` label was created or applied.
+All issues use the human-led triage state `ready-for-human`. Migration slices
+are classified as `enhancement`; the snapshot determinism defect is classified
+as `bug`. No `ready-for-agent` label was created or applied.
 
 | Issue | Slice |
 |---|---|
@@ -132,3 +143,4 @@ All issues are classified as `enhancement` and use the human-led triage state
 | [#12](https://github.com/kyphucclv/ConMeoGauGau/issues/12) | Serve registered reports and restricted audit history |
 | [#13](https://github.com/kyphucclv/ConMeoGauGau/issues/13) | Prove production readiness and perform controlled workflow cutover |
 | [#14](https://github.com/kyphucclv/ConMeoGauGau/issues/14) | Retire Streamlit after the stabilization gate |
+| [#15](https://github.com/kyphucclv/ConMeoGauGau/issues/15) | Make Phase 11 operational snapshot identity deterministic |
