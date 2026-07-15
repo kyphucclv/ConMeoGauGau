@@ -1,6 +1,6 @@
 # Issue #1 secure same-origin sign-in review
 
-Status: **implementation complete; target HTTPS observation pending**
+Status: **complete; target HTTPS behavior observed**
 
 ## Delivered
 
@@ -40,9 +40,19 @@ The Python suite emits one upstream Starlette deprecation warning about its
 TestClient HTTP transport; it does not affect runtime behavior and should be
 removed when FastAPI's supported test transport changes.
 
-## Remaining acceptance evidence
+## Target HTTPS evidence
 
-Do not close Issue #1 until the operator has captured the checks in
-`docs/runbooks/issue-1-same-origin-auth.md` on the real HTTPS hostname. Local
-tests prove the topology and cookie configuration, but cannot prove the TLS
-gateway, redirect, or externally observed cookie behavior.
+The operator verified `https://english-class.example.internal` in Chrome:
+
+- successful sign-in rendered protected content only after authentication;
+- refresh revalidated and retained the server-side session;
+- sign-out returned to the login shell, and the database recorded
+  `revocation_reason=logout`;
+- the browser cookie was `HttpOnly`, `Secure`, `SameSite=Lax`, and `Path=/`;
+- the application does not set a `Domain` attribute, so the cookie is
+  host-only.
+
+The evidence screenshot accidentally displayed the raw cookie value. The
+operator response revoked every active session for `hr-admin`, recorded
+`app_session.revoke_exposed`, and verified zero active sessions. The exposed
+token is therefore no longer usable; the account password was not exposed.
