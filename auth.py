@@ -79,6 +79,37 @@ def active_user_by_id(pool, user_id: int) -> AppUser | None:
     return AppUser(row["user_id"], row["username"], row["full_name"], row["role"])
 
 
+def reset_user_password(pool, username: str, new_password: str, *, actor_label: str = "database_operator") -> None:
+    """Operator recovery path: replace a password and revoke existing sessions."""
+    clean_username = username.strip()
+    if not clean_username or len(new_password) < 12:
+        raise CommandError("invalid_input", "username and a password of at least 12 characters are required")
+    with pooled_connection(pool) as conn:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE app_users SET password_hash = %s, updated_at = NOW()
+                       WHERE username = %s AND is_active
+                       RETURNING user_id""",
+                    (hash_password(new_password), clean_username),
+                )
+                row = cur.fetchone()
+                if not row:
+                    raise CommandError("not_found", "active user not found")
+                cur.execute(
+                    """UPDATE app_sessions
+                       SET revoked_at = NOW(), revocation_reason = 'password_reset'
+                       WHERE user_id = %s AND revoked_at IS NULL""",
+                    (row[0],),
+                )
+                cur.execute(
+                    """INSERT INTO audit_events(
+                           actor_user_id, actor_username, action, entity_type, entity_key, details
+                       ) VALUES (NULL, %s, 'app_user.password_reset', 'app_user', %s, '{}'::jsonb)""",
+                    (actor_label, clean_username),
+                )
+
+
 def list_users(pool):
     return fetch_all(
         pool,

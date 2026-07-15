@@ -44,3 +44,16 @@ owner. Schema migrations run separately with the migration credential.
 
 Do not claim target-topology sign-off until these checks have been captured on
 the operator-supplied HTTPS hostname.
+
+## Password recovery
+
+If an active user has lost their password, run the audited recovery command
+from an interactive terminal. It prompts twice without echoing the password,
+requires at least 12 characters, and revokes every existing session:
+
+```powershell
+python scripts/reset_user_password.py --username hr-admin
+```
+
+Never pass the password as a command-line argument or place it in chat, source
+control, logs, or environment variables.
