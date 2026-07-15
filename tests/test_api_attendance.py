@@ -15,6 +15,252 @@ def _login(client, username: str = "pytest_editor", password: str = "editor-pass
     return response.json()
 
 
+def test_editor_credits_an_eligible_absence_through_the_makeup_http_interface(database_url, factory, admin_svc):
+    _, course_run_id = factory.cohort_run()
+    enrollment = factory.onboard(course_run_id, full_name="Make-up Learner")
+    _, absence_unit_id = factory.meeting_unit(course_run_id, 1, status="completed")
+    admin_svc.bulk_record_attendance([{
+        "run_enrollment_id": enrollment.entity_id,
+        "session_unit_id": absence_unit_id,
+        "effective_status": "Absent",
+    }])
+    attendance_id = factory.one(
+        "SELECT attendance_id FROM attendance WHERE run_enrollment_id=%s AND session_unit_id=%s",
+        (enrollment.entity_id, absence_unit_id),
+    )[0]
+    _, makeup_unit_id = factory.meeting_unit(
+        course_run_id, 2, unit_type="makeup", day_offset=7
+    )
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            auth = _login(client)
+            options = client.get("/api/attendance/makeup-options")
+            credited = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "makeup_session_unit_id": makeup_unit_id,
+                    "reason": "Approved medical absence",
+                },
+            )
+            refreshed = client.get("/api/attendance/makeup-options")
+
+        assert options.status_code == 200
+        absence = next(
+            item for item in options.json()["items"]
+            if item["attendance_id"] == attendance_id
+        )
+        assert absence["full_name"] == "Make-up Learner"
+        assert [unit["session_unit_id"] for unit in absence["eligible_units"]] == [makeup_unit_id]
+        assert credited.status_code == 200
+        assert credited.json() == {
+            "attendance_id": credited.json()["attendance_id"],
+            "makeup_for_attendance_id": attendance_id,
+            "credited_status": "Present",
+            "denominator_units_added": 0,
+        }
+        assert attendance_id not in {
+            item["attendance_id"] for item in refreshed.json()["items"]
+        }
+    finally:
+        pool.closeall()
+
+
+def test_makeup_http_credit_preserves_the_original_denominator_and_named_audit(database_url, factory, admin_svc):
+    _, course_run_id = factory.cohort_run()
+    enrollment = factory.onboard(course_run_id, full_name="Reconciled Make-up")
+    _, absence_unit_id = factory.meeting_unit(course_run_id, 1, status="completed")
+    admin_svc.bulk_record_attendance([{
+        "run_enrollment_id": enrollment.entity_id,
+        "session_unit_id": absence_unit_id,
+        "effective_status": "Absent",
+    }])
+    attendance_id = factory.one(
+        "SELECT attendance_id FROM attendance WHERE run_enrollment_id=%s AND session_unit_id=%s",
+        (enrollment.entity_id, absence_unit_id),
+    )[0]
+    _, makeup_unit_id = factory.meeting_unit(
+        course_run_id, 2, unit_type="makeup", day_offset=7
+    )
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            auth = _login(client)
+            response = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "makeup_session_unit_id": makeup_unit_id,
+                    "reason": "Manager-approved recovery class",
+                },
+            )
+
+        assert response.status_code == 200
+        assert factory.one(
+            "SELECT effective_status,is_makeup FROM attendance WHERE attendance_id=%s",
+            (attendance_id,),
+        ) == ("Absent", False)
+        assert factory.one(
+            """SELECT applicable_units,present_units,makeup_present_units,attendance_ratio
+               FROM v_run_enrollment_attendance WHERE run_enrollment_id=%s""",
+            (enrollment.entity_id,),
+        ) == (1, 1, 1, 1)
+        audit = factory.one(
+            """SELECT actor_username,details->>'reason',details->'before',details->'after',
+                      (details->>'denominator_units_added')::int
+               FROM audit_events WHERE action='attendance.makeup' AND entity_key=%s""",
+            (str(response.json()["attendance_id"]),),
+        )
+        assert audit == (
+            "pytest_editor",
+            "Manager-approved recovery class",
+            {"original_status": "Absent", "credited_status": "Absent"},
+            {"original_status": "Absent", "credited_status": "Present"},
+            0,
+        )
+    finally:
+        pool.closeall()
+
+
+def test_concurrent_makeup_http_credits_commit_once(database_url, factory, admin_svc):
+    _, course_run_id = factory.cohort_run()
+    enrollment = factory.onboard(course_run_id, full_name="Concurrent Make-up")
+    _, absence_unit_id = factory.meeting_unit(course_run_id, 1, status="completed")
+    admin_svc.bulk_record_attendance([{
+        "run_enrollment_id": enrollment.entity_id,
+        "session_unit_id": absence_unit_id,
+        "effective_status": "Absent",
+    }])
+    attendance_id = factory.one(
+        "SELECT attendance_id FROM attendance WHERE run_enrollment_id=%s AND session_unit_id=%s",
+        (enrollment.entity_id, absence_unit_id),
+    )[0]
+    _, makeup_unit_id = factory.meeting_unit(
+        course_run_id, 2, unit_type="makeup", day_offset=7
+    )
+    pool_a, client_a = client_for(database_url)
+    pool_b, client_b = client_for(database_url)
+    barrier = Barrier(2)
+
+    def submit(client, csrf_token: str):
+        barrier.wait()
+        return client.post(
+            f"/api/attendance/{attendance_id}/makeup-credit",
+            headers={"X-CSRF-Token": csrf_token},
+            json={
+                "makeup_session_unit_id": makeup_unit_id,
+                "reason": "Concurrent approved request",
+            },
+        )
+
+    try:
+        with client_a, client_b:
+            auth_a = _login(client_a)
+            auth_b = _login(client_b, "pytest_admin", "admin-pass")
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                responses = [future.result(timeout=15) for future in [
+                    executor.submit(submit, client_a, auth_a["csrf_token"]),
+                    executor.submit(submit, client_b, auth_b["csrf_token"]),
+                ]]
+
+        assert sorted(response.status_code for response in responses) == [200, 409]
+        rejected = next(response for response in responses if response.status_code == 409)
+        assert rejected.json()["code"] == "duplicate_makeup"
+        assert factory.one(
+            "SELECT count(*) FROM attendance WHERE makeup_for_attendance_id=%s",
+            (attendance_id,),
+        )[0] == 1
+        assert factory.one(
+            "SELECT count(*) FROM audit_events WHERE action='attendance.makeup' AND details->>'makeup_for'=%s",
+            (str(attendance_id),),
+        )[0] == 1
+    finally:
+        pool_a.closeall()
+        pool_b.closeall()
+
+
+def test_makeup_http_contract_filters_invalid_units_and_rejects_unauthorized_or_forged_writes(database_url, factory, admin_svc):
+    _, course_run_id = factory.cohort_run()
+    enrollment = factory.onboard(course_run_id, full_name="Protected Make-up")
+    _, absence_unit_id = factory.meeting_unit(course_run_id, 1, status="completed")
+    admin_svc.bulk_record_attendance([{
+        "run_enrollment_id": enrollment.entity_id,
+        "session_unit_id": absence_unit_id,
+        "effective_status": "Absent",
+    }])
+    attendance_id = factory.one(
+        "SELECT attendance_id FROM attendance WHERE run_enrollment_id=%s AND session_unit_id=%s",
+        (enrollment.entity_id, absence_unit_id),
+    )[0]
+    _, normal_unit_id = factory.meeting_unit(course_run_id, 2, day_offset=7)
+    cancelled_meeting_id, cancelled_unit_id = factory.meeting_unit(
+        course_run_id, 3, unit_type="makeup", day_offset=8
+    )
+    admin_svc.cancel_meeting(cancelled_meeting_id, "cancelled make-up")
+    _, valid_unit_id = factory.meeting_unit(
+        course_run_id, 4, unit_type="makeup", day_offset=9
+    )
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            viewer = _login(client, "pytest_viewer", "viewer-pass")
+            viewer_options = client.get("/api/attendance/makeup-options")
+            viewer_write = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": viewer["csrf_token"]},
+                json={"makeup_session_unit_id": valid_unit_id, "reason": "forbidden"},
+            )
+            client.post("/api/auth/logout", headers={"X-CSRF-Token": viewer["csrf_token"]})
+            auth = _login(client, "pytest_admin", "admin-pass")
+            options = client.get("/api/attendance/makeup-options")
+            bad_csrf = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                json={"makeup_session_unit_id": valid_unit_id, "reason": "missing csrf"},
+            )
+            forged = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={
+                    "makeup_session_unit_id": valid_unit_id,
+                    "reason": "attempted forgery",
+                    "actor_username": "forged",
+                    "denominator_units_added": 1,
+                },
+            )
+            blank_reason = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={"makeup_session_unit_id": valid_unit_id, "reason": "   "},
+            )
+            normal_target = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={"makeup_session_unit_id": normal_unit_id, "reason": "wrong target"},
+            )
+            cancelled_target = client.post(
+                f"/api/attendance/{attendance_id}/makeup-credit",
+                headers={"X-CSRF-Token": auth["csrf_token"]},
+                json={"makeup_session_unit_id": cancelled_unit_id, "reason": "wrong target"},
+            )
+
+        assert viewer_options.status_code == 403
+        assert viewer_write.status_code == 403
+        option = next(item for item in options.json()["items"] if item["attendance_id"] == attendance_id)
+        assert [unit["session_unit_id"] for unit in option["eligible_units"]] == [valid_unit_id]
+        assert bad_csrf.status_code == 403 and bad_csrf.json()["code"] == "csrf_rejected"
+        assert forged.status_code == 422 and forged.json()["code"] == "invalid_input"
+        assert blank_reason.status_code == 422 and blank_reason.json()["code"] == "invalid_input"
+        assert normal_target.status_code == 422 and normal_target.json()["code"] == "invalid_input"
+        assert cancelled_target.status_code == 409 and cancelled_target.json()["code"] == "invalid_state"
+        assert factory.one(
+            "SELECT count(*) FROM attendance WHERE makeup_for_attendance_id=%s",
+            (attendance_id,),
+        )[0] == 0
+    finally:
+        pool.closeall()
+
+
 def test_editor_creates_a_session_and_saves_its_complete_roster(database_url, factory):
     _, course_run_id = factory.cohort_run()
     first = factory.onboard(course_run_id, full_name="Attendance Alpha")

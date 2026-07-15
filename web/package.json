@@ -10,7 +10,7 @@
     "api:export": "python ../scripts/export_openapi.py",
     "api:generate": "npm run api:export && openapi-typescript openapi.json -o src/api/schema.d.ts",
     "api:check": "npm run api:generate && git diff --exit-code -- openapi.json src/api/schema.d.ts",
-    "e2e:prepare": "cd .. && python -m pytest tests/test_api_learner_reads.py -q && cd web && npm run build",
+    "e2e:prepare": "cd .. && python -m pytest tests/test_api_learner_reads.py -q && python scripts/prepare_e2e_makeup.py && cd web && npm run build",
     "test:e2e": "playwright test"
   },
   "dependencies": {

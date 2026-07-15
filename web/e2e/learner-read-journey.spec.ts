@@ -57,9 +57,20 @@ test('admin edits a profile and starts a learner without a full page reload', as
   await page.getByLabel('Session start').fill('2030-09-01T09:00')
   await page.getByRole('button', { name: 'Confirm session' }).click()
   await expect(page.getByRole('button', { name: 'Save attendance' })).toBeEnabled()
+  await page.locator('select[id^="attendance-"]').first().selectOption('Absent')
   await page.getByRole('button', { name: 'Save attendance' }).click()
   await expect(page.getByText('Attendance saved.')).toBeVisible()
   await expect(page.locator('.attendance-summary').getByText('Completed', { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Record make-up' }).click()
+  await page.getByLabel('Original absence').selectOption({ index: 1 })
+  await page.getByLabel('Make-up session').selectOption({ index: 1 })
+  await page.getByLabel('Reason').fill('Playwright approved recovery class')
+  await expect(page.getByText('Original attendance remains Absent.')).toBeVisible()
+  await expect(page.getByText('Adds 0 denominator units.')).toBeVisible()
+  await page.getByRole('button', { name: 'Confirm make-up credit' }).click()
+  await expect(page.getByText('Make-up attendance credited.')).toBeVisible()
+  await expect(page.getByText('No eligible absences currently have a make-up session available.')).toBeVisible()
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {

@@ -72,6 +72,31 @@ def test_second_makeup_for_same_absence_is_rejected(factory, admin_svc, absence)
     assert excinfo.value.code == "duplicate_makeup"
 
 
+def test_existing_attendance_at_makeup_unit_cannot_credit_another_absence(factory, admin_svc):
+    _, run_id = factory.cohort_run()
+    enrollment_id = factory.onboard(run_id).entity_id
+    _, first_unit = factory.meeting_unit(run_id, 1)
+    _save_roster(admin_svc, run_id, first_unit, enrollment_id, "Absent")
+    _, second_unit = factory.meeting_unit(run_id, 2, day_offset=1)
+    _save_roster(admin_svc, run_id, second_unit, enrollment_id, "Absent")
+    first_absence, second_absence = [
+        row[0] for row in [
+            factory.one(
+                "SELECT attendance_id FROM attendance WHERE run_enrollment_id=%s AND session_unit_id=%s",
+                (enrollment_id, unit_id),
+            )
+            for unit_id in (first_unit, second_unit)
+        ]
+    ]
+    _, makeup_unit = factory.meeting_unit(run_id, 3, unit_type="makeup", day_offset=7)
+    admin_svc.correct_attendance_makeup(first_absence, makeup_unit, "first recovery")
+
+    with pytest.raises(CommandError) as excinfo:
+        admin_svc.correct_attendance_makeup(second_absence, makeup_unit, "same attended unit")
+
+    assert excinfo.value.code == "invalid_state"
+
+
 def test_absence_with_makeup_credit_cannot_be_rewritten(factory, admin_svc, conn, absence):
     _, makeup_unit = factory.meeting_unit(absence["run_id"], 2, unit_type="makeup", day_offset=7)
     admin_svc.correct_attendance_makeup(absence["attendance_id"], makeup_unit, "doctor note")

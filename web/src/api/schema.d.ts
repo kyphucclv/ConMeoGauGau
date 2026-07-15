@@ -21,6 +21,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attendance/makeup-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attendance Makeup Options */
+        get: operations["attendance_makeup_options_api_attendance_makeup_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attendance/{attendance_id}/makeup-credit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attendance Makeup Credit */
+        post: operations["attendance_makeup_credit_api_attendance__attendance_id__makeup_credit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -748,6 +782,80 @@ export interface components {
             /** Username */
             username: string;
         };
+        /** MakeupAbsenceOption */
+        MakeupAbsenceOption: {
+            /** Attendance Id */
+            attendance_id: number;
+            /** Class Code */
+            class_code: string;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Eligible Units */
+            eligible_units: components["schemas"]["MakeupUnitOption"][];
+            /** Emp Code */
+            emp_code: string;
+            /** Full Name */
+            full_name: string;
+            /** Run Number */
+            run_number: number;
+            /** Sequence In Run */
+            sequence_in_run: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+        };
+        /** MakeupCreditBody */
+        MakeupCreditBody: {
+            /** Makeup Session Unit Id */
+            makeup_session_unit_id: number;
+            /** Reason */
+            reason: string;
+        };
+        /** MakeupCreditResult */
+        MakeupCreditResult: {
+            /** Attendance Id */
+            attendance_id: number;
+            /**
+             * Credited Status
+             * @constant
+             */
+            credited_status: "Present";
+            /**
+             * Denominator Units Added
+             * @constant
+             */
+            denominator_units_added: 0;
+            /** Makeup For Attendance Id */
+            makeup_for_attendance_id: number;
+        };
+        /** MakeupOptions */
+        MakeupOptions: {
+            /** Items */
+            items: components["schemas"]["MakeupAbsenceOption"][];
+        };
+        /** MakeupUnitOption */
+        MakeupUnitOption: {
+            /**
+             * Meeting Status
+             * @enum {string}
+             */
+            meeting_status: "planned" | "completed";
+            /** Sequence In Run */
+            sequence_in_run: number;
+            /** Session Unit Id */
+            session_unit_id: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+        };
         /** ProfileOptions */
         ProfileOptions: {
             /** Business Units */
@@ -935,6 +1043,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttendanceCourseRuns"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_makeup_options_api_attendance_makeup_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MakeupOptions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attendance_makeup_credit_api_attendance__attendance_id__makeup_credit_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                attendance_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MakeupCreditBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MakeupCreditResult"];
                 };
             };
             /** @description Validation Error */

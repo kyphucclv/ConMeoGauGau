@@ -22,6 +22,9 @@ export type AttendanceSessionResult = Schemas['AttendanceSessionResult']
 export type AttendanceRoster = Schemas['AttendanceRoster']
 export type AttendanceRosterBody = Schemas['AttendanceRosterBody']
 export type AttendanceRosterResult = Schemas['AttendanceRosterResult']
+export type MakeupOptions = Schemas['MakeupOptions']
+export type MakeupCreditBody = Schemas['MakeupCreditBody']
+export type MakeupCreditResult = Schemas['MakeupCreditResult']
 
 type ErrorEnvelope = { message?: string }
 

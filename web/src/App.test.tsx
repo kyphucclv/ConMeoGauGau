@@ -187,3 +187,36 @@ test('editor creates an attendance session and saves the complete roster once', 
   expect(screen.getByText('Completed')).toBeTruthy()
   expect(fetchMock.mock.calls.filter(([url,init]) => String(url).endsWith('/roster') && init?.method === 'PUT')).toHaveLength(1)
 })
+
+test('editor records a linked make-up with a reason and zero denominator impact', async () => {
+  const jsonResponse = (body: unknown) => new Response(JSON.stringify(body), {status:200,headers:{'Content-Type':'application/json'}})
+  let credited = false
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+    if (url === '/api/auth/me') return jsonResponse({user:{user_id:2,username:'editor',full_name:'HR Editor',role:'editor'},csrf_token:'makeup-csrf'})
+    if (url === '/api/dashboard') return jsonResponse({summary:{active_employees:1,active_learners:1,open_course_runs:1,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:1,current_learners:1,open_classes:1,review_items:0,urgent_items:0,follow_ups:0}})
+    if (url === '/api/attendance/course-runs') return jsonResponse({items:[]})
+    if (url === '/api/attendance/makeup-options') return jsonResponse({items:credited?[]:[{attendance_id:31,course_run_id:7,emp_code:'E021',full_name:'Make-up Alpha',class_code:'A1',course_code:'ENG1',course_name:'English One',run_number:1,sequence_in_run:1,starts_at:'2026-08-03T09:00:00Z',eligible_units:[{session_unit_id:42,sequence_in_run:2,starts_at:'2026-08-10T09:00:00Z',meeting_status:'planned'}]}]})
+    if (url === '/api/attendance/31/makeup-credit') {
+      expect(init).toMatchObject({method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':'makeup-csrf'}})
+      expect(JSON.parse(String(init?.body))).toEqual({makeup_session_unit_id:42,reason:'Approved medical recovery'})
+      credited = true
+      return jsonResponse({attendance_id:50,makeup_for_attendance_id:31,credited_status:'Present',denominator_units_added:0})
+    }
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Attendance'}))
+  fireEvent.click(await screen.findByRole('button',{name:'Record make-up'}))
+  fireEvent.change(await screen.findByLabelText('Original absence'),{target:{value:'31'}})
+  fireEvent.change(screen.getByLabelText('Make-up session'),{target:{value:'42'}})
+  fireEvent.change(screen.getByLabelText('Reason'),{target:{value:'Approved medical recovery'}})
+  expect(screen.getByText('Original attendance remains Absent.')).toBeTruthy()
+  expect(screen.getByText('Adds 0 denominator units.')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Confirm make-up credit'}))
+
+  expect(await screen.findByText('Make-up attendance credited.')).toBeTruthy()
+  expect(screen.getByText('No eligible absences currently have a make-up session available.')).toBeTruthy()
+})

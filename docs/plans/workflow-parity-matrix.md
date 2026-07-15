@@ -38,8 +38,8 @@ Current visibility is preserved unless an owner approves a product change:
 | Propose/create attendance session | Workflow refs and `propose_next_attendance_session` | `create_attendance_session` | admin/editor | `attendance.session.create` | Attendance roster slice | Verified in Issue #6; React confirms the locked next sequence before one meeting/unit transaction |
 | Event-time roster | `attendance_roster(course_run_id, session_unit_id)` | none | admin/editor through current UI | none | Attendance roster slice | Verified in Issue #6; course run plus session unit is identity and historical unknowns remain blank |
 | Full-roster save | Event-time roster reload | `save_attendance_roster` | admin/editor | `attendance.roster.save` | Attendance roster slice | Verified in Issue #6; opaque roster precondition, exact membership, concurrent conflict, and atomic row-level audit covered |
-| Make-up options | `available_makeup_absences` plus session refs | none | admin/editor | none | Make-up slice | Inventoried |
-| Link make-up credit | Selected absence and makeup session unit | `correct_attendance_makeup` | admin/editor | `attendance.makeup` | Make-up slice | Original absence/denominator invariant required |
+| Make-up options | `available_makeup_absences` plus session refs | none | admin/editor | none | Make-up slice | Verified in Issue #7; each completed direct absence is returned with only later, same-run, non-cancelled and unoccupied make-up units |
+| Link make-up credit | Selected absence and makeup session unit | `correct_attendance_makeup` | admin/editor | `attendance.makeup` | Make-up slice | Verified in Issue #7; original remains Absent, linked fact is Present, denominator adds zero, and concurrent duplicate commits once |
 
 ## Final results
 

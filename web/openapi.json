@@ -1320,6 +1320,174 @@
         "title": "LoginBody",
         "type": "object"
       },
+      "MakeupAbsenceOption": {
+        "properties": {
+          "attendance_id": {
+            "title": "Attendance Id",
+            "type": "integer"
+          },
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "eligible_units": {
+            "items": {
+              "$ref": "#/components/schemas/MakeupUnitOption"
+            },
+            "title": "Eligible Units",
+            "type": "array"
+          },
+          "emp_code": {
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          },
+          "sequence_in_run": {
+            "title": "Sequence In Run",
+            "type": "integer"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attendance_id",
+          "course_run_id",
+          "emp_code",
+          "full_name",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "sequence_in_run",
+          "starts_at",
+          "eligible_units"
+        ],
+        "title": "MakeupAbsenceOption",
+        "type": "object"
+      },
+      "MakeupCreditBody": {
+        "additionalProperties": false,
+        "properties": {
+          "makeup_session_unit_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Makeup Session Unit Id",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "makeup_session_unit_id",
+          "reason"
+        ],
+        "title": "MakeupCreditBody",
+        "type": "object"
+      },
+      "MakeupCreditResult": {
+        "properties": {
+          "attendance_id": {
+            "title": "Attendance Id",
+            "type": "integer"
+          },
+          "credited_status": {
+            "const": "Present",
+            "title": "Credited Status",
+            "type": "string"
+          },
+          "denominator_units_added": {
+            "const": 0,
+            "title": "Denominator Units Added",
+            "type": "integer"
+          },
+          "makeup_for_attendance_id": {
+            "title": "Makeup For Attendance Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attendance_id",
+          "makeup_for_attendance_id",
+          "credited_status",
+          "denominator_units_added"
+        ],
+        "title": "MakeupCreditResult",
+        "type": "object"
+      },
+      "MakeupOptions": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MakeupAbsenceOption"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "MakeupOptions",
+        "type": "object"
+      },
+      "MakeupUnitOption": {
+        "properties": {
+          "meeting_status": {
+            "enum": [
+              "planned",
+              "completed"
+            ],
+            "title": "Meeting Status",
+            "type": "string"
+          },
+          "sequence_in_run": {
+            "title": "Sequence In Run",
+            "type": "integer"
+          },
+          "session_unit_id": {
+            "title": "Session Unit Id",
+            "type": "integer"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_unit_id",
+          "sequence_in_run",
+          "starts_at",
+          "meeting_status"
+        ],
+        "title": "MakeupUnitOption",
+        "type": "object"
+      },
       "ProfileOptions": {
         "properties": {
           "business_units": {
@@ -1810,6 +1978,133 @@
           }
         },
         "summary": "Attendance Run List"
+      }
+    },
+    "/api/attendance/makeup-options": {
+      "get": {
+        "operationId": "attendance_makeup_options_api_attendance_makeup_options_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MakeupOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Makeup Options"
+      }
+    },
+    "/api/attendance/{attendance_id}/makeup-credit": {
+      "post": {
+        "operationId": "attendance_makeup_credit_api_attendance__attendance_id__makeup_credit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "attendance_id",
+            "required": true,
+            "schema": {
+              "title": "Attendance Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeupCreditBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MakeupCreditResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attendance Makeup Credit"
       }
     },
     "/api/auth/login": {

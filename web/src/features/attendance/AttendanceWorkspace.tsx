@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { apiJson, type AttendanceCourseRuns, type AttendanceRoster, type AttendanceRosterBody, type AttendanceRosterResult, type AttendanceSessionBody, type AttendanceSessionResult, type AttendanceSessionUnits } from '../../api/client'
+import { apiJson, type AttendanceCourseRuns, type AttendanceRoster, type AttendanceRosterBody, type AttendanceRosterResult, type AttendanceSessionBody, type AttendanceSessionResult, type AttendanceSessionUnits, type MakeupCreditBody, type MakeupCreditResult, type MakeupOptions } from '../../api/client'
 import './attendance.css'
 
 type Status = 'Present' | 'Absent' | ''
@@ -17,6 +17,10 @@ export function AttendanceWorkspace({csrfToken,onSaved}:{csrfToken:string;onSave
   const [roster, setRoster] = useState<AttendanceRoster | null>(null)
   const [statuses, setStatuses] = useState<Record<number,Status>>({})
   const [creating, setCreating] = useState(false)
+  const [recordingMakeup, setRecordingMakeup] = useState(false)
+  const [makeupOptions, setMakeupOptions] = useState<MakeupOptions['items']>([])
+  const [selectedAbsenceId, setSelectedAbsenceId] = useState('')
+  const [selectedMakeupUnitId, setSelectedMakeupUnitId] = useState('')
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
@@ -88,20 +92,48 @@ export function AttendanceWorkspace({csrfToken,onSaved}:{csrfToken:string;onSave
     finally { setSaving(false) }
   }
 
+  async function openMakeup() {
+    setRecordingMakeup(true); setCreating(false); setRoster(null); setNotice(''); setError('')
+    try {
+      const response = await apiJson<MakeupOptions>('/api/attendance/makeup-options')
+      setMakeupOptions(response.items)
+    } catch (error) { showError(error) }
+  }
+
+  async function recordMakeup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setSaving(true); setNotice(''); setError('')
+    const form = new FormData(event.currentTarget)
+    const body: MakeupCreditBody = {
+      makeup_session_unit_id: Number(selectedMakeupUnitId),
+      reason: String(form.get('reason')),
+    }
+    try {
+      await apiJson<MakeupCreditResult>(`/api/attendance/${selectedAbsenceId}/makeup-credit`, {method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrfToken},body:JSON.stringify(body)})
+      const response = await apiJson<MakeupOptions>('/api/attendance/makeup-options')
+      setMakeupOptions(response.items); setSelectedAbsenceId(''); setSelectedMakeupUnitId('')
+      setNotice('Make-up attendance credited.')
+      onSaved()
+    } catch (error) { showError(error) }
+    finally { setSaving(false) }
+  }
+
   const selectedRun = runs.find(item => item.course_run_id === Number(selectedRunId))
   const present = Object.values(statuses).filter(status => status === 'Present').length
   const absent = Object.values(statuses).filter(status => status === 'Absent').length
   const missing = Object.values(statuses).filter(status => !status).length
+  const selectedAbsence = makeupOptions.find(item => item.attendance_id === Number(selectedAbsenceId))
 
   return <section><div className="section-heading"><div><p className="eyebrow">Attendance workspace</p><h2>Attendance</h2></div></div>
     {notice && <p className="success-notice" role="status">{notice}</p>}{error && <p role="alert">{error}</p>}
     <div className="attendance-selectors">
       <label>Class and course<select value={selectedRunId} onChange={event => void selectRun(event.target.value)}><option value="">Select class and course</option>{runs.map(run => <option key={run.course_run_id} value={run.course_run_id}>{run.class_code} · {run.course_name} · Run {run.run_number}</option>)}</select></label>
       <label>Session<select value={selectedUnitId} onChange={event => void selectUnit(event.target.value)} disabled={!selectedRunId}><option value="">Select session</option>{units.map(unit => <option key={unit.session_unit_id} value={unit.session_unit_id}>Session {unit.sequence_in_run} · {new Date(unit.starts_at).toLocaleString()} · {unit.meeting_status}</option>)}</select></label>
-      <button type="button" onClick={() => setCreating(true)} disabled={!selectedRunId}>Create session</button>
+      <button type="button" onClick={() => {setCreating(true);setRecordingMakeup(false)}} disabled={!selectedRunId}>Create session</button>
+      <button type="button" className="secondary" onClick={() => void openMakeup()}>Record make-up</button>
     </div>
     {selectedRunId && units.length === 0 && !creating && <p className="notice">This class has no attendance sessions yet.</p>}
     {creating && selectedRun && <form className="attendance-create" onSubmit={createSession}><h3>Create session</h3><div className="confirmation-summary"><strong>Next credited session</strong><span>{selectedRun.class_code} · {selectedRun.course_name}</span><span>Session {selectedRun.next_sequence_in_run}</span></div><label>Session start<input name="starts_at" type="datetime-local" defaultValue={localDateTimeValue()} required /></label><label>Duration minutes<input name="duration_minutes" type="number" min="1" max="1440" defaultValue="60" required /></label><div className="form-actions"><button disabled={saving}>{saving?'Creating…':'Confirm session'}</button><button type="button" className="secondary" onClick={() => setCreating(false)}>Cancel</button></div></form>}
+    {recordingMakeup && <form className="attendance-create" onSubmit={recordMakeup}><h3>Record make-up attendance</h3>{makeupOptions.length===0?<><p className="notice">No eligible absences currently have a make-up session available.</p><div className="form-actions"><button type="button" className="secondary" onClick={() => setRecordingMakeup(false)}>Cancel</button></div></>:<><label>Original absence<select value={selectedAbsenceId} onChange={event => {setSelectedAbsenceId(event.target.value);setSelectedMakeupUnitId('')}} required><option value="">Select original absence</option>{makeupOptions.map(item => <option key={item.attendance_id} value={item.attendance_id}>{item.full_name} · {item.class_code} · {item.course_code} · Session {item.sequence_in_run}</option>)}</select></label><label>Make-up session<select value={selectedMakeupUnitId} onChange={event => setSelectedMakeupUnitId(event.target.value)} disabled={!selectedAbsence} required><option value="">Select make-up session</option>{selectedAbsence?.eligible_units.map(unit => <option key={unit.session_unit_id} value={unit.session_unit_id}>Session {unit.sequence_in_run} · {new Date(unit.starts_at).toLocaleString()} · {unit.meeting_status}</option>)}</select></label><label>Reason<input name="reason" maxLength={1000} required /></label>{selectedAbsence && selectedMakeupUnitId && <div className="confirmation-summary"><strong>Replacement credit</strong><span>Original attendance remains Absent.</span><span>Adds 0 denominator units.</span></div>}<div className="form-actions"><button disabled={saving || !selectedAbsenceId || !selectedMakeupUnitId}>{saving?'Crediting…':'Confirm make-up credit'}</button><button type="button" className="secondary" onClick={() => setRecordingMakeup(false)}>Cancel</button></div></>}</form>}
     {roster && <section className="attendance-roster"><div className="attendance-summary"><div><span>Session</span><strong>{roster.sequence_in_run}</strong></div><div><span>Status</span><strong>{roster.meeting_status === 'completed'?'Completed':'Planned'}</strong></div><div><span>Learners</span><strong>{roster.rows.length}</strong></div></div><div className="attendance-counts"><strong>{present} present</strong><strong>{absent} absent</strong>{missing>0 && <strong>{missing} needs entry</strong>}</div><div className="table-wrap"><table><thead><tr><th>Learner</th><th>Joined at session</th><th>Attendance</th></tr></thead><tbody>{roster.rows.map(row => <tr key={row.run_enrollment_id}><td>{row.full_name}<small>{row.emp_code}</small></td><td>{row.start_session_number}</td><td><label className="sr-only" htmlFor={`attendance-${row.run_enrollment_id}`}>Attendance for {row.emp_code}</label><select id={`attendance-${row.run_enrollment_id}`} value={statuses[row.run_enrollment_id]??''} onChange={event => setStatuses(current => ({...current,[row.run_enrollment_id]:event.target.value as Status}))}><option value="">Select attendance</option><option value="Present">Present</option><option value="Absent">Absent</option></select></td></tr>)}</tbody></table></div><div className="form-actions"><button type="button" onClick={() => void saveRoster()} disabled={saving || missing>0 || roster.rows.length===0}>{saving?'Saving…':'Save attendance'}</button></div></section>}
   </section>
 }

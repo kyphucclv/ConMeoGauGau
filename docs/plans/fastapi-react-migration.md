@@ -598,8 +598,9 @@ Acceptance:
 Implementation status (2026-07-15): Issue #6 delivers attendance course-run and
 session-unit selection, atomic planned session creation with an exact sequence
 precondition, event-time roster reads, and atomic full-roster save protected by
-an opaque stale/concurrent token. Linked make-up remains on Streamlit until
-Issue #7.
+an opaque stale/concurrent token. Issue #7 adds server-filtered make-up options
+and linked credit with required reason, named audit attribution, immutable
+original absence, zero denominator effect, and safe concurrent rejection.
 
 Deliver:
 

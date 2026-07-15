@@ -250,6 +250,23 @@ Issue #6 freezes the attendance-session and full-roster subset as follows:
 - One successful save upserts the complete roster, marks a planned meeting
   completed, and records row-level before/after audit detail in one transaction.
 
+Issue #7 freezes the linked make-up subset as follows:
+
+- `GET /api/attendance/makeup-options` is admin/editor-only. Each completed
+  direct absence contains its eligible units; targets are server-filtered to
+  the same course run, at or after enrollment start, later than the absence,
+  non-cancelled, type `makeup`, and not already attended by that enrollment.
+- `POST /api/attendance/{attendance_id}/makeup-credit` is admin/editor-only,
+  requires CSRF, and accepts only `makeup_session_unit_id` plus a non-blank
+  `reason`. Actor, original status, credited status, audit fields, and
+  denominator meaning are server-owned.
+- Success creates one linked Present attendance, leaves the original Absent,
+  completes a planned make-up meeting, adds zero denominator units, and writes
+  named actor/reason/before/after/denominator audit detail in one transaction.
+- A second credit, occupied target, wrong-run/normal/early target, cancelled
+  target, stale option, and concurrent duplicate fail without a second fact or
+  audit event.
+
 ## Final results
 
 | Method and path | Read/command seam | Notes |
