@@ -56,8 +56,8 @@ projected-count, or audit fields.
 - Playwright: 2 journeys passed, including start followed by transfer and named
   audit-history reconciliation.
 - Manual Chrome review passed for source/destination clarity, calculated first
-  session, projected capacity, disabled/enabled confirmation, responsive card
-  layout, and cancel-without-write behavior.
+  session, projected capacity, disabled/enabled confirmation, desktop layout,
+  and cancel-without-write behavior.
 - Phase 8 UAT, Phase 9 cutover rehearsal, Phase 10 quality sign-off, Phase 11
   decision gate, and Phase 13 dictionary check all passed.
 
