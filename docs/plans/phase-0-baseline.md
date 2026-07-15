@@ -1,6 +1,6 @@
 # FastAPI + React Migration: Phase 0 Baseline
 
-Status: **Environment-blocked; code baseline not yet green**
+Status: **Green; full verification battery passed**
 
 Captured: 2026-07-15 (Asia/Bangkok)
 
@@ -30,7 +30,36 @@ application database URL was configured in the current process/user environment.
 
 ## Verification results
 
-### Fast pytest suite
+### Green full-battery rerun
+
+After an operator supplied the PostgreSQL maintenance credential in the local
+PowerShell process, the verification battery was rerun from the repository root:
+
+```powershell
+python -m pytest tests/
+.\scripts\run-all-gates.ps1
+```
+
+Result reported on 2026-07-15:
+
+| Gate | Result | Duration |
+|---|---|---:|
+| pytest fast suite | Pass | 4s |
+| Phase 13 dictionary check | Pass | 0s |
+| Phase 8 automated UAT | Pass | 8s |
+| Phase 9 cutover rehearsal | Pass | 71s |
+| Phase 10 sign-off gate | Pass | 0s |
+| Phase 11 decision gate | Pass | 0s |
+
+Final runner result: `All gates passed.` No database credential was recorded in
+the repository or this evidence file.
+
+The full run regenerated the Phase 11 operational-issue snapshot in the working
+tree. Those generated changes are intentionally not included in the migration
+baseline documentation commit and require their own semantic review before any
+later commit.
+
+### Initial environment-blocked attempt
 
 Command:
 
@@ -67,10 +96,11 @@ The heavyweight Phase 8-11 gates were not run because they require the same
 missing database credentials. This avoids misrepresenting an environment
 failure as a code regression and avoids any accidental production connection.
 
-## Required rerun
+## Reproduction
 
-Before Phase 1 implementation begins, an operator must configure a maintenance
-URL for disposable databases without committing the secret, then rerun:
+An operator can reproduce the green baseline by configuring a maintenance URL
+or process-scoped `PGPASSWORD` for disposable databases without committing the
+secret, then running:
 
 ```powershell
 $env:ENGLISH_CLASS_TEST_MAINTENANCE_URL = '<operator-supplied URL>'
@@ -78,12 +108,11 @@ python -m pytest tests/
 .\scripts\run-all-gates.ps1
 ```
 
-Expected gate: all tests and required heavyweight gates pass. Record the new
-result here or in a dated successor baseline before changing dependencies,
-migrations, services, or runtime entrypoints.
+Expected gate: all tests and required heavyweight gates pass.
 
 ## Baseline conclusion
 
-Documentation and contract work may continue. Phase 1 code and the
-`app_sessions` migration must not begin until the database-backed baseline is
-green or an owner explicitly accepts a documented pre-existing failure.
+The Phase 0 verification prerequisite for Issue #1 is satisfied. Future
+implementation still begins from a reviewed worktree: the two pre-existing
+frontend changes and regenerated Phase 11 snapshot must be committed separately,
+discarded by their owner, or otherwise isolated before migration code is added.
