@@ -45,12 +45,12 @@ Current visibility is preserved unless an owner approves a product change:
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Pending/outcome list | `evaluation_outcome_rows` | none | admin/editor | none | Final-results slice | Inventoried |
-| Calculated eligibility | `calculate_exam_eligibility` | read command | admin/editor through current UI | none | Final-results slice | Server calculated |
-| Eligibility override | Latest calculation | `override_exam_eligibility` | admin only | `eligibility.override` | Final-results slice | Reason required |
-| Record/correct final result | Outcome and reference data | `record_evaluation` | admin/editor | `evaluation.record` | Final-results slice | Version 2+ correction reason |
-| Suggest completion | Enrollment/result context | `suggest_completion` | admin/editor | none unless service changes state | Final-results slice | Preserve service behavior |
-| Confirm/reject completion | Suggested completion | `confirm_completion` | admin/editor | completion audit action | Final-results slice | Rejection reason behavior retained |
+| Pending/outcome list | `evaluation_outcome_rows` | none | admin/editor | none | Final-results slice | Verified in Issue #8; all run enrollments are reviewable with unevaluated outcomes first |
+| Calculated eligibility | `calculate_exam_eligibility` | read command | admin/editor through current UI | none | Final-results slice | Verified in Issue #8; attendance-derived value and source are server-owned |
+| Eligibility override | Latest calculation | `override_exam_eligibility` | admin only | `eligibility.override` | Final-results slice | Verified in Issue #8; explicit value and non-blank reason create a new immutable version |
+| Record/correct final result | Outcome and reference data | `record_evaluation` | admin/editor | `evaluation.record` | Final-results slice | Verified in Issue #8; v1 is created once and version 2+ requires a correction reason |
+| Suggest completion | Enrollment/result context | `suggest_completion` | admin/editor | completion audit action | Final-results slice | Verified in Issue #8; suggestion preserves enrollment lifecycle state |
+| Confirm/reject completion | Suggested completion | `confirm_completion` | admin only | completion audit action | Final-results slice | Verified in Issue #8; confirmation completes and rejection requires a reason without completing |
 
 ## Monthly review and reports
 

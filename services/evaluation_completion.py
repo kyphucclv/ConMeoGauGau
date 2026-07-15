@@ -41,14 +41,32 @@ class EvaluationCompletionCommands:
 
     def override_exam_eligibility(self, run_enrollment_id: int, eligible: bool, reason: str) -> CommandResult:
         def op(cur):
-            _required(reason,"reason")
+            reason_value = _required(reason,"reason").strip()
             cur.execute("""INSERT INTO evaluations(run_enrollment_id) VALUES(%s) ON CONFLICT(run_enrollment_id) DO UPDATE SET run_enrollment_id=EXCLUDED.run_enrollment_id RETURNING evaluation_id""",(run_enrollment_id,)); evaluation_id=cur.fetchone()[0]
             self._advisory_lock(cur, f"evaluation_version:{evaluation_id}")
             calc = self._eligibility_in_tx(cur, run_enrollment_id)
             version = self._next_evaluation_version(cur, evaluation_id)
-            cur.execute("""INSERT INTO evaluation_versions(evaluation_id,version_number,exam_eligible,exam_eligibility_override,exam_eligibility_override_reason,created_by_user_id,correction_reason)
-                         VALUES(%s,%s,%s,TRUE,%s,%s,%s) RETURNING evaluation_version_id""",(evaluation_id,version,eligible,reason,self.actor_user_id,"eligibility override" if version>1 else None))
-            entity_id=cur.fetchone()[0]; self._audit(cur,"eligibility.override","evaluation_version",entity_id,{"previous":calc,"eligible":eligible,"reason":reason}); return CommandResult("evaluation_version",entity_id,{"exam_eligible":eligible,"previous":calc})
+            cur.execute("""SELECT final_level_id,passed,next_course_id,teacher_notes
+                           FROM evaluation_versions WHERE evaluation_id=%s
+                           ORDER BY version_number DESC LIMIT 1""", (evaluation_id,))
+            latest_result = cur.fetchone() or (None, None, None, None)
+            cur.execute("""INSERT INTO evaluation_versions(
+                              evaluation_id,version_number,final_level_id,exam_eligible,
+                              exam_eligibility_override,exam_eligibility_override_reason,
+                              passed,next_course_id,teacher_notes,created_by_user_id,correction_reason
+                           ) VALUES(%s,%s,%s,%s,TRUE,%s,%s,%s,%s,%s,%s)
+                           RETURNING evaluation_version_id""",
+                        (evaluation_id,version,latest_result[0],eligible,reason_value,
+                         latest_result[1],latest_result[2],latest_result[3],self.actor_user_id,
+                         reason_value if version>1 else None))
+            entity_id=cur.fetchone()[0]
+            self._audit(cur,"eligibility.override","evaluation_version",entity_id,
+                        {"previous":calc,"eligible":eligible,"reason":reason_value})
+            return CommandResult("evaluation_version",entity_id,{
+                "version_number": version,
+                "exam_eligible":eligible,
+                "previous":calc,
+            })
         return self._run({"admin"},op)
 
     def _eligibility_in_tx(self, cur, enrollment_id):

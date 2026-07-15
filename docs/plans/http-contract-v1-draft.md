@@ -280,6 +280,25 @@ Issue #7 freezes the linked make-up subset as follows:
 React never submits a trusted calculated eligibility or evaluation version
 number. The service calculates and locks the next version.
 
+Issue #8 freezes the final-result subset as follows:
+
+- `GET /api/evaluations/pending` is admin/editor-only and returns the review
+  queue with unevaluated run enrollments first. `GET .../final-result` returns
+  authoritative enrollment context, attendance-derived effective eligibility,
+  immutable result history, completion state, and active level/course options.
+- `POST .../final-result` accepts final level, pass outcome, optional next
+  course and notes, and a correction reason. The server creates v1 once,
+  locks and assigns every later version, and requires a non-blank reason for
+  v2+; clients cannot submit eligibility, actor, or version identity.
+- `POST .../exam-eligibility-override` is admin-only, requires CSRF plus an
+  explicit boolean and non-blank reason, and carries the current result fields
+  into the new immutable version while changing only override semantics.
+- `POST .../completion-confirmation` accepts `suggest`, `confirm`, or `reject`.
+  Admin/editor may suggest; only admin may confirm or reject; rejection requires
+  a reason. The service owns lifecycle transitions and audit attribution.
+- Invalid, forged, duplicate, stale/concurrent, unauthorized, and incomplete
+  writes fail without a partial version, lifecycle transition, or audit event.
+
 ## Monthly review, follow-ups, and remediation
 
 | Method and path | Read/command seam | Notes |

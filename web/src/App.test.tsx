@@ -220,3 +220,64 @@ test('editor records a linked make-up with a reason and zero denominator impact'
   expect(await screen.findByText('Make-up attendance credited.')).toBeTruthy()
   expect(screen.getByText('No eligible absences currently have a make-up session available.')).toBeTruthy()
 })
+
+test('admin records a result, overrides eligibility, and confirms completion in one workspace', async () => {
+  const jsonResponse = (body: unknown) => new Response(JSON.stringify(body), {status:200,headers:{'Content-Type':'application/json'}})
+  let recorded = false
+  let overridden = false
+  let completion: null|'suggested'|'confirmed' = null
+  const detail = () => ({enrollment:{run_enrollment_id:51,employee_id:41,emp_code:'E041',full_name:'Final Alpha',course_run_id:7,class_code:'A1',course_code:'ENG1',course_name:'English One',run_number:1,enrollment_status:completion==='confirmed'?'completed':'active'},eligibility:{applicable_units:4,present_units:2,attendance_ratio:.5,calculated_exam_eligible:false,effective_exam_eligible:overridden,exam_eligibility_override:overridden,exam_eligibility_override_reason:overridden?'Approved exception':null,latest_evaluation_version:recorded?(overridden?2:1):null},latest_result:recorded?{evaluation_version_id:overridden?72:71,version_number:overridden?2:1,final_level_id:3,final_level_name:'Level Two',passed:true,next_course_id:9,next_course_code:'ENG2',teacher_notes:'Ready',correction_reason:overridden?'Approved exception':null,created_by_username:'admin',created_at:'2026-08-20T09:00:00Z'}:null,history:recorded?[{evaluation_version_id:71,version_number:1,final_level_id:3,final_level_name:'Level Two',passed:true,next_course_id:9,next_course_code:'ENG2',teacher_notes:'Ready',correction_reason:null,created_by_username:'admin',created_at:'2026-08-20T09:00:00Z'}]:[],completion:completion?{suggested:true,status:completion,confirmed_by_username:completion==='confirmed'?'admin':null,confirmed_at:completion==='confirmed'?'2026-08-20T10:00:00Z':null}:null,options:{levels:[{level_id:3,level_name:'Level Two'}],courses:[{course_id:9,course_code:'ENG2',course_name:'English Two'}]}})
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+    if (url === '/api/auth/me') return jsonResponse({user:{user_id:1,username:'admin',full_name:'HR Admin',role:'admin'},csrf_token:'result-csrf'})
+    if (url === '/api/dashboard') return jsonResponse({summary:{active_employees:1,active_learners:1,open_course_runs:1,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:1,current_learners:1,open_classes:1,review_items:0,urgent_items:0,follow_ups:0}})
+    if (url === '/api/evaluations/pending') return jsonResponse({items:[{run_enrollment_id:51,employee_id:41,emp_code:'E041',full_name:'Final Alpha',class_code:'A1',course_code:'ENG1',course_name:'English One',run_number:1,enrollment_status:'active',attendance_ratio:.5,effective_exam_eligible:overridden,latest_version_number:recorded?(overridden?2:1):null,passed:recorded?true:null,completion_status:completion}]})
+    if (url === '/api/run-enrollments/51/final-result' && !init?.method) return jsonResponse(detail())
+    if (url === '/api/run-enrollments/51/final-result' && init?.method === 'POST') {
+      expect(init.headers).toMatchObject({'Content-Type':'application/json','X-CSRF-Token':'result-csrf'})
+      expect(JSON.parse(String(init.body))).toEqual({final_level_id:3,passed:true,next_course_id:9,teacher_notes:'Ready',correction_reason:null})
+      recorded = true
+      return jsonResponse({evaluation_version_id:71,version_number:1,effective_exam_eligible:false,exam_eligibility_override:false})
+    }
+    if (url === '/api/run-enrollments/51/exam-eligibility-override') {
+      expect(JSON.parse(String(init?.body))).toEqual({eligible:true,reason:'Approved exception'})
+      overridden = true
+      return jsonResponse({evaluation_version_id:72,version_number:2,effective_exam_eligible:true,previous_effective_exam_eligible:false})
+    }
+    if (url === '/api/run-enrollments/51/completion-confirmation') {
+      const body = JSON.parse(String(init?.body))
+      if (completion === null) {
+        expect(body).toEqual({action:'suggest',reason:null}); completion = 'suggested'
+      } else {
+        expect(body).toEqual({action:'confirm',reason:null}); completion = 'confirmed'
+      }
+      return jsonResponse({action:body.action,suggested:true,completion_status:completion,enrollment_status:completion==='confirmed'?'completed':'active'})
+    }
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Final results'}))
+  fireEvent.change(await screen.findByLabelText('Learner and course'),{target:{value:'51'}})
+  expect(await screen.findByText('50% attendance')).toBeTruthy()
+  fireEvent.change(screen.getByLabelText('Final level'),{target:{value:'3'}})
+  fireEvent.click(screen.getByLabelText('Passed'))
+  fireEvent.change(screen.getByLabelText('Next course'),{target:{value:'9'}})
+  fireEvent.change(screen.getByLabelText('Teacher notes'),{target:{value:'Ready'}})
+  fireEvent.click(screen.getByRole('button',{name:'Save final result'}))
+  expect(await screen.findByText('Final result saved as version 1.')).toBeTruthy()
+
+  fireEvent.change(screen.getByLabelText('Eligibility decision'),{target:{value:'true'}})
+  fireEvent.change(screen.getByLabelText('Override reason'),{target:{value:'Approved exception'}})
+  fireEvent.click(screen.getByRole('button',{name:'Save eligibility override'}))
+  expect(await screen.findByText('Eligibility override saved.')).toBeTruthy()
+  expect(screen.getByText('Admin override')).toBeTruthy()
+
+  fireEvent.change(screen.getByLabelText('Completion action'),{target:{value:'suggest'}})
+  fireEvent.click(screen.getByRole('button',{name:'Apply completion action'}))
+  expect(await screen.findByText('Completion suggested.')).toBeTruthy()
+  fireEvent.change(screen.getByLabelText('Completion action'),{target:{value:'confirm'}})
+  fireEvent.click(screen.getByRole('button',{name:'Apply completion action'}))
+  expect(await screen.findByText('Completion confirmed.')).toBeTruthy()
+})

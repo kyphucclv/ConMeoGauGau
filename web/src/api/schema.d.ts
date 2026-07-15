@@ -175,6 +175,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/evaluations/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evaluation Pending List */
+        get: operations["evaluation_pending_list_api_evaluations_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health/live": {
         parameters: {
             query?: never;
@@ -309,6 +326,58 @@ export interface paths {
         head?: never;
         /** Learner Profile Update */
         patch: operations["learner_profile_update_api_learners__employee_id__profile_patch"];
+        trace?: never;
+    };
+    "/api/run-enrollments/{run_enrollment_id}/completion-confirmation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Evaluation Completion Action */
+        post: operations["evaluation_completion_action_api_run_enrollments__run_enrollment_id__completion_confirmation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/run-enrollments/{run_enrollment_id}/exam-eligibility-override": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Evaluation Eligibility Override */
+        post: operations["evaluation_eligibility_override_api_run_enrollments__run_enrollment_id__exam_eligibility_override_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/run-enrollments/{run_enrollment_id}/final-result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evaluation Final Result Detail */
+        get: operations["evaluation_final_result_detail_api_run_enrollments__run_enrollment_id__final_result_get"];
+        put?: never;
+        /** Evaluation Final Result Record */
+        post: operations["evaluation_final_result_record_api_run_enrollments__run_enrollment_id__final_result_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/run-enrollments/{run_enrollment_id}/transfer": {
@@ -512,6 +581,36 @@ export interface components {
             csrf_token: string;
             user: components["schemas"]["PublicUser"];
         };
+        /** CompletionActionBody */
+        CompletionActionBody: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "suggest" | "confirm" | "reject";
+            /** Reason */
+            reason?: string | null;
+        };
+        /** CompletionActionResult */
+        CompletionActionResult: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "suggest" | "confirm" | "reject";
+            /**
+             * Completion Status
+             * @enum {string}
+             */
+            completion_status: "suggested" | "confirmed" | "rejected";
+            /**
+             * Enrollment Status
+             * @enum {string}
+             */
+            enrollment_status: "active" | "completed" | "transferred" | "dropped" | "cancelled";
+            /** Suggested */
+            suggested: boolean;
+        };
         /** CourseHistoryItem */
         CourseHistoryItem: {
             /** Attendance Ratio */
@@ -538,6 +637,213 @@ export interface components {
         DashboardResponse: {
             hr_home: components["schemas"]["HrHomeSummary"] | null;
             summary: components["schemas"]["ApplicationSummary"];
+        };
+        /** EligibilityOverrideBody */
+        EligibilityOverrideBody: {
+            /** Eligible */
+            eligible: boolean;
+            /** Reason */
+            reason: string;
+        };
+        /** EligibilityOverrideResult */
+        EligibilityOverrideResult: {
+            /** Effective Exam Eligible */
+            effective_exam_eligible: boolean;
+            /** Evaluation Version Id */
+            evaluation_version_id: number;
+            /** Previous Effective Exam Eligible */
+            previous_effective_exam_eligible: boolean;
+            /** Version Number */
+            version_number: number;
+        };
+        /** EvaluationCompletion */
+        EvaluationCompletion: {
+            /** Confirmed At */
+            confirmed_at: string | null;
+            /** Confirmed By Username */
+            confirmed_by_username: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "suggested" | "confirmed" | "rejected";
+            /** Suggested */
+            suggested: boolean;
+        };
+        /** EvaluationCourseOption */
+        EvaluationCourseOption: {
+            /** Course Code */
+            course_code: string;
+            /** Course Id */
+            course_id: number;
+            /** Course Name */
+            course_name: string;
+        };
+        /** EvaluationEligibility */
+        EvaluationEligibility: {
+            /** Applicable Units */
+            applicable_units: number;
+            /** Attendance Ratio */
+            attendance_ratio: number;
+            /** Calculated Exam Eligible */
+            calculated_exam_eligible: boolean;
+            /** Effective Exam Eligible */
+            effective_exam_eligible: boolean;
+            /** Exam Eligibility Override */
+            exam_eligibility_override: boolean;
+            /** Exam Eligibility Override Reason */
+            exam_eligibility_override_reason: string | null;
+            /** Latest Evaluation Version */
+            latest_evaluation_version: number | null;
+            /** Present Units */
+            present_units: number;
+        };
+        /** EvaluationEnrollment */
+        EvaluationEnrollment: {
+            /** Class Code */
+            class_code: string;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Course Run Id */
+            course_run_id: number;
+            /** Emp Code */
+            emp_code: string;
+            /** Employee Id */
+            employee_id: number;
+            /**
+             * Enrollment Status
+             * @enum {string}
+             */
+            enrollment_status: "active" | "completed" | "transferred" | "dropped" | "cancelled";
+            /** Full Name */
+            full_name: string;
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+            /** Run Number */
+            run_number: number;
+        };
+        /** EvaluationLevelOption */
+        EvaluationLevelOption: {
+            /** Level Id */
+            level_id: number;
+            /** Level Name */
+            level_name: string;
+        };
+        /** EvaluationOptions */
+        EvaluationOptions: {
+            /** Courses */
+            courses: components["schemas"]["EvaluationCourseOption"][];
+            /** Levels */
+            levels: components["schemas"]["EvaluationLevelOption"][];
+        };
+        /** EvaluationPendingItem */
+        EvaluationPendingItem: {
+            /** Attendance Ratio */
+            attendance_ratio: number | null;
+            /** Class Code */
+            class_code: string;
+            /** Completion Status */
+            completion_status: ("suggested" | "confirmed" | "rejected") | null;
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Effective Exam Eligible */
+            effective_exam_eligible: boolean;
+            /** Emp Code */
+            emp_code: string;
+            /** Employee Id */
+            employee_id: number;
+            /**
+             * Enrollment Status
+             * @enum {string}
+             */
+            enrollment_status: "active" | "completed" | "transferred" | "dropped" | "cancelled";
+            /** Full Name */
+            full_name: string;
+            /** Latest Version Number */
+            latest_version_number: number | null;
+            /** Passed */
+            passed: boolean | null;
+            /** Run Enrollment Id */
+            run_enrollment_id: number;
+            /** Run Number */
+            run_number: number;
+        };
+        /** EvaluationPendingList */
+        EvaluationPendingList: {
+            /** Items */
+            items: components["schemas"]["EvaluationPendingItem"][];
+        };
+        /** EvaluationResultVersion */
+        EvaluationResultVersion: {
+            /** Correction Reason */
+            correction_reason: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By Username */
+            created_by_username: string | null;
+            /** Evaluation Version Id */
+            evaluation_version_id: number;
+            /** Exam Eligibility Override */
+            exam_eligibility_override: boolean;
+            /** Exam Eligibility Override Reason */
+            exam_eligibility_override_reason: string | null;
+            /** Exam Eligible */
+            exam_eligible: boolean | null;
+            /** Final Level Id */
+            final_level_id: number | null;
+            /** Final Level Name */
+            final_level_name: string | null;
+            /** Next Course Code */
+            next_course_code: string | null;
+            /** Next Course Id */
+            next_course_id: number | null;
+            /** Passed */
+            passed: boolean | null;
+            /** Teacher Notes */
+            teacher_notes: string | null;
+            /** Version Number */
+            version_number: number;
+        };
+        /** FinalResultBody */
+        FinalResultBody: {
+            /** Correction Reason */
+            correction_reason?: string | null;
+            /** Final Level Id */
+            final_level_id: number;
+            /** Next Course Id */
+            next_course_id?: number | null;
+            /** Passed */
+            passed: boolean;
+            /** Teacher Notes */
+            teacher_notes?: string | null;
+        };
+        /** FinalResultDetail */
+        FinalResultDetail: {
+            completion: components["schemas"]["EvaluationCompletion"] | null;
+            eligibility: components["schemas"]["EvaluationEligibility"];
+            enrollment: components["schemas"]["EvaluationEnrollment"];
+            /** History */
+            history: components["schemas"]["EvaluationResultVersion"][];
+            latest_result: components["schemas"]["EvaluationResultVersion"] | null;
+            options: components["schemas"]["EvaluationOptions"];
+        };
+        /** FinalResultResult */
+        FinalResultResult: {
+            /** Effective Exam Eligible */
+            effective_exam_eligible: boolean;
+            /** Evaluation Version Id */
+            evaluation_version_id: number;
+            /** Exam Eligibility Override */
+            exam_eligibility_override: boolean;
+            /** Version Number */
+            version_number: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1398,6 +1704,37 @@ export interface operations {
             };
         };
     };
+    evaluation_pending_list_api_evaluations_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationPendingList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     live_api_health_live_get: {
         parameters: {
             query?: never;
@@ -1637,6 +1974,156 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileUpdateResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluation_completion_action_api_run_enrollments__run_enrollment_id__completion_confirmation_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompletionActionBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompletionActionResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluation_eligibility_override_api_run_enrollments__run_enrollment_id__exam_eligibility_override_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EligibilityOverrideBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibilityOverrideResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluation_final_result_detail_api_run_enrollments__run_enrollment_id__final_result_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinalResultDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluation_final_result_record_api_run_enrollments__run_enrollment_id__final_result_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                run_enrollment_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinalResultBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinalResultResult"];
                 };
             };
             /** @description Validation Error */

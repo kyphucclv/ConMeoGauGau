@@ -422,6 +422,82 @@
         "title": "AuthResponse",
         "type": "object"
       },
+      "CompletionActionBody": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "suggest",
+              "confirm",
+              "reject"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "CompletionActionBody",
+        "type": "object"
+      },
+      "CompletionActionResult": {
+        "properties": {
+          "action": {
+            "enum": [
+              "suggest",
+              "confirm",
+              "reject"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "completion_status": {
+            "enum": [
+              "suggested",
+              "confirmed",
+              "rejected"
+            ],
+            "title": "Completion Status",
+            "type": "string"
+          },
+          "enrollment_status": {
+            "enum": [
+              "active",
+              "completed",
+              "transferred",
+              "dropped",
+              "cancelled"
+            ],
+            "title": "Enrollment Status",
+            "type": "string"
+          },
+          "suggested": {
+            "title": "Suggested",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action",
+          "suggested",
+          "completion_status",
+          "enrollment_status"
+        ],
+        "title": "CompletionActionResult",
+        "type": "object"
+      },
       "CourseHistoryItem": {
         "properties": {
           "attendance_ratio": {
@@ -510,6 +586,712 @@
           "hr_home"
         ],
         "title": "DashboardResponse",
+        "type": "object"
+      },
+      "EligibilityOverrideBody": {
+        "additionalProperties": false,
+        "properties": {
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "eligible",
+          "reason"
+        ],
+        "title": "EligibilityOverrideBody",
+        "type": "object"
+      },
+      "EligibilityOverrideResult": {
+        "properties": {
+          "effective_exam_eligible": {
+            "title": "Effective Exam Eligible",
+            "type": "boolean"
+          },
+          "evaluation_version_id": {
+            "title": "Evaluation Version Id",
+            "type": "integer"
+          },
+          "previous_effective_exam_eligible": {
+            "title": "Previous Effective Exam Eligible",
+            "type": "boolean"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evaluation_version_id",
+          "version_number",
+          "effective_exam_eligible",
+          "previous_effective_exam_eligible"
+        ],
+        "title": "EligibilityOverrideResult",
+        "type": "object"
+      },
+      "EvaluationCompletion": {
+        "properties": {
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          },
+          "confirmed_by_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed By Username"
+          },
+          "status": {
+            "enum": [
+              "suggested",
+              "confirmed",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "suggested": {
+            "title": "Suggested",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "suggested",
+          "status",
+          "confirmed_by_username",
+          "confirmed_at"
+        ],
+        "title": "EvaluationCompletion",
+        "type": "object"
+      },
+      "EvaluationCourseOption": {
+        "properties": {
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_id": {
+            "title": "Course Id",
+            "type": "integer"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course_id",
+          "course_code",
+          "course_name"
+        ],
+        "title": "EvaluationCourseOption",
+        "type": "object"
+      },
+      "EvaluationEligibility": {
+        "properties": {
+          "applicable_units": {
+            "title": "Applicable Units",
+            "type": "integer"
+          },
+          "attendance_ratio": {
+            "title": "Attendance Ratio",
+            "type": "number"
+          },
+          "calculated_exam_eligible": {
+            "title": "Calculated Exam Eligible",
+            "type": "boolean"
+          },
+          "effective_exam_eligible": {
+            "title": "Effective Exam Eligible",
+            "type": "boolean"
+          },
+          "exam_eligibility_override": {
+            "title": "Exam Eligibility Override",
+            "type": "boolean"
+          },
+          "exam_eligibility_override_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exam Eligibility Override Reason"
+          },
+          "latest_evaluation_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Evaluation Version"
+          },
+          "present_units": {
+            "title": "Present Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "applicable_units",
+          "present_units",
+          "attendance_ratio",
+          "calculated_exam_eligible",
+          "effective_exam_eligible",
+          "exam_eligibility_override",
+          "exam_eligibility_override_reason",
+          "latest_evaluation_version"
+        ],
+        "title": "EvaluationEligibility",
+        "type": "object"
+      },
+      "EvaluationEnrollment": {
+        "properties": {
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "course_run_id": {
+            "title": "Course Run Id",
+            "type": "integer"
+          },
+          "emp_code": {
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "enrollment_status": {
+            "enum": [
+              "active",
+              "completed",
+              "transferred",
+              "dropped",
+              "cancelled"
+            ],
+            "title": "Enrollment Status",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "employee_id",
+          "emp_code",
+          "full_name",
+          "course_run_id",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "enrollment_status"
+        ],
+        "title": "EvaluationEnrollment",
+        "type": "object"
+      },
+      "EvaluationLevelOption": {
+        "properties": {
+          "level_id": {
+            "title": "Level Id",
+            "type": "integer"
+          },
+          "level_name": {
+            "title": "Level Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "level_id",
+          "level_name"
+        ],
+        "title": "EvaluationLevelOption",
+        "type": "object"
+      },
+      "EvaluationOptions": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationCourseOption"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "levels": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationLevelOption"
+            },
+            "title": "Levels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "levels",
+          "courses"
+        ],
+        "title": "EvaluationOptions",
+        "type": "object"
+      },
+      "EvaluationPendingItem": {
+        "properties": {
+          "attendance_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendance Ratio"
+          },
+          "class_code": {
+            "title": "Class Code",
+            "type": "string"
+          },
+          "completion_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "suggested",
+                  "confirmed",
+                  "rejected"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion Status"
+          },
+          "course_code": {
+            "title": "Course Code",
+            "type": "string"
+          },
+          "course_name": {
+            "title": "Course Name",
+            "type": "string"
+          },
+          "effective_exam_eligible": {
+            "title": "Effective Exam Eligible",
+            "type": "boolean"
+          },
+          "emp_code": {
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "enrollment_status": {
+            "enum": [
+              "active",
+              "completed",
+              "transferred",
+              "dropped",
+              "cancelled"
+            ],
+            "title": "Enrollment Status",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "latest_version_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Version Number"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "run_enrollment_id": {
+            "title": "Run Enrollment Id",
+            "type": "integer"
+          },
+          "run_number": {
+            "title": "Run Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_enrollment_id",
+          "employee_id",
+          "emp_code",
+          "full_name",
+          "class_code",
+          "course_code",
+          "course_name",
+          "run_number",
+          "enrollment_status",
+          "attendance_ratio",
+          "effective_exam_eligible",
+          "latest_version_number",
+          "passed",
+          "completion_status"
+        ],
+        "title": "EvaluationPendingItem",
+        "type": "object"
+      },
+      "EvaluationPendingList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationPendingItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EvaluationPendingList",
+        "type": "object"
+      },
+      "EvaluationResultVersion": {
+        "properties": {
+          "correction_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction Reason"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Username"
+          },
+          "evaluation_version_id": {
+            "title": "Evaluation Version Id",
+            "type": "integer"
+          },
+          "exam_eligibility_override": {
+            "title": "Exam Eligibility Override",
+            "type": "boolean"
+          },
+          "exam_eligibility_override_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exam Eligibility Override Reason"
+          },
+          "exam_eligible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exam Eligible"
+          },
+          "final_level_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Level Id"
+          },
+          "final_level_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Level Name"
+          },
+          "next_course_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Course Code"
+          },
+          "next_course_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Course Id"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "teacher_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Notes"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evaluation_version_id",
+          "version_number",
+          "final_level_id",
+          "final_level_name",
+          "exam_eligible",
+          "exam_eligibility_override",
+          "exam_eligibility_override_reason",
+          "passed",
+          "next_course_id",
+          "next_course_code",
+          "teacher_notes",
+          "correction_reason",
+          "created_by_username",
+          "created_at"
+        ],
+        "title": "EvaluationResultVersion",
+        "type": "object"
+      },
+      "FinalResultBody": {
+        "additionalProperties": false,
+        "properties": {
+          "correction_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction Reason"
+          },
+          "final_level_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Final Level Id",
+            "type": "integer"
+          },
+          "next_course_id": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Course Id"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "teacher_notes": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher Notes"
+          }
+        },
+        "required": [
+          "final_level_id",
+          "passed"
+        ],
+        "title": "FinalResultBody",
+        "type": "object"
+      },
+      "FinalResultDetail": {
+        "properties": {
+          "completion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationCompletion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eligibility": {
+            "$ref": "#/components/schemas/EvaluationEligibility"
+          },
+          "enrollment": {
+            "$ref": "#/components/schemas/EvaluationEnrollment"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationResultVersion"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "latest_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationResultVersion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "options": {
+            "$ref": "#/components/schemas/EvaluationOptions"
+          }
+        },
+        "required": [
+          "enrollment",
+          "eligibility",
+          "latest_result",
+          "history",
+          "completion",
+          "options"
+        ],
+        "title": "FinalResultDetail",
+        "type": "object"
+      },
+      "FinalResultResult": {
+        "properties": {
+          "effective_exam_eligible": {
+            "title": "Effective Exam Eligible",
+            "type": "boolean"
+          },
+          "evaluation_version_id": {
+            "title": "Evaluation Version Id",
+            "type": "integer"
+          },
+          "exam_eligibility_override": {
+            "title": "Exam Eligibility Override",
+            "type": "boolean"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evaluation_version_id",
+          "version_number",
+          "effective_exam_eligible",
+          "exam_eligibility_override"
+        ],
+        "title": "FinalResultResult",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -2580,6 +3362,52 @@
         "summary": "Dashboard"
       }
     },
+    "/api/evaluations/pending": {
+      "get": {
+        "operationId": "evaluation_pending_list_api_evaluations_pending_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationPendingList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation Pending List"
+      }
+    },
     "/api/health/live": {
       "get": {
         "operationId": "live_api_health_live_get",
@@ -3090,6 +3918,302 @@
           }
         },
         "summary": "Learner Profile Update"
+      }
+    },
+    "/api/run-enrollments/{run_enrollment_id}/completion-confirmation": {
+      "post": {
+        "operationId": "evaluation_completion_action_api_run_enrollments__run_enrollment_id__completion_confirmation_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionActionBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionActionResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation Completion Action"
+      }
+    },
+    "/api/run-enrollments/{run_enrollment_id}/exam-eligibility-override": {
+      "post": {
+        "operationId": "evaluation_eligibility_override_api_run_enrollments__run_enrollment_id__exam_eligibility_override_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EligibilityOverrideBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EligibilityOverrideResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation Eligibility Override"
+      }
+    },
+    "/api/run-enrollments/{run_enrollment_id}/final-result": {
+      "get": {
+        "operationId": "evaluation_final_result_detail_api_run_enrollments__run_enrollment_id__final_result_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalResultDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation Final Result Detail"
+      },
+      "post": {
+        "operationId": "evaluation_final_result_record_api_run_enrollments__run_enrollment_id__final_result_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_enrollment_id",
+            "required": true,
+            "schema": {
+              "title": "Run Enrollment Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinalResultBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalResultResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation Final Result Record"
       }
     },
     "/api/run-enrollments/{run_enrollment_id}/transfer": {

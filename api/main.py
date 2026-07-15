@@ -22,6 +22,7 @@ from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
 from api.attendance import AttendanceCourseRuns, AttendanceRoster, AttendanceRosterBody, AttendanceRosterResult, AttendanceSessionBody, AttendanceSessionResult, AttendanceSessionUnits, MakeupCreditBody, MakeupCreditResult, MakeupOptions, attendance_course_runs, attendance_roster, attendance_session_units, create_attendance_session, credit_makeup, makeup_options, save_attendance_roster
+from api.evaluations import CompletionActionBody, CompletionActionResult, EligibilityOverrideBody, EligibilityOverrideResult, EvaluationPendingList, FinalResultBody, FinalResultDetail, FinalResultResult, apply_completion_action, final_result_detail, override_eligibility, pending_evaluations, record_final_result
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
 from api.learner_transfer import LearnerTransferBody, LearnerTransferOptions, LearnerTransferResult, learner_transfer_options, transfer_learner
@@ -117,9 +118,23 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
             raise ForbiddenFailure()
         return session
 
+    def require_admin_session(session: AuthenticatedSession = Depends(require_session)):
+        if session.user.role != "admin":
+            raise ForbiddenFailure()
+        return session
+
     def require_hr_csrf(
         request: Request,
         session: AuthenticatedSession = Depends(require_hr_session),
+        csrf: str | None = Header(default=None, alias="X-CSRF-Token"),
+    ):
+        if not request.app.state.sessions.csrf_matches(session, csrf):
+            raise CsrfFailure()
+        return session
+
+    def require_admin_csrf(
+        request: Request,
+        session: AuthenticatedSession = Depends(require_admin_session),
         csrf: str | None = Header(default=None, alias="X-CSRF-Token"),
     ):
         if not request.app.state.sessions.csrf_matches(session, csrf):
@@ -312,6 +327,29 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
     @app.post("/api/attendance/{attendance_id}/makeup-credit", response_model=MakeupCreditResult)
     def attendance_makeup_credit(attendance_id: int, body: MakeupCreditBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
         return credit_makeup(request.app.state.pool, session.user.user_id, attendance_id, body)
+
+    @app.get("/api/evaluations/pending", response_model=EvaluationPendingList)
+    def evaluation_pending_list(request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        return pending_evaluations(request.app.state.pool)
+
+    @app.get("/api/run-enrollments/{run_enrollment_id}/final-result", response_model=FinalResultDetail)
+    def evaluation_final_result_detail(run_enrollment_id: int, request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        detail = final_result_detail(request.app.state.pool, session.user.user_id, run_enrollment_id)
+        if detail is None:
+            raise NotFoundFailure()
+        return detail
+
+    @app.post("/api/run-enrollments/{run_enrollment_id}/final-result", response_model=FinalResultResult)
+    def evaluation_final_result_record(run_enrollment_id: int, body: FinalResultBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
+        return record_final_result(request.app.state.pool, session.user.user_id, run_enrollment_id, body)
+
+    @app.post("/api/run-enrollments/{run_enrollment_id}/exam-eligibility-override", response_model=EligibilityOverrideResult)
+    def evaluation_eligibility_override(run_enrollment_id: int, body: EligibilityOverrideBody, request: Request, session: AuthenticatedSession = Depends(require_admin_csrf)):
+        return override_eligibility(request.app.state.pool, session.user.user_id, run_enrollment_id, body)
+
+    @app.post("/api/run-enrollments/{run_enrollment_id}/completion-confirmation", response_model=CompletionActionResult)
+    def evaluation_completion_action(run_enrollment_id: int, body: CompletionActionBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
+        return apply_completion_action(request.app.state.pool, session.user.user_id, run_enrollment_id, body)
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):

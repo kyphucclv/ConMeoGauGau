@@ -71,6 +71,29 @@ test('admin edits a profile and starts a learner without a full page reload', as
   await page.getByRole('button', { name: 'Confirm make-up credit' }).click()
   await expect(page.getByText('Make-up attendance credited.')).toBeVisible()
   await expect(page.getByText('No eligible absences currently have a make-up session available.')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Final results' }).click()
+  await page.getByLabel('Learner and course').selectOption({ index: 1 })
+  await expect(page.getByText(/attendance$/)).toBeVisible()
+  await page.getByLabel('Final level').selectOption({ index: 1 })
+  await page.getByLabel('Passed').check()
+  await page.getByLabel('Next course').selectOption({ index: 1 })
+  await page.getByLabel('Teacher notes').fill('Playwright final assessment')
+  await page.getByRole('button', { name: 'Save final result' }).click()
+  await expect(page.getByText('Final result saved as version 1.')).toBeVisible()
+
+  await page.getByLabel('Eligibility decision').selectOption('true')
+  await page.getByLabel('Override reason').fill('Playwright approved exception')
+  await page.getByRole('button', { name: 'Save eligibility override' }).click()
+  await expect(page.getByText('Eligibility override saved.')).toBeVisible()
+  await expect(page.getByText('Admin override')).toBeVisible()
+
+  await page.getByLabel('Completion action').selectOption('suggest')
+  await page.getByRole('button', { name: 'Apply completion action' }).click()
+  await expect(page.getByText('Completion suggested.')).toBeVisible()
+  await page.getByLabel('Completion action').selectOption('confirm')
+  await page.getByRole('button', { name: 'Apply completion action' }).click()
+  await expect(page.getByText('Completion confirmed.')).toBeVisible()
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {
@@ -81,4 +104,5 @@ test('viewer sees the approved summary but no HR learner navigation', async ({ p
 
   await expect(page.getByRole('heading', { name: 'Workspace summary' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Learners' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Final results' })).toHaveCount(0)
 })

@@ -601,6 +601,9 @@ precondition, event-time roster reads, and atomic full-roster save protected by
 an opaque stale/concurrent token. Issue #7 adds server-filtered make-up options
 and linked credit with required reason, named audit attribution, immutable
 original absence, zero denominator effect, and safe concurrent rejection.
+Issue #8 adds the final-result review queue, server-calculated eligibility,
+immutable result corrections, admin-only override, and role-safe completion
+suggest/confirm/reject actions as one coherent run-enrollment journey.
 
 Deliver:
 

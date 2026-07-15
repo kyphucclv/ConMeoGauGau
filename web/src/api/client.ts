@@ -25,6 +25,14 @@ export type AttendanceRosterResult = Schemas['AttendanceRosterResult']
 export type MakeupOptions = Schemas['MakeupOptions']
 export type MakeupCreditBody = Schemas['MakeupCreditBody']
 export type MakeupCreditResult = Schemas['MakeupCreditResult']
+export type EvaluationPendingList = Schemas['EvaluationPendingList']
+export type FinalResultDetail = Schemas['FinalResultDetail']
+export type FinalResultBody = Schemas['FinalResultBody']
+export type FinalResultResult = Schemas['FinalResultResult']
+export type EligibilityOverrideBody = Schemas['EligibilityOverrideBody']
+export type EligibilityOverrideResult = Schemas['EligibilityOverrideResult']
+export type CompletionActionBody = Schemas['CompletionActionBody']
+export type CompletionActionResult = Schemas['CompletionActionResult']
 
 type ErrorEnvelope = { message?: string }
 
