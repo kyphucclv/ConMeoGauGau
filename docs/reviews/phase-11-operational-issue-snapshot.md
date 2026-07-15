@@ -4,11 +4,11 @@ Status: **Owner decisions approved for current high-severity legacy issues**
 
 ## Snapshot identity
 
-- Database: `english_class_p9_rehearsal`
+- Database: `english_class`
 - Source workbook: `okok_FIXED_v2.xlsx`
 - Source checksum: `f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997`
-- Operational issue snapshot SHA-256: `7fe3274cca6086fcff51d7362a79d0c6238e7e77667ee0942d56020016eb3a34`
-- Generated at: `2026-07-15T00:59:25+07:00`
+- Operational issue snapshot SHA-256: `d79985c7133e3cd8ef2758a2d4e83e194d9919488abac088b63784b780b8ca69`
+- Generated at: `2026-07-15T15:22:21+07:00`
 - Total issues: **255**
 - High severity issues: **173**
 - Warning issues: **82**
@@ -29,9 +29,9 @@ exceptions.
 
 | Issue code | Count | Decision | Owner | Date | Note |
 |---|---:|---|---|---|---|
-| `incomplete_attendance_roster` | 124 | `approve_legacy_attendance_exception` | Owner approval in chat | 2026-07-14 | Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking. |
-| `missing_business_placement` | 49 | `approve_unknown_placement_placeholder` | Owner approval in chat | 2026-07-14 | Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later. |
-| `low_attendance_follow_up` | 82 | `review_operationally` |  |  |  |
+| `incomplete_attendance_roster` | 124 | `approve_legacy_attendance_exception` | Owner approval in chat | 2026-07-15 | Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking. |
+| `missing_business_placement` | 49 | `approve_unknown_placement_placeholder` | Owner approval in chat | 2026-07-15 | Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later. |
+| `low_attendance_follow_up` | 82 | `review_operationally` | Owner approval in chat | 2026-07-15 | Approved all 82 warning-level low-attendance follow-ups for normal operational review. |
 
 ## High-Severity Examples
 

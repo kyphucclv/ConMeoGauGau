@@ -29,8 +29,6 @@ from scripts.phase4_integration_check import _database_url, recreate_database
 from scripts.phase6_security_check import create_roles
 from scripts.phase8_automated_uat import PG_DUMP, PG_RESTORE
 from scripts.phase11_operational_issue_snapshot import (
-    DEFAULT_JSON as PHASE11_ISSUE_JSON,
-    DEFAULT_MARKDOWN as PHASE11_ISSUE_MARKDOWN,
     generate as generate_phase11_operational_issue_snapshot,
 )
 from scripts.stage_workbook import load_profile, profile_for_json, profile_workbook
@@ -40,6 +38,8 @@ DEFAULT_MAINTENANCE_URL = "postgresql://postgres@localhost:5432/postgres"
 DEFAULT_TEST_DB = "english_class_p9_rehearsal"
 WORKBOOK = ROOT / "okok_FIXED_v2.xlsx"
 PROTECTED_DATABASES = {"english_class", "postgres", "template0", "template1"}
+PHASE11_REHEARSAL_JSON = ROOT / "backups" / "phase9-operational-issue-snapshot.json"
+PHASE11_REHEARSAL_MARKDOWN = ROOT / "backups" / "phase9-operational-issue-snapshot.md"
 
 
 def validate_disposable_target(database_url: str, db_name: str) -> None:
@@ -175,7 +175,7 @@ def main() -> None:
     smoke = streamlit_smoke(roles["app"].url(db_name))
     summary = summarize_database(database_url)
     phase11_snapshot = generate_phase11_operational_issue_snapshot(
-        database_url, PHASE11_ISSUE_JSON, PHASE11_ISSUE_MARKDOWN
+        database_url, PHASE11_REHEARSAL_JSON, PHASE11_REHEARSAL_MARKDOWN
     )
     restore = backup_restore(database_url, restored_db, maintenance_url)
 

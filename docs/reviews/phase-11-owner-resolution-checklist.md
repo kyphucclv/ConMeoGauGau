@@ -46,11 +46,11 @@ python scripts\phase8_automated_uat.py
 Issue snapshot command:
 
 ```powershell
-python scripts\phase11_operational_issue_snapshot.py
+python scripts\phase11_operational_issue_snapshot.py --generate
 ```
 
-`python scripts\phase9_cutover_rehearsal.py` also regenerates this snapshot as
-part of the production-shaped rehearsal.
+`python scripts\phase9_cutover_rehearsal.py` writes disposable snapshot evidence
+under `backups/`; it does not overwrite this tracked owner-signoff snapshot.
 
 Owner decision validation command:
 

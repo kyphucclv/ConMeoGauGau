@@ -70,7 +70,7 @@ python scripts/canonical_etl_v3.py "$env:MIGRATION_DATABASE_URL"
 # 7. Verify on disposable databases.
 python scripts/phase8_automated_uat.py
 python scripts/phase9_cutover_rehearsal.py
-python scripts/phase11_operational_issue_snapshot.py
+python scripts/phase11_operational_issue_snapshot.py --generate
 ```
 
 Generate the smaller owner decision template, apply it after the owner fills it

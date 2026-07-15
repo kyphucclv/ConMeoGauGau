@@ -14,7 +14,7 @@ Status: Production cutover completed and verified on 2026-07-13.
   issues.
 - `python scripts\phase10_quality_signoff.py --validate-decisions` passes
   against the final candidate database and checksum.
-- For Phase 11 rollout, `python scripts\phase11_operational_issue_snapshot.py`
+- For Phase 11 rollout, `python scripts\phase11_operational_issue_snapshot.py --generate`
   has been regenerated against the final candidate database. The Phase 9
   rehearsal also emits this snapshot. Then
   `python scripts\phase11_operational_issue_snapshot.py --validate-decisions`
@@ -135,7 +135,7 @@ Rollback if any of these happen during production cutover:
 13. For Phase 11 rollout, generate and validate the operational issue snapshot:
 
     ```powershell
-    python scripts\phase11_operational_issue_snapshot.py --database-url "$env:MIGRATION_DATABASE_URL"
+    python scripts\phase11_operational_issue_snapshot.py --generate --database-url "$env:MIGRATION_DATABASE_URL"
     python scripts\phase11_operational_issue_snapshot.py --write-decision-template
     python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
     python scripts\phase11_operational_issue_snapshot.py --database-url "$env:MIGRATION_DATABASE_URL" --validate-decisions

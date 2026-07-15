@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "database_name": "english_class_p9_rehearsal",
+    "database_name": "english_class",
     "source_name": "okok_FIXED_v2.xlsx",
     "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
-    "issue_snapshot_sha256": "7fe3274cca6086fcff51d7362a79d0c6238e7e77667ee0942d56020016eb3a34",
-    "generated_at": "2026-07-15T00:59:25+07:00"
+    "issue_snapshot_sha256": "d79985c7133e3cd8ef2758a2d4e83e194d9919488abac088b63784b780b8ca69",
+    "generated_at": "2026-07-15T15:22:21+07:00"
   },
   "allowed_decisions": [
     "accept_legacy_lineage_limitation",
@@ -25,7 +25,7 @@
       "owner_decision": "approve_legacy_attendance_exception",
       "decision_owner": "Owner approval in chat",
       "decision_note": "Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking.",
-      "decided_at": "2026-07-14"
+      "decided_at": "2026-07-15"
     },
     {
       "issue_code": "missing_business_placement",
@@ -34,16 +34,16 @@
       "owner_decision": "approve_unknown_placement_placeholder",
       "decision_owner": "Owner approval in chat",
       "decision_note": "Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later.",
-      "decided_at": "2026-07-14"
+      "decided_at": "2026-07-15"
     },
     {
       "issue_code": "low_attendance_follow_up",
       "severity": "warning",
       "expected_count": 82,
       "owner_decision": "review_operationally",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved all 82 warning-level low-attendance follow-ups for normal operational review.",
+      "decided_at": "2026-07-15"
     }
   ],
   "summary": [
@@ -93,6 +93,15 @@
         "sequence_in_run": 2,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL052",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "267040"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -114,6 +123,15 @@
         "course_run_id": 84,
         "sequence_in_run": 3,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL052",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "267040"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -137,6 +155,15 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL052",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "267040"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -159,6 +186,15 @@
         "sequence_in_run": 8,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL005",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "237182"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -173,7 +209,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "128",
+      "entity_key": "129",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -181,6 +217,18 @@
         "sequence_in_run": 1,
         "missing_enrollment_count": 4
       },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -195,7 +243,7 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "130",
+      "entity_key": "131",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
@@ -203,27 +251,17 @@
         "sequence_in_run": 2,
         "missing_enrollment_count": 4
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "133",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 11,
-        "sequence_in_run": 3,
-        "missing_enrollment_count": 4
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -239,13 +277,59 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "135",
+      "entity_key": "132",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 11,
+        "sequence_in_run": 3,
+        "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "134",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 11,
         "sequence_in_run": 4,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -269,6 +353,18 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 4
       },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -291,6 +387,18 @@
         "sequence_in_run": 6,
         "missing_enrollment_count": 4
       },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -305,13 +413,25 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "140",
+      "entity_key": "141",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 11,
         "sequence_in_run": 7,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "203759",
+          "247190",
+          "247191",
+          "247198"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -335,6 +455,17 @@
         "sequence_in_run": 15,
         "missing_enrollment_count": 3
       },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 15,
+        "missing_emp_codes": [
+          "247190",
+          "247191",
+          "247198"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -356,6 +487,17 @@
         "course_run_id": 11,
         "sequence_in_run": 16,
         "missing_enrollment_count": 3
+      },
+      "stable_identity": {
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 16,
+        "missing_emp_codes": [
+          "247190",
+          "247191",
+          "247198"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -379,6 +521,15 @@
         "sequence_in_run": 7,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL008",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "193523"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -400,6 +551,18 @@
         "course_run_id": 20,
         "sequence_in_run": 3,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "227153",
+          "237169",
+          "237222",
+          "237235"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -423,6 +586,17 @@
         "sequence_in_run": 3,
         "missing_enrollment_count": 3
       },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "237227",
+          "237238",
+          "247379"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -444,6 +618,19 @@
         "course_run_id": 20,
         "sequence_in_run": 4,
         "missing_enrollment_count": 5
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "227153",
+          "237222",
+          "237227",
+          "237238",
+          "247379"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -467,6 +654,16 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "237169",
+          "237235"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -488,6 +685,20 @@
         "course_run_id": 20,
         "sequence_in_run": 5,
         "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "227153",
+          "237222",
+          "237227",
+          "237235",
+          "237238",
+          "247379"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -511,6 +722,15 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "237169"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -532,6 +752,20 @@
         "course_run_id": 20,
         "sequence_in_run": 6,
         "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "227153",
+          "237222",
+          "237227",
+          "237235",
+          "237238",
+          "247379"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -555,6 +789,15 @@
         "sequence_in_run": 6,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "237169"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -575,7 +818,16 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "237169"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -597,7 +849,21 @@
       "details": {
         "course_run_id": 20,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "227153",
+          "237222",
+          "237227",
+          "237235",
+          "237238",
+          "247379"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -621,6 +887,16 @@
         "sequence_in_run": 7,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL013",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "183427",
+          "213893"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -642,6 +918,18 @@
         "course_run_id": 23,
         "sequence_in_run": 7,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL013",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "183422",
+          "193516",
+          "227244",
+          "247234"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -665,6 +953,19 @@
         "sequence_in_run": 10,
         "missing_enrollment_count": 5
       },
+      "stable_identity": {
+        "class_code": "EL013",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 10,
+        "missing_emp_codes": [
+          "183422",
+          "183427",
+          "193516",
+          "213893",
+          "227244"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -685,7 +986,18 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 3
+      },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "193451",
+          "213820",
+          "213938"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -707,7 +1019,16 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 1,
-        "missing_enrollment_count": 3
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "193443"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -723,13 +1044,25 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "296",
+      "entity_key": "297",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 6,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "193443",
+          "193451",
+          "213820",
+          "213938"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -751,7 +1084,16 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 3
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "193443"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -773,7 +1115,18 @@
       "details": {
         "course_run_id": 24,
         "sequence_in_run": 7,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 3
+      },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "193451",
+          "213820",
+          "213938"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -797,6 +1150,17 @@
         "sequence_in_run": 9,
         "missing_enrollment_count": 3
       },
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "193451",
+          "213820",
+          "213938"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -819,27 +1183,14 @@
         "sequence_in_run": 9,
         "missing_enrollment_count": 1
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "304",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 25,
-        "sequence_in_run": 1,
-        "missing_enrollment_count": 1
+      "stable_identity": {
+        "class_code": "EL014",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "193443"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -855,13 +1206,53 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "309",
+      "entity_key": "305",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 25,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL015",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "247163"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "308",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 25,
         "sequence_in_run": 4,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL015",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "247163"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -885,6 +1276,15 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL015",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "247163"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -899,13 +1299,22 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "313",
+      "entity_key": "312",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 25,
         "sequence_in_run": 6,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL015",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "247163"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -927,7 +1336,16 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "193579"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -949,7 +1367,17 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "213954",
+          "227112"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -973,6 +1401,16 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "193579",
+          "213954"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -995,6 +1433,15 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "227112"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1015,7 +1462,16 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "213954"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1037,7 +1493,17 @@
       "details": {
         "course_run_id": 32,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "193579",
+          "227112"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1060,6 +1526,15 @@
         "course_run_id": 4,
         "sequence_in_run": 1,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL002",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "247200"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1083,6 +1558,21 @@
         "sequence_in_run": 1,
         "missing_enrollment_count": 7
       },
+      "stable_identity": {
+        "class_code": "EL002",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "193547",
+          "247156",
+          "247192",
+          "247195",
+          "247196",
+          "247199",
+          "247300"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1104,6 +1594,15 @@
         "course_run_id": 40,
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL024",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "247332"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1127,6 +1626,15 @@
         "sequence_in_run": 12,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL024",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "247086"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1148,6 +1656,16 @@
         "course_run_id": 45,
         "sequence_in_run": 4,
         "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL026",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "227144",
+          "247359"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1171,27 +1689,18 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 5
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "56",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 5,
-        "sequence_in_run": 6,
-        "missing_enrollment_count": 2
+      "stable_identity": {
+        "class_code": "EL026",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "227069",
+          "237043",
+          "237246",
+          "247298",
+          "247405"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1215,6 +1724,15 @@
         "sequence_in_run": 2,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1236,6 +1754,47 @@
         "course_run_id": 48,
         "sequence_in_run": 3,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "57",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 5,
+        "sequence_in_run": 6,
+        "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL003",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "247264",
+          "247360"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1259,6 +1818,15 @@
         "sequence_in_run": 4,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1280,6 +1848,15 @@
         "course_run_id": 48,
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "143084"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1303,6 +1880,15 @@
         "sequence_in_run": 6,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 6,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1324,6 +1910,15 @@
         "course_run_id": 48,
         "sequence_in_run": 7,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "143084"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1347,6 +1942,15 @@
         "sequence_in_run": 8,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1368,6 +1972,15 @@
         "course_run_id": 48,
         "sequence_in_run": 10,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 10,
+        "missing_emp_codes": [
+          "143084"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1391,6 +2004,15 @@
         "sequence_in_run": 11,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 11,
+        "missing_emp_codes": [
+          "143084"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1413,6 +2035,18 @@
         "sequence_in_run": 9,
         "missing_enrollment_count": 4
       },
+      "stable_identity": {
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "143084",
+          "237226",
+          "247083",
+          "247178"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1433,7 +2067,16 @@
       "details": {
         "course_run_id": 50,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 5
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL029",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "227170"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1455,7 +2098,20 @@
       "details": {
         "course_run_id": 50,
         "sequence_in_run": 8,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 5
+      },
+      "stable_identity": {
+        "class_code": "EL029",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "183324",
+          "227224",
+          "237023",
+          "247114",
+          "247230"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1479,6 +2135,15 @@
         "sequence_in_run": 9,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL029",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "227170"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1500,6 +2165,19 @@
         "course_run_id": 50,
         "sequence_in_run": 9,
         "missing_enrollment_count": 5
+      },
+      "stable_identity": {
+        "class_code": "EL029",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "183324",
+          "227224",
+          "237023",
+          "247114",
+          "247230"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1523,6 +2201,16 @@
         "sequence_in_run": 2,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "227125",
+          "247146"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1545,6 +2233,19 @@
         "sequence_in_run": 2,
         "missing_enrollment_count": 5
       },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "183332",
+          "227220",
+          "237049",
+          "237101",
+          "247122"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1565,7 +2266,21 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "183332",
+          "227125",
+          "227220",
+          "237101",
+          "247122",
+          "247146"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1587,7 +2302,16 @@
       "details": {
         "course_run_id": 51,
         "sequence_in_run": 5,
-        "missing_enrollment_count": 6
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "237049"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1611,6 +2335,20 @@
         "sequence_in_run": 8,
         "missing_enrollment_count": 6
       },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "183332",
+          "227125",
+          "227220",
+          "237101",
+          "247122",
+          "247146"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1632,6 +2370,15 @@
         "course_run_id": 51,
         "sequence_in_run": 8,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "237049"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1655,6 +2402,15 @@
         "sequence_in_run": 11,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 11,
+        "missing_emp_codes": [
+          "213975"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1676,6 +2432,15 @@
         "course_run_id": 54,
         "sequence_in_run": 12,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "213975"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1699,6 +2464,15 @@
         "sequence_in_run": 13,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 13,
+        "missing_emp_codes": [
+          "213975"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1720,6 +2494,15 @@
         "course_run_id": 54,
         "sequence_in_run": 14,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 14,
+        "missing_emp_codes": [
+          "213975"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1743,6 +2526,15 @@
         "sequence_in_run": 15,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 15,
+        "missing_emp_codes": [
+          "213975"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1765,27 +2557,14 @@
         "sequence_in_run": 16,
         "missing_enrollment_count": 1
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "658",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 56,
-        "sequence_in_run": 1,
-        "missing_enrollment_count": 6
+      "stable_identity": {
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 16,
+        "missing_emp_codes": [
+          "213975"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1801,13 +2580,63 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "661",
+      "entity_key": "659",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 1,
+        "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "113024",
+          "213815",
+          "213851",
+          "213861",
+          "213914",
+          "247223"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "660",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 56,
         "sequence_in_run": 2,
         "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "113024",
+          "213815",
+          "213851",
+          "213861",
+          "213914",
+          "247223"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1831,27 +2660,19 @@
         "sequence_in_run": 3,
         "missing_enrollment_count": 6
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "665",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 56,
-        "sequence_in_run": 4,
-        "missing_enrollment_count": 6
+      "stable_identity": {
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "113024",
+          "213815",
+          "213851",
+          "213861",
+          "213914",
+          "247223"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1867,13 +2688,63 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "667",
+      "entity_key": "664",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 56,
+        "sequence_in_run": 4,
+        "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "113024",
+          "213815",
+          "213851",
+          "213861",
+          "213914",
+          "247223"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "666",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 56,
         "sequence_in_run": 5,
         "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "113024",
+          "213815",
+          "213851",
+          "213861",
+          "213914",
+          "247223"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1897,6 +2768,15 @@
         "sequence_in_run": 13,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "BUSINESS_ENGLISH",
+        "sequence_in_run": 13,
+        "missing_emp_codes": [
+          "213889"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1918,6 +2798,15 @@
         "course_run_id": 62,
         "sequence_in_run": 2,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "227104"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1941,6 +2830,16 @@
         "sequence_in_run": 11,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 11,
+        "missing_emp_codes": [
+          "213863",
+          "247098"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -1962,6 +2861,16 @@
         "course_run_id": 62,
         "sequence_in_run": 12,
         "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "213863",
+          "247098"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -1985,6 +2894,15 @@
         "sequence_in_run": 13,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 13,
+        "missing_emp_codes": [
+          "247098"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2006,6 +2924,15 @@
         "course_run_id": 62,
         "sequence_in_run": 14,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 14,
+        "missing_emp_codes": [
+          "247098"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2029,6 +2956,15 @@
         "sequence_in_run": 15,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 15,
+        "missing_emp_codes": [
+          "247098"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2051,6 +2987,15 @@
         "sequence_in_run": 16,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2",
+        "sequence_in_run": 16,
+        "missing_emp_codes": [
+          "247098"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2065,13 +3010,25 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "765",
+      "entity_key": "766",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 63,
         "sequence_in_run": 5,
         "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL037",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "213805",
+          "213854",
+          "213935",
+          "227063"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2095,6 +3052,20 @@
         "sequence_in_run": 8,
         "missing_enrollment_count": 6
       },
+      "stable_identity": {
+        "class_code": "EL039",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "183423",
+          "227188",
+          "237061",
+          "237245",
+          "247265",
+          "247415"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2116,6 +3087,15 @@
         "course_run_id": 68,
         "sequence_in_run": 8,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL039",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "213946"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2139,6 +3119,15 @@
         "sequence_in_run": 12,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL043",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "237072"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2160,6 +3149,15 @@
         "course_run_id": 75,
         "sequence_in_run": 8,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 8,
+        "missing_emp_codes": [
+          "247082"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2183,6 +3181,15 @@
         "sequence_in_run": 9,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 9,
+        "missing_emp_codes": [
+          "247082"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2204,6 +3211,15 @@
         "course_run_id": 75,
         "sequence_in_run": 10,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 10,
+        "missing_emp_codes": [
+          "247082"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2227,6 +3243,15 @@
         "sequence_in_run": 11,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 11,
+        "missing_emp_codes": [
+          "247082"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2248,6 +3273,15 @@
         "course_run_id": 75,
         "sequence_in_run": 12,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "247082"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2271,6 +3305,15 @@
         "sequence_in_run": 13,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 13,
+        "missing_emp_codes": [
+          "247082"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2292,6 +3335,15 @@
         "course_run_id": 75,
         "sequence_in_run": 14,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 14,
+        "missing_emp_codes": [
+          "247082"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2315,6 +3367,16 @@
         "sequence_in_run": 15,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 15,
+        "missing_emp_codes": [
+          "163215",
+          "247082"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2335,7 +3397,19 @@
       "details": {
         "course_run_id": 77,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 2
+        "missing_enrollment_count": 4
+      },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "153138",
+          "193522",
+          "203757",
+          "237070"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2357,7 +3431,17 @@
       "details": {
         "course_run_id": 77,
         "sequence_in_run": 3,
-        "missing_enrollment_count": 4
+        "missing_enrollment_count": 2
+      },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "193470",
+          "213911"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2373,13 +3457,27 @@
       "severity": "high",
       "issue_code": "incomplete_attendance_roster",
       "entity_type": "session_unit",
-      "entity_key": "929",
+      "entity_key": "930",
       "title": "Delivered session has applicable learners without a saved attendance result",
       "workflow": "Attendance",
       "details": {
         "course_run_id": 77,
         "sequence_in_run": 4,
         "missing_enrollment_count": 6
+      },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "153138",
+          "193470",
+          "193522",
+          "203757",
+          "213911",
+          "237070"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2403,6 +3501,15 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "193522"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2425,6 +3532,15 @@
         "sequence_in_run": 1,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL005",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "237182"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2445,7 +3561,20 @@
       "details": {
         "course_run_id": 77,
         "sequence_in_run": 14,
-        "missing_enrollment_count": 1
+        "missing_enrollment_count": 5
+      },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 14,
+        "missing_emp_codes": [
+          "153138",
+          "193522",
+          "203757",
+          "213911",
+          "237070"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2467,7 +3596,16 @@
       "details": {
         "course_run_id": 77,
         "sequence_in_run": 14,
-        "missing_enrollment_count": 5
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 14,
+        "missing_emp_codes": [
+          "193470"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2491,6 +3629,20 @@
         "sequence_in_run": 15,
         "missing_enrollment_count": 6
       },
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 15,
+        "missing_emp_codes": [
+          "153138",
+          "193470",
+          "193522",
+          "203757",
+          "213911",
+          "237070"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2513,27 +3665,19 @@
         "sequence_in_run": 16,
         "missing_enrollment_count": 6
       },
-      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
-      "owner_decision_options": [
-        "resolve_source",
-        "approve_legacy_attendance_exception"
-      ],
-      "owner_decision": "pending",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
-    },
-    {
-      "severity": "high",
-      "issue_code": "incomplete_attendance_roster",
-      "entity_type": "session_unit",
-      "entity_key": "95",
-      "title": "Delivered session has applicable learners without a saved attendance result",
-      "workflow": "Attendance",
-      "details": {
-        "course_run_id": 8,
-        "sequence_in_run": 2,
-        "missing_enrollment_count": 1
+      "stable_identity": {
+        "class_code": "EL046",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 16,
+        "missing_emp_codes": [
+          "153138",
+          "193470",
+          "193522",
+          "203757",
+          "213911",
+          "237070"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2557,6 +3701,15 @@
         "sequence_in_run": 7,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL047",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 7,
+        "missing_emp_codes": [
+          "193607"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2577,7 +3730,16 @@
       "details": {
         "course_run_id": 78,
         "sequence_in_run": 12,
-        "missing_enrollment_count": 5
+        "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL047",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "237031"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2599,7 +3761,51 @@
       "details": {
         "course_run_id": 78,
         "sequence_in_run": 12,
+        "missing_enrollment_count": 5
+      },
+      "stable_identity": {
+        "class_code": "EL047",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 12,
+        "missing_emp_codes": [
+          "193607",
+          "203713",
+          "203725",
+          "203791",
+          "213874"
+        ]
+      },
+      "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
+      "owner_decision_options": [
+        "resolve_source",
+        "approve_legacy_attendance_exception"
+      ],
+      "owner_decision": "pending",
+      "decision_owner": "",
+      "decision_note": "",
+      "decided_at": null
+    },
+    {
+      "severity": "high",
+      "issue_code": "incomplete_attendance_roster",
+      "entity_type": "session_unit",
+      "entity_key": "96",
+      "title": "Delivered session has applicable learners without a saved attendance result",
+      "workflow": "Attendance",
+      "details": {
+        "course_run_id": 8,
+        "sequence_in_run": 2,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL005",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "237182"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2623,6 +3829,16 @@
         "sequence_in_run": 1,
         "missing_enrollment_count": 2
       },
+      "stable_identity": {
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "247423",
+          "257134"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2644,6 +3860,22 @@
         "course_run_id": 80,
         "sequence_in_run": 1,
         "missing_enrollment_count": 8
+      },
+      "stable_identity": {
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 1,
+        "missing_emp_codes": [
+          "183382",
+          "193495",
+          "227103",
+          "227116",
+          "237103",
+          "237201",
+          "237239",
+          "247413"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2667,6 +3899,15 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "193495"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2688,6 +3929,15 @@
         "course_run_id": 80,
         "sequence_in_run": 10,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 10,
+        "missing_emp_codes": [
+          "193495"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2711,6 +3961,15 @@
         "sequence_in_run": 13,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION",
+        "sequence_in_run": 13,
+        "missing_emp_codes": [
+          "237103"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2732,6 +3991,15 @@
         "course_run_id": 81,
         "sequence_in_run": 2,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 2,
+        "missing_emp_codes": [
+          "213817"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2755,6 +4023,15 @@
         "sequence_in_run": 3,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 3,
+        "missing_emp_codes": [
+          "213817"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2776,6 +4053,15 @@
         "course_run_id": 81,
         "sequence_in_run": 4,
         "missing_enrollment_count": 1
+      },
+      "stable_identity": {
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 4,
+        "missing_emp_codes": [
+          "213817"
+        ]
       },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
@@ -2799,6 +4085,15 @@
         "sequence_in_run": 5,
         "missing_enrollment_count": 1
       },
+      "stable_identity": {
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1",
+        "sequence_in_run": 5,
+        "missing_emp_codes": [
+          "213817"
+        ]
+      },
       "rollout_disposition": "Block rollout until original attendance is entered or an audited legacy exception is approved without inventing attendance facts.",
       "owner_decision_options": [
         "resolve_source",
@@ -2819,6 +4114,9 @@
       "details": {
         "emp_code": "203748",
         "full_name": "LÂM MINH HOÀNG"
+      },
+      "stable_identity": {
+        "emp_code": "203748"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -2841,6 +4139,9 @@
         "emp_code": "257045",
         "full_name": "NGUYỄN BẢO DUY"
       },
+      "stable_identity": {
+        "emp_code": "257045"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -2861,6 +4162,9 @@
       "details": {
         "emp_code": "133067",
         "full_name": "Phu Nguyen"
+      },
+      "stable_identity": {
+        "emp_code": "133067"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -2883,6 +4187,9 @@
         "emp_code": "227055",
         "full_name": "NGUYỄN HOÀNG PHÚC"
       },
+      "stable_identity": {
+        "emp_code": "227055"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -2903,6 +4210,9 @@
       "details": {
         "emp_code": "213857",
         "full_name": "NGUYỄN THÀNH NHÂN"
+      },
+      "stable_identity": {
+        "emp_code": "213857"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -2925,6 +4235,9 @@
         "emp_code": "173231",
         "full_name": "NGUYỄN THANH TÙNG"
       },
+      "stable_identity": {
+        "emp_code": "173231"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -2945,6 +4258,9 @@
       "details": {
         "emp_code": "193550",
         "full_name": "PHẠM TƯỜNG NHÂN"
+      },
+      "stable_identity": {
+        "emp_code": "193550"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -2967,6 +4283,9 @@
         "emp_code": "247423",
         "full_name": "CHUNG QUANG PHƯƠNG"
       },
+      "stable_identity": {
+        "emp_code": "247423"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -2987,6 +4306,9 @@
       "details": {
         "emp_code": "257134",
         "full_name": "ĐINH QUỐC HUẤN"
+      },
+      "stable_identity": {
+        "emp_code": "257134"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3009,6 +4331,9 @@
         "emp_code": "237239",
         "full_name": "ĐỖ NGỌC THÀNH"
       },
+      "stable_identity": {
+        "emp_code": "237239"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3029,6 +4354,9 @@
       "details": {
         "emp_code": "227116",
         "full_name": "LÊ THẾ PHƯƠNG"
+      },
+      "stable_identity": {
+        "emp_code": "227116"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3051,6 +4379,9 @@
         "emp_code": "247413",
         "full_name": "NGUYỄN ĐỨC TIẾN"
       },
+      "stable_identity": {
+        "emp_code": "247413"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3071,6 +4402,9 @@
       "details": {
         "emp_code": "183382",
         "full_name": "NGUYỄN DUY PHÚ"
+      },
+      "stable_identity": {
+        "emp_code": "183382"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3093,6 +4427,9 @@
         "emp_code": "227103",
         "full_name": "NGUYỄN HUỲNH SƠN"
       },
+      "stable_identity": {
+        "emp_code": "227103"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3113,6 +4450,9 @@
       "details": {
         "emp_code": "237201",
         "full_name": "NGUYỄN MINH QUANG"
+      },
+      "stable_identity": {
+        "emp_code": "237201"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3135,6 +4475,9 @@
         "emp_code": "193495",
         "full_name": "THẠCH THÁI HUY"
       },
+      "stable_identity": {
+        "emp_code": "193495"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3155,6 +4498,9 @@
       "details": {
         "emp_code": "237035",
         "full_name": "Nguyễn Đặng Khương Duy (Dustin)"
+      },
+      "stable_identity": {
+        "emp_code": "237035"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3177,6 +4523,9 @@
         "emp_code": "203664",
         "full_name": "Nguyễn Hà Vi (V)"
       },
+      "stable_identity": {
+        "emp_code": "203664"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3197,6 +4546,9 @@
       "details": {
         "emp_code": "247065",
         "full_name": "Phạm Ngọc Hưng (Zero)"
+      },
+      "stable_identity": {
+        "emp_code": "247065"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3219,6 +4571,9 @@
         "emp_code": "183379",
         "full_name": "Tạ Phạm Minh Chương (Chivas)"
       },
+      "stable_identity": {
+        "emp_code": "183379"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3239,6 +4594,9 @@
       "details": {
         "emp_code": "227101",
         "full_name": "Phuoc Ta"
+      },
+      "stable_identity": {
+        "emp_code": "227101"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3261,6 +4619,9 @@
         "emp_code": "193530",
         "full_name": "Trần Hùng Cường (Ethan)"
       },
+      "stable_identity": {
+        "emp_code": "193530"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3281,6 +4642,9 @@
       "details": {
         "emp_code": "257036",
         "full_name": "NGUYỄN PHÚC VINH"
+      },
+      "stable_identity": {
+        "emp_code": "257036"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3303,6 +4667,9 @@
         "emp_code": "227131",
         "full_name": "Quyen Nguyen"
       },
+      "stable_identity": {
+        "emp_code": "227131"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3323,6 +4690,9 @@
       "details": {
         "emp_code": "193620",
         "full_name": "TRẦN THỊ HUỲNH NHƯ"
+      },
+      "stable_identity": {
+        "emp_code": "193620"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3345,6 +4715,9 @@
         "emp_code": "193470",
         "full_name": "Thai Nguyen 2"
       },
+      "stable_identity": {
+        "emp_code": "193470"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3365,6 +4738,9 @@
       "details": {
         "emp_code": "153138",
         "full_name": "Nguyễn Đình Mạnh"
+      },
+      "stable_identity": {
+        "emp_code": "153138"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3387,6 +4763,9 @@
         "emp_code": "193522",
         "full_name": "Đinh Bộ Lĩnh"
       },
+      "stable_identity": {
+        "emp_code": "193522"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3407,6 +4786,9 @@
       "details": {
         "emp_code": "237070",
         "full_name": "Cao Ngọc Nguyên"
+      },
+      "stable_identity": {
+        "emp_code": "237070"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3429,6 +4811,9 @@
         "emp_code": "203757",
         "full_name": "Trần Hoàng Tuấn"
       },
+      "stable_identity": {
+        "emp_code": "203757"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3449,6 +4834,9 @@
       "details": {
         "emp_code": "213911",
         "full_name": "Hồ Phạm Sĩ Hùng"
+      },
+      "stable_identity": {
+        "emp_code": "213911"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3471,6 +4859,9 @@
         "emp_code": "203791",
         "full_name": "Trương Quốc Quy"
       },
+      "stable_identity": {
+        "emp_code": "203791"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3491,6 +4882,9 @@
       "details": {
         "emp_code": "237031",
         "full_name": "Nguyễn Ngọc Thạch"
+      },
+      "stable_identity": {
+        "emp_code": "237031"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3513,6 +4907,9 @@
         "emp_code": "203713",
         "full_name": "Bùi Quang Khôi"
       },
+      "stable_identity": {
+        "emp_code": "203713"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3533,6 +4930,9 @@
       "details": {
         "emp_code": "213874",
         "full_name": "Nguyễn Hoàng Hải"
+      },
+      "stable_identity": {
+        "emp_code": "213874"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3555,6 +4955,9 @@
         "emp_code": "203725",
         "full_name": "Đặng Thanh Túc"
       },
+      "stable_identity": {
+        "emp_code": "203725"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3575,6 +4978,9 @@
       "details": {
         "emp_code": "193607",
         "full_name": "NGUYỄN TRẦN MINH NGHĨA"
+      },
+      "stable_identity": {
+        "emp_code": "193607"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3597,6 +5003,9 @@
         "emp_code": "227005",
         "full_name": "Trang Ngo"
       },
+      "stable_identity": {
+        "emp_code": "227005"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3617,6 +5026,9 @@
       "details": {
         "emp_code": "213813",
         "full_name": "Lê Trọng Ân"
+      },
+      "stable_identity": {
+        "emp_code": "213813"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3639,6 +5051,9 @@
         "emp_code": "203786",
         "full_name": "Trần Ánh Tuyết (Taylor)"
       },
+      "stable_identity": {
+        "emp_code": "203786"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3659,6 +5074,9 @@
       "details": {
         "emp_code": "257121",
         "full_name": "Nguyễn Kim Khánh (Annie)"
+      },
+      "stable_identity": {
+        "emp_code": "257121"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3681,6 +5099,9 @@
         "emp_code": "257135",
         "full_name": "Lê Tuyết Ngân"
       },
+      "stable_identity": {
+        "emp_code": "257135"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3701,6 +5122,9 @@
       "details": {
         "emp_code": "257059",
         "full_name": "Nguyễn Ngọc Hào"
+      },
+      "stable_identity": {
+        "emp_code": "257059"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3723,6 +5147,9 @@
         "emp_code": "237103",
         "full_name": "NGUYỄN THỊ THÙY LINH"
       },
+      "stable_identity": {
+        "emp_code": "237103"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3743,6 +5170,9 @@
       "details": {
         "emp_code": "247063",
         "full_name": "GIANG KHIẾT ĐÌNH"
+      },
+      "stable_identity": {
+        "emp_code": "247063"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3765,6 +5195,9 @@
         "emp_code": "227218",
         "full_name": "NGUYỄN HOÀNG BẢO TRÂN"
       },
+      "stable_identity": {
+        "emp_code": "227218"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3785,6 +5218,9 @@
       "details": {
         "emp_code": "247062",
         "full_name": "NGUYỄN THẾ ANH"
+      },
+      "stable_identity": {
+        "emp_code": "247062"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3807,6 +5243,9 @@
         "emp_code": "247147",
         "full_name": "PHẠM LÊ QUỲNH HƯƠNG"
       },
+      "stable_identity": {
+        "emp_code": "247147"
+      },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
         "resolve_source",
@@ -3827,6 +5266,9 @@
       "details": {
         "emp_code": "247102",
         "full_name": "Vinh Tran"
+      },
+      "stable_identity": {
+        "emp_code": "247102"
       },
       "rollout_disposition": "Block rollout until the owner supplies an entrance level or approves the Unknown Entrance Level placeholder.",
       "owner_decision_options": [
@@ -3849,6 +5291,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6
       },
+      "stable_identity": {
+        "emp_code": "227153",
+        "class_code": "EL012",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -3868,6 +5316,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.375
+      },
+      "stable_identity": {
+        "emp_code": "213936",
+        "class_code": "EL013",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -3889,6 +5343,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "183427",
+        "class_code": "EL013",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -3908,6 +5368,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6667
+      },
+      "stable_identity": {
+        "emp_code": "213895",
+        "class_code": "EL016",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -3929,6 +5395,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "213991",
+        "class_code": "EL016",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -3948,6 +5420,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6667
+      },
+      "stable_identity": {
+        "emp_code": "247127",
+        "class_code": "EL016",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -3969,6 +5447,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.4
       },
+      "stable_identity": {
+        "emp_code": "247300",
+        "class_code": "EL002",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -3988,6 +5472,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7
+      },
+      "stable_identity": {
+        "emp_code": "222010",
+        "class_code": "EL017",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4009,6 +5499,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.3
       },
+      "stable_identity": {
+        "emp_code": "242006",
+        "class_code": "EL017",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4028,6 +5524,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6
+      },
+      "stable_identity": {
+        "emp_code": "242003",
+        "class_code": "EL017",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4049,6 +5551,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6
       },
+      "stable_identity": {
+        "emp_code": "227112",
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4068,6 +5576,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6
+      },
+      "stable_identity": {
+        "emp_code": "247156",
+        "class_code": "EL002",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4089,6 +5603,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7143
       },
+      "stable_identity": {
+        "emp_code": "213974",
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4108,6 +5628,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7143
+      },
+      "stable_identity": {
+        "emp_code": "247389",
+        "class_code": "EL020",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4129,6 +5655,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "242001",
+        "class_code": "EL021",
+        "run_number": 1,
+        "course_code": "BUSINESS_ENGLISH"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4148,6 +5680,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.625
+      },
+      "stable_identity": {
+        "emp_code": "247183",
+        "class_code": "EL021",
+        "run_number": 1,
+        "course_code": "BUSINESS_ENGLISH"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4169,6 +5707,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.4
       },
+      "stable_identity": {
+        "emp_code": "247192",
+        "class_code": "EL002",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4188,6 +5732,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6667
+      },
+      "stable_identity": {
+        "emp_code": "183340",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4209,6 +5759,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "193534",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4228,6 +5784,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7778
+      },
+      "stable_identity": {
+        "emp_code": "227047",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4249,6 +5811,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7778
       },
+      "stable_identity": {
+        "emp_code": "173230",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4268,6 +5836,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6667
+      },
+      "stable_identity": {
+        "emp_code": "227048",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4289,6 +5863,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "227122",
+        "class_code": "EL022",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4308,6 +5888,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.4167
+      },
+      "stable_identity": {
+        "emp_code": "227081",
+        "class_code": "EL024",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4329,6 +5915,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.0
       },
+      "stable_identity": {
+        "emp_code": "247086",
+        "class_code": "EL024",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4348,6 +5940,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7333
+      },
+      "stable_identity": {
+        "emp_code": "247225",
+        "class_code": "EL025",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4369,6 +5967,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7273
       },
+      "stable_identity": {
+        "emp_code": "247359",
+        "class_code": "EL026",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4388,6 +5992,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.2
+      },
+      "stable_identity": {
+        "emp_code": "173272",
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4409,6 +6019,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.0
       },
+      "stable_identity": {
+        "emp_code": "143084",
+        "class_code": "EL027",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_3"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4428,6 +6044,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.5
+      },
+      "stable_identity": {
+        "emp_code": "143071",
+        "class_code": "EL028",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4449,6 +6071,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7
       },
+      "stable_identity": {
+        "emp_code": "227200",
+        "class_code": "EL028",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4468,6 +6096,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.4
+      },
+      "stable_identity": {
+        "emp_code": "227240",
+        "class_code": "EL028",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4489,6 +6123,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7
       },
+      "stable_identity": {
+        "emp_code": "237023",
+        "class_code": "EL029",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4508,6 +6148,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.5
+      },
+      "stable_identity": {
+        "emp_code": "237049",
+        "class_code": "EL030",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4529,6 +6175,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.4
       },
+      "stable_identity": {
+        "emp_code": "193536",
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4548,6 +6200,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.5333
+      },
+      "stable_identity": {
+        "emp_code": "213975",
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4569,6 +6227,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7333
       },
+      "stable_identity": {
+        "emp_code": "237196",
+        "class_code": "EL032",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4588,6 +6252,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.75
+      },
+      "stable_identity": {
+        "emp_code": "213815",
+        "class_code": "EL033",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4609,6 +6279,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7
       },
+      "stable_identity": {
+        "emp_code": "247416",
+        "class_code": "EL034",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4628,6 +6304,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0
+      },
+      "stable_identity": {
+        "emp_code": "227097",
+        "class_code": "EL034",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4649,6 +6331,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7143
       },
+      "stable_identity": {
+        "emp_code": "193588",
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "BUSINESS_ENGLISH"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4668,6 +6356,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.2857
+      },
+      "stable_identity": {
+        "emp_code": "213889",
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "BUSINESS_ENGLISH"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4689,6 +6383,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.5625
       },
+      "stable_identity": {
+        "emp_code": "213863",
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4708,6 +6408,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0
+      },
+      "stable_identity": {
+        "emp_code": "213898",
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4729,6 +6435,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.5
       },
+      "stable_identity": {
+        "emp_code": "247098",
+        "class_code": "EL035",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4748,6 +6460,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.625
+      },
+      "stable_identity": {
+        "emp_code": "193479",
+        "class_code": "EL004",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4769,6 +6487,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6875
       },
+      "stable_identity": {
+        "emp_code": "213811",
+        "class_code": "EL004",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4788,6 +6512,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.4
+      },
+      "stable_identity": {
+        "emp_code": "213805",
+        "class_code": "EL037",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4809,6 +6539,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "213935",
+        "class_code": "EL037",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4828,6 +6564,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7333
+      },
+      "stable_identity": {
+        "emp_code": "227063",
+        "class_code": "EL037",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4849,6 +6591,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "183431",
+        "class_code": "EL004",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4868,6 +6616,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.5
+      },
+      "stable_identity": {
+        "emp_code": "183423",
+        "class_code": "EL039",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4889,6 +6643,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "227141",
+        "class_code": "EL004",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4908,6 +6668,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6875
+      },
+      "stable_identity": {
+        "emp_code": "217001",
+        "class_code": "EL040",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4929,6 +6695,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.1
       },
+      "stable_identity": {
+        "emp_code": "133067",
+        "class_code": "EL041",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4948,6 +6720,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.4
+      },
+      "stable_identity": {
+        "emp_code": "203748",
+        "class_code": "EL041",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -4969,6 +6747,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.4
       },
+      "stable_identity": {
+        "emp_code": "213857",
+        "class_code": "EL041",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -4988,6 +6772,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.3
+      },
+      "stable_identity": {
+        "emp_code": "173231",
+        "class_code": "EL041",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5009,6 +6799,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.25
       },
+      "stable_identity": {
+        "emp_code": "227035",
+        "class_code": "EL042",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5028,6 +6824,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.75
+      },
+      "stable_identity": {
+        "emp_code": "247147",
+        "class_code": "EL042",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5049,6 +6851,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "237072",
+        "class_code": "EL043",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5068,6 +6876,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0
+      },
+      "stable_identity": {
+        "emp_code": "237097",
+        "class_code": "EL004",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5089,6 +6903,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6923
       },
+      "stable_identity": {
+        "emp_code": "213881",
+        "class_code": "EL043",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5108,6 +6928,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7692
+      },
+      "stable_identity": {
+        "emp_code": "213929",
+        "class_code": "EL043",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5129,6 +6955,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6154
       },
+      "stable_identity": {
+        "emp_code": "227058",
+        "class_code": "EL043",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5148,6 +6980,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0667
+      },
+      "stable_identity": {
+        "emp_code": "247082",
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5169,6 +7007,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6
       },
+      "stable_identity": {
+        "emp_code": "163215",
+        "class_code": "EL044",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5188,6 +7032,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7857
+      },
+      "stable_identity": {
+        "emp_code": "183379",
+        "class_code": "EL045",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5209,6 +7059,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.5
       },
+      "stable_identity": {
+        "emp_code": "203713",
+        "class_code": "EL047",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5228,6 +7084,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6923
+      },
+      "stable_identity": {
+        "emp_code": "193607",
+        "class_code": "EL047",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5249,6 +7111,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.7692
       },
+      "stable_identity": {
+        "emp_code": "257121",
+        "class_code": "EL048",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5268,6 +7136,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.6
+      },
+      "stable_identity": {
+        "emp_code": "257134",
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5289,6 +7163,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.0667
       },
+      "stable_identity": {
+        "emp_code": "237103",
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5308,6 +7188,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.7333
+      },
+      "stable_identity": {
+        "emp_code": "193495",
+        "class_code": "EL049",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5329,6 +7215,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "193633",
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5348,6 +7240,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0
+      },
+      "stable_identity": {
+        "emp_code": "213817",
+        "class_code": "EL050",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5369,6 +7267,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.5455
       },
+      "stable_identity": {
+        "emp_code": "227091",
+        "class_code": "EL051",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_1"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5388,6 +7292,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.0
+      },
+      "stable_identity": {
+        "emp_code": "267040",
+        "class_code": "EL052",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5409,6 +7319,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.6667
       },
+      "stable_identity": {
+        "emp_code": "247338",
+        "class_code": "EL052",
+        "run_number": 1,
+        "course_code": "FOUNDATION"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5428,6 +7344,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.75
+      },
+      "stable_identity": {
+        "emp_code": "247190",
+        "class_code": "EL007",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
@@ -5449,6 +7371,12 @@
         "threshold": 0.8,
         "attendance_ratio": 0.75
       },
+      "stable_identity": {
+        "emp_code": "237158",
+        "class_code": "EL009",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
+      },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [
         "review_operationally"
@@ -5468,6 +7396,12 @@
       "details": {
         "threshold": 0.8,
         "attendance_ratio": 0.75
+      },
+      "stable_identity": {
+        "emp_code": "237207",
+        "class_code": "EL009",
+        "run_number": 1,
+        "course_code": "COMMUNICATION_2"
       },
       "rollout_disposition": "Warning only; review operationally and include in monthly follow-up.",
       "owner_decision_options": [

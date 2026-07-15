@@ -1,7 +1,7 @@
 {
   "metadata": {
     "source_checksum": "f1d88362fdfc7d595843271361a8a59cffbc2c599cb3ae84ae7284b95b105997",
-    "issue_snapshot_sha256": "da4c78ce5ef58f15425cc5de2184654c8034ce89ed58a570705964efafd8bf12",
+    "issue_snapshot_sha256": "d79985c7133e3cd8ef2758a2d4e83e194d9919488abac088b63784b780b8ca69",
     "generated_from": "docs\\reviews\\phase-11-operational-issue-snapshot.json"
   },
   "instructions": [
@@ -29,7 +29,7 @@
       "owner_decision": "approve_legacy_attendance_exception",
       "decision_owner": "Owner approval in chat",
       "decision_note": "Approved all 124 incomplete attendance roster issues as legacy exceptions; do not create invented Present/Absent attendance facts and exclude these legacy gaps from rollout blocking.",
-      "decided_at": "2026-07-14"
+      "decided_at": "2026-07-15"
     },
     {
       "issue_code": "missing_business_placement",
@@ -38,16 +38,16 @@
       "owner_decision": "approve_unknown_placement_placeholder",
       "decision_owner": "Owner approval in chat",
       "decision_note": "Approved Unknown Entrance Level placeholder for 49 learners; HR will replace it with the confirmed placement later.",
-      "decided_at": "2026-07-14"
+      "decided_at": "2026-07-15"
     },
     {
       "issue_code": "low_attendance_follow_up",
       "severity": "warning",
       "expected_count": 82,
       "owner_decision": "review_operationally",
-      "decision_owner": "",
-      "decision_note": "",
-      "decided_at": null
+      "decision_owner": "Owner approval in chat",
+      "decision_note": "Approved all 82 warning-level low-attendance follow-ups for normal operational review.",
+      "decided_at": "2026-07-15"
     }
   ]
 }

@@ -76,6 +76,22 @@ ISSUE_POLICY = {
     },
 }
 
+# Stable business grain used for owner-approval identity. Surrogate keys remain
+# in display details for diagnostics but never participate in snapshot hashes.
+ISSUE_IDENTITY_GRAIN = {
+    "incomplete_employee_profile": "employee emp_code plus exact missing profile fields",
+    "employee_code_case_conflict": "normalized emp_code plus conflicting emp_codes",
+    "active_enrollment_conflict": "employee emp_code plus active class/course/run set",
+    "active_enrollment_membership_link_missing": "employee emp_code plus class/course/run",
+    "active_enrollment_snapshot_incomplete": "employee emp_code plus class/course/run and missing snapshot fields",
+    "missing_business_placement": "employee emp_code",
+    "session_datetime_conflict": "class_code plus starts_at and conflicting class/course/run set",
+    "incomplete_attendance_roster": "class/course/run plus sequence and missing emp_code set",
+    "low_attendance_follow_up": "employee emp_code plus class/course/run",
+    "capacity_override_review": "employee emp_code plus class/course/run and override event time",
+    "transfer_link_incomplete": "employee emp_code plus class_code and membership start date",
+}
+
 DECISION_FIELDS = ("owner_decision", "decision_owner", "decision_note", "decided_at")
 ACCEPTED_EXISTING_HIGH_DECISIONS = {
     "approve_unknown_org_placeholder",
@@ -99,12 +115,12 @@ def issue_identity_digest(rows: list[dict[str, Any]]) -> str:
             "issue_code": row["issue_code"],
             "severity": row["severity"],
             "entity_type": row["entity_type"],
-            "entity_key": row["entity_key"],
             "workflow": row["workflow"],
-            "details": row["details"],
+            "stable_identity": row["stable_identity"],
         }
         for row in rows
     ]
+    identity_rows.sort(key=lambda row: json.dumps(row, sort_keys=True, separators=(",", ":"), default=json_safe))
     identity_json = json.dumps(identity_rows, sort_keys=True, separators=(",", ":"), default=json_safe)
     return hashlib.sha256(identity_json.encode("utf-8")).hexdigest()
 
@@ -114,18 +130,20 @@ def issue_decision_key(issue: dict[str, Any]) -> tuple[Any, ...]:
         issue["issue_code"],
         issue["severity"],
         issue["entity_type"],
-        issue["entity_key"],
         issue["workflow"],
+        json.dumps(issue["stable_identity"], sort_keys=True, separators=(",", ":"), default=json_safe),
     )
 
 
 def prior_decisions(
-    json_output: Path, source_checksum: str | None
+    json_output: Path, source_checksum: str | None, issue_snapshot_sha256: str
 ) -> tuple[dict[str, dict[str, Any]], dict[tuple[Any, ...], dict[str, Any]]]:
     if not json_output.exists():
         return {}, {}
     prior = json.loads(json_output.read_text(encoding="utf-8"))
     if prior.get("metadata", {}).get("source_checksum") != source_checksum:
+        return {}, {}
+    if prior.get("metadata", {}).get("issue_snapshot_sha256") != issue_snapshot_sha256:
         return {}, {}
     bulk = {row["issue_code"]: row for row in prior.get("bulk_decisions", [])}
     issues = {issue_decision_key(row): row for row in prior.get("issues", [])}
@@ -150,11 +168,144 @@ def fetch_snapshot(database_url: str) -> tuple[dict[str, Any], list[dict[str, An
             source = dict(cur.fetchone() or {})
             cur.execute(
                 """
-                SELECT severity, issue_code, entity_type, entity_key, title, workflow, details
-                FROM v_operational_data_issues
+                SELECT v.severity, v.issue_code, v.entity_type, v.entity_key,
+                       v.title, v.workflow, v.details,
+                       CASE v.issue_code
+                         WHEN 'incomplete_employee_profile' THEN (
+                           SELECT jsonb_build_object(
+                             'emp_code', e.emp_code,
+                             'full_name_missing', NULLIF(BTRIM(e.full_name), '') IS NULL,
+                             'current_org_missing', eoh.employee_org_history_id IS NULL,
+                             'business_unit_missing', eoh.business_unit_id IS NULL,
+                             'job_role_missing', eoh.job_role_id IS NULL
+                           )
+                           FROM employees e
+                           LEFT JOIN employee_org_history eoh ON eoh.employee_id=e.employee_id AND eoh.is_current
+                           WHERE e.employee_id = v.entity_key::bigint
+                         )
+                         WHEN 'employee_code_case_conflict' THEN jsonb_build_object(
+                           'normalized_emp_code', v.details->'normalized_emp_code',
+                           'emp_codes', (
+                             SELECT jsonb_agg(e.emp_code ORDER BY e.emp_code)
+                             FROM employees e
+                             WHERE lower(e.emp_code) = v.details->>'normalized_emp_code'
+                           )
+                         )
+                         WHEN 'active_enrollment_conflict' THEN (
+                           SELECT jsonb_build_object(
+                             'emp_code', e.emp_code,
+                             'active_runs', jsonb_agg(
+                               jsonb_build_array(c.class_code, course.course_code, cr.run_number)
+                               ORDER BY c.class_code, course.course_code, cr.run_number
+                             )
+                           )
+                           FROM employees e
+                           JOIN run_enrollments re ON re.employee_id=e.employee_id AND re.status='active'
+                           JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE e.employee_id=v.entity_key::bigint
+                           GROUP BY e.emp_code
+                         )
+                         WHEN 'active_enrollment_membership_link_missing' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code, 'class_code', c.class_code,
+                             'course_code', course.course_code, 'run_number', cr.run_number)
+                           FROM run_enrollments re
+                           JOIN employees e ON e.employee_id=re.employee_id
+                           JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE re.run_enrollment_id=v.entity_key::bigint
+                         )
+                         WHEN 'active_enrollment_snapshot_incomplete' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code, 'class_code', c.class_code,
+                             'course_code', course.course_code, 'run_number', cr.run_number,
+                             'business_unit_missing', re.business_unit_id_snapshot IS NULL,
+                             'job_role_missing', re.job_role_id_snapshot IS NULL)
+                           FROM run_enrollments re
+                           JOIN employees e ON e.employee_id=re.employee_id
+                           JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE re.run_enrollment_id=v.entity_key::bigint
+                         )
+                         WHEN 'missing_business_placement' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code)
+                           FROM employees e WHERE e.employee_id=v.entity_key::bigint
+                         )
+                         WHEN 'session_datetime_conflict' THEN (
+                           SELECT jsonb_build_object(
+                             'class_code', c.class_code,
+                             'starts_at', v.details->'starts_at',
+                             'conflicting_runs', (
+                               SELECT jsonb_agg(
+                                 jsonb_build_array(c2.class_code, course.course_code, cr.run_number)
+                                 ORDER BY c2.class_code, course.course_code, cr.run_number
+                               )
+                               FROM meetings m
+                               JOIN course_runs cr ON cr.course_run_id=m.course_run_id
+                               JOIN cohorts c2 ON c2.cohort_id=cr.cohort_id
+                               JOIN courses course ON course.course_id=cr.course_id
+                               WHERE c2.cohort_id=c.cohort_id AND m.starts_at=(v.details->>'starts_at')::timestamptz
+                                 AND m.status <> 'cancelled'
+                             )
+                           )
+                           FROM cohorts c WHERE c.cohort_id=v.entity_key::bigint
+                         )
+                         WHEN 'incomplete_attendance_roster' THEN (
+                           SELECT jsonb_build_object(
+                             'class_code', c.class_code, 'course_code', course.course_code,
+                             'run_number', cr.run_number, 'sequence_in_run', su.sequence_in_run,
+                             'missing_emp_codes', (
+                               SELECT jsonb_agg(e.emp_code ORDER BY e.emp_code)
+                               FROM run_enrollments re
+                               JOIN employees e ON e.employee_id=re.employee_id
+                               LEFT JOIN attendance a ON a.session_unit_id=su.session_unit_id
+                                 AND a.run_enrollment_id=re.run_enrollment_id
+                               WHERE re.course_run_id=su.course_run_id AND re.status='active'
+                                 AND re.start_session_number<=su.sequence_in_run AND a.attendance_id IS NULL
+                             )
+                           )
+                           FROM session_units su
+                           JOIN course_runs cr ON cr.course_run_id=su.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE su.session_unit_id=v.entity_key::bigint
+                         )
+                         WHEN 'low_attendance_follow_up' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code, 'class_code', c.class_code,
+                             'course_code', course.course_code, 'run_number', cr.run_number)
+                           FROM run_enrollments re
+                           JOIN employees e ON e.employee_id=re.employee_id
+                           JOIN course_runs cr ON cr.course_run_id=re.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE re.run_enrollment_id=v.entity_key::bigint
+                         )
+                         WHEN 'capacity_override_review' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code, 'class_code', c.class_code,
+                             'course_code', course.course_code, 'run_number', cr.run_number,
+                             'override_created_at', cco.created_at)
+                           FROM cohort_capacity_overrides cco
+                           JOIN employees e ON e.employee_id=cco.employee_id
+                           JOIN course_runs cr ON cr.course_run_id=cco.course_run_id
+                           JOIN cohorts c ON c.cohort_id=cr.cohort_id
+                           JOIN courses course ON course.course_id=cr.course_id
+                           WHERE cco.cohort_capacity_override_id=v.entity_key::bigint
+                         )
+                         WHEN 'transfer_link_incomplete' THEN (
+                           SELECT jsonb_build_object('emp_code', e.emp_code, 'class_code', c.class_code,
+                             'membership_start_date', cm.start_date)
+                           FROM cohort_memberships cm
+                           JOIN employees e ON e.employee_id=cm.employee_id
+                           JOIN cohorts c ON c.cohort_id=cm.cohort_id
+                           WHERE cm.cohort_membership_id=v.entity_key::bigint
+                         )
+                       END AS stable_identity
+                FROM v_operational_data_issues v
                 ORDER BY
-                    CASE severity WHEN 'high' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
-                    issue_code, entity_type, entity_key
+                    CASE v.severity WHEN 'high' THEN 0 WHEN 'warning' THEN 1 ELSE 2 END,
+                    v.issue_code, v.entity_type, v.entity_key
                 """
             )
             rows = [dict(row) for row in cur.fetchall()]
@@ -162,6 +313,11 @@ def fetch_snapshot(database_url: str) -> tuple[dict[str, Any], list[dict[str, An
     unknown_codes = sorted({row["issue_code"] for row in rows} - ISSUE_POLICY.keys())
     if unknown_codes:
         raise RuntimeError(f"operational issue policy is missing issue codes: {unknown_codes}")
+    if set(ISSUE_IDENTITY_GRAIN) != set(ISSUE_POLICY):
+        raise RuntimeError("stable identity grain is not documented for every operational issue code")
+    missing_identity = [row["issue_code"] for row in rows if row.get("stable_identity") is None]
+    if missing_identity:
+        raise RuntimeError(f"stable business identity is missing for issue codes: {sorted(set(missing_identity))}")
 
     metadata = {
         "database_name": database_name,
@@ -330,7 +486,9 @@ def markdown_report(
 
 def generate(database_url: str, json_output: Path, markdown_output: Path) -> dict[str, Any]:
     metadata, rows = fetch_snapshot(database_url)
-    prior_bulk, prior_issues = prior_decisions(json_output, metadata.get("source_checksum"))
+    prior_bulk, prior_issues = prior_decisions(
+        json_output, metadata.get("source_checksum"), metadata["issue_snapshot_sha256"]
+    )
     for row in rows:
         previous = prior_issues.get(issue_decision_key(row))
         if previous and previous.get("owner_decision") != "pending":
@@ -483,10 +641,12 @@ def main() -> None:
     parser.add_argument("--database-url")
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON)
     parser.add_argument("--markdown-output", type=Path, default=DEFAULT_MARKDOWN)
-    parser.add_argument("--validate-decisions", action="store_true")
-    parser.add_argument("--write-decision-template", action="store_true")
+    actions = parser.add_mutually_exclusive_group(required=True)
+    actions.add_argument("--generate", action="store_true")
+    actions.add_argument("--validate-decisions", action="store_true")
+    actions.add_argument("--write-decision-template", action="store_true")
     parser.add_argument("--decision-template", type=Path, default=DEFAULT_DECISION_TEMPLATE)
-    parser.add_argument("--apply-decision-template", action="store_true")
+    actions.add_argument("--apply-decision-template", action="store_true")
     args = parser.parse_args()
 
     maintenance_url = os.getenv("PHASE11_MAINTENANCE_URL", DEFAULT_MAINTENANCE_URL)
@@ -509,7 +669,7 @@ def main() -> None:
             print(f"Phase 11 operational issue decisions are not approved: {exc}", file=sys.stderr)
             raise SystemExit(1) from exc
         print("Phase 11 operational issue decisions approved.")
-    else:
+    elif args.generate:
         result = generate(database_url, args.json_output.resolve(), args.markdown_output.resolve())
         print("Phase 11 operational issue snapshot generated.")
     print(json.dumps(result, indent=2))

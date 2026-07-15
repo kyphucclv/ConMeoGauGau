@@ -106,7 +106,7 @@ The latest checksum-matched verification passes with zero open quality issues.
 Generate and validate the Phase 11 operational issue snapshot:
 
 ```powershell
-python scripts\phase11_operational_issue_snapshot.py
+python scripts\phase11_operational_issue_snapshot.py --generate
 python scripts\phase11_operational_issue_snapshot.py --write-decision-template
 python scripts\phase11_operational_issue_snapshot.py --apply-decision-template
 python scripts\phase11_operational_issue_snapshot.py --validate-decisions
