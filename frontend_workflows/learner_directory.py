@@ -19,12 +19,13 @@ from frontend_workflows.shared import (
     LIFECYCLE_LABELS,
     _learner_rows,
     _open_operation_section,
+    load_refs,
     options,
     submit_values,
 )
 
 
-def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) -> None:
+def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]] | None = None) -> None:
     """HR-first learner search and lifecycle journeys."""
     if st.session_state.pop("learner_redirect_to_list", False):
         st.session_state["learner_workspace_mode"] = "Find learners"
@@ -40,6 +41,7 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     )
 
     if mode == "Start learning":
+        refs = refs or load_refs(pool)
         render_learner_onboarding(pool, actor, refs)
         return
 
@@ -140,6 +142,7 @@ def render_learner_workspace(pool, actor: AppUser, refs: dict[str, list[dict]]) 
     )
     selected = filtered[event.selection.rows[0]] if event.selection.rows else None
     if selected:
+        refs = refs or load_refs(pool)
         render_learner_detail(pool, actor, refs, selected)
 
 

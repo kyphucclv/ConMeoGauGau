@@ -550,6 +550,12 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
     assert any(button.label == "Start learning" for button in app.button)
     assert any(frame.key == "learner_results_v2" for frame in app.dataframe)
 
+    app.session_state["learner_results_v2"] = {"selection": {"rows": [0]}}
+    app.run(timeout=10)
+    assert not app.exception
+    assert any("Course history" in item.value for item in app.markdown)
+
+    learner_task = next(control for control in app.segmented_control if control.label == "Learner task")
     learner_task.set_value("Start learning")
     app.run(timeout=10)
     assert not app.exception
@@ -564,7 +570,7 @@ def streamlit_smoke(database_url: str) -> dict[str, int]:
         "titles": len(app.title),
         "tabs": len(app.tabs),
         "sign_in_buttons": sign_in_buttons,
-        "learner_views": 2,
+        "learner_views": 3,
     }
 
 

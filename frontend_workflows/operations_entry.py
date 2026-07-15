@@ -35,21 +35,20 @@ def render_operations(pool, actor: AppUser) -> None:
         key="operations_section",
     )
 
-    refs = load_refs(pool)
     if section == "Start here":
         render_hr_start(pool)
     elif section == "Learners":
-        render_learner_workspace(pool, actor, refs)
+        render_learner_workspace(pool, actor)
     elif section == "Attendance":
-        render_attendance_workflow(pool, actor, refs)
+        render_attendance_workflow(pool, actor, load_refs(pool))
     elif section == "Final results":
-        render_evaluation_workflow(pool, actor, refs)
+        render_evaluation_workflow(pool, actor, load_refs(pool))
     elif section == "Monthly review":
         render_monthly_review(pool, actor)
     elif section == "Follow-ups":
         render_data_issues_workspace(pool, actor)
     elif section == "Class setup":
-        render_class_setup_workspace(pool, actor, refs)
+        render_class_setup_workspace(pool, actor, load_refs(pool))
 
 
 def render_hr_start(pool) -> None:
