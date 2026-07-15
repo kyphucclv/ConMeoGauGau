@@ -1,6 +1,6 @@
-# FastAPI + React Migration: Proposed Issue Breakdown
+# FastAPI + React Migration: Published Issue Breakdown
 
-Status: **Draft for granularity/dependency approval; not yet published**
+Status: **Approved and published to GitHub Issues on 2026-07-15**
 
 The breakdown follows tracer-bullet vertical slices. Each issue is independently
 demoable and crosses the necessary schema, HTTP, UI, test, and operational seams.
@@ -111,10 +111,24 @@ Issues 2, 6, 9, 10, 11, and 12 may proceed in parallel after issue 1 if separate
 owners are available. Issue 13 waits for every parity slice, not merely the
 nominal feature screens.
 
-## Approval questions required by the issue-writing workflow
+## Published issues
 
-Before publishing:
+All issues are classified as `enhancement` and use the human-led triage state
+`ready-for-human`. No `ready-for-agent` label was created or applied.
 
-1. Is this granularity too coarse, too fine, or appropriate?
-2. Are the dependency relationships correct?
-3. Should any slice be merged or split?
+| Issue | Slice |
+|---|---|
+| [#1](https://github.com/kyphucclv/ConMeoGauGau/issues/1) | Prove secure same-origin sign-in on the target topology |
+| [#2](https://github.com/kyphucclv/ConMeoGauGau/issues/2) | Deliver the read-only HR home and learner directory journey |
+| [#3](https://github.com/kyphucclv/ConMeoGauGau/issues/3) | Edit an employee profile safely from learner detail |
+| [#4](https://github.com/kyphucclv/ConMeoGauGau/issues/4) | Start a first-time or returning learner in a class |
+| [#5](https://github.com/kyphucclv/ConMeoGauGau/issues/5) | Transfer an active run enrollment between classes |
+| [#6](https://github.com/kyphucclv/ConMeoGauGau/issues/6) | Create an attendance session and save its full event-time roster |
+| [#7](https://github.com/kyphucclv/ConMeoGauGau/issues/7) | Credit one original absence through a later make-up session |
+| [#8](https://github.com/kyphucclv/ConMeoGauGau/issues/8) | Record, correct, and authorize a learner final result |
+| [#9](https://github.com/kyphucclv/ConMeoGauGau/issues/9) | Review a month, save conclusions, and export the workbook |
+| [#10](https://github.com/kyphucclv/ConMeoGauGau/issues/10) | Resolve operational and logged data follow-ups through approved actions |
+| [#11](https://github.com/kyphucclv/ConMeoGauGau/issues/11) | Administer classes, course runs, PIC assignments, and schedule events |
+| [#12](https://github.com/kyphucclv/ConMeoGauGau/issues/12) | Serve registered reports and restricted audit history |
+| [#13](https://github.com/kyphucclv/ConMeoGauGau/issues/13) | Prove production readiness and perform controlled workflow cutover |
+| [#14](https://github.com/kyphucclv/ConMeoGauGau/issues/14) | Retire Streamlit after the stabilization gate |

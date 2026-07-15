@@ -8,7 +8,7 @@ Phase 0 companion artifacts:
 - [Deployment and session decisions](deployment-session-decisions.md)
 - [HTTP contract v1 draft](http-contract-v1-draft.md)
 - [Workflow parity matrix](workflow-parity-matrix.md)
-- [Proposed issue breakdown](fastapi-react-issue-breakdown-draft.md)
+- [Published issue breakdown](fastapi-react-issues.md)
 
 ## 1. Objective
 
