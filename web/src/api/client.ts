@@ -33,6 +33,9 @@ export type EligibilityOverrideBody = Schemas['EligibilityOverrideBody']
 export type EligibilityOverrideResult = Schemas['EligibilityOverrideResult']
 export type CompletionActionBody = Schemas['CompletionActionBody']
 export type CompletionActionResult = Schemas['CompletionActionResult']
+export type MonthlyReviewResponse = Schemas['MonthlyReviewResponse']
+export type MonthlyActionSummaryBody = Schemas['MonthlyActionSummaryBody']
+export type MonthlyActionSummaryResult = Schemas['MonthlyActionSummaryResult']
 
 type ErrorEnvelope = { message?: string }
 

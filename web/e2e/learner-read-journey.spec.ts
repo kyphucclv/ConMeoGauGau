@@ -94,6 +94,20 @@ test('admin edits a profile and starts a learner without a full page reload', as
   await page.getByLabel('Completion action').selectOption('confirm')
   await page.getByRole('button', { name: 'Apply completion action' }).click()
   await expect(page.getByText('Completion confirmed.')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Monthly review' }).click()
+  await page.getByLabel('Review month').fill('2026-08')
+  await expect(page.locator('.monthly-summary strong').first()).toContainText('active participants')
+  await page.getByRole('button', { name: 'Summary & export' }).click()
+  await page.getByLabel('Highlights').fill('Playwright monthly highlight')
+  await page.getByLabel('Risks').fill('Playwright monthly risk')
+  await page.getByLabel('Next-month priorities').fill('Playwright monthly priority')
+  await page.getByRole('button', { name: 'Save action summary' }).click()
+  await expect(page.getByText(/Action summary saved as version \d+\./)).toBeVisible()
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByRole('link', { name: 'Download Excel review' }).click()
+  const download = await downloadPromise
+  expect(download.suggestedFilename()).toBe('english-class-monthly-review-2026-08-01.xlsx')
 })
 
 test('viewer sees the approved summary but no HR learner navigation', async ({ page }) => {
@@ -105,4 +119,5 @@ test('viewer sees the approved summary but no HR learner navigation', async ({ p
   await expect(page.getByRole('heading', { name: 'Workspace summary' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Learners' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Final results' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Monthly review' })).toHaveCount(0)
 })

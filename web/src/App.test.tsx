@@ -281,3 +281,32 @@ test('admin records a result, overrides eligibility, and confirms completion in 
   fireEvent.click(screen.getByRole('button',{name:'Apply completion action'}))
   expect(await screen.findByText('Completion confirmed.')).toBeTruthy()
 })
+
+test('editor reviews a month, saves the conclusion, and can export the same month', async () => {
+  const jsonResponse=(body:unknown)=>new Response(JSON.stringify(body),{status:200,headers:{'Content-Type':'application/json'}})
+  let saved=false
+  const fetchMock=vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
+    const url=String(input)
+    if(url==='/api/auth/me') return jsonResponse({user:{user_id:2,username:'editor',full_name:'HR Editor',role:'editor'},csrf_token:'monthly-csrf'})
+    if(url==='/api/dashboard') return jsonResponse({summary:{active_employees:1,active_learners:1,open_course_runs:1,operational_issues:0,high_issues:0,open_quality_issues:0},hr_home:{active_people:1,current_learners:1,open_classes:1,review_items:0,urgent_items:0,follow_ups:0}})
+    if(url.startsWith('/api/monthly-review?month=')) return jsonResponse({review_month:'2026-07-01',summary:{active:4,repeated:1,planned:3,delivered:2,variance:-1,attendance_ratio:.75,low_count:1,improved_count:1,tested_count:2,delivery_rate:2/3,low_rate:.25,improved_rate:.5,new_course_count:1},program:[{class_code:'A1',course_name:'English One',planned_sessions:3,delivered_sessions:2}],participation:[],course_participation:[{course_code:'ENG1',course_name:'English One',attendance_ratio:.75}],class_participation:[],progress:[],level_distribution:[],new_courses:[],action_summary:saved?{version_number:1,highlights:'Saved highlight',risks:'Saved risk',next_month_priorities:'Saved priority',created_by_username:'editor',created_at:'2026-07-16T00:00:00Z'}:null,proposed_action_summary:{highlights:'Proposed highlight',risks:'Proposed risk',next_month_priorities:'Proposed priority'}})
+    if(url==='/api/monthly-review/action-summary'){
+      expect(init).toMatchObject({method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':'monthly-csrf'}})
+      expect(JSON.parse(String(init?.body))).toEqual({month:'2026-07',highlights:'Saved highlight',risks:'Saved risk',next_month_priorities:'Saved priority'})
+      saved=true;return jsonResponse({review_month:'2026-07-01',version_number:1})
+    }
+    throw new Error(`Unexpected fetch: ${url}`)
+  })
+  vi.stubGlobal('fetch',fetchMock)
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button',{name:'Monthly review'}))
+  expect(await screen.findByText('4 active participants')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Summary & export'}))
+  fireEvent.change(screen.getByLabelText('Highlights'),{target:{value:'Saved highlight'}})
+  fireEvent.change(screen.getByLabelText('Risks'),{target:{value:'Saved risk'}})
+  fireEvent.change(screen.getByLabelText('Next-month priorities'),{target:{value:'Saved priority'}})
+  fireEvent.click(screen.getByRole('button',{name:'Save action summary'}))
+  expect(await screen.findByText('Action summary saved as version 1.')).toBeTruthy()
+  expect(screen.getByText(/Saved by editor/)).toBeTruthy()
+  expect(screen.getByRole('link',{name:'Download Excel review'}).getAttribute('href')).toBe('/api/monthly-review/export?month=2026-07')
+})

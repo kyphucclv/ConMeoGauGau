@@ -328,6 +328,57 @@ export interface paths {
         patch: operations["learner_profile_update_api_learners__employee_id__profile_patch"];
         trace?: never;
     };
+    "/api/monthly-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Monthly Review Read */
+        get: operations["monthly_review_read_api_monthly_review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/monthly-review/action-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Monthly Review Action Summary */
+        post: operations["monthly_review_action_summary_api_monthly_review_action_summary_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/monthly-review/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Monthly Review Export */
+        get: operations["monthly_review_export_api_monthly_review_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/run-enrollments/{run_enrollment_id}/completion-confirmation": {
         parameters: {
             query?: never;
@@ -1162,6 +1213,104 @@ export interface components {
              */
             starts_at: string;
         };
+        /** MonthlyActionSummary */
+        MonthlyActionSummary: {
+            /** Highlights */
+            highlights: string;
+            /** Next Month Priorities */
+            next_month_priorities: string;
+            /** Risks */
+            risks: string;
+        };
+        /** MonthlyActionSummaryBody */
+        MonthlyActionSummaryBody: {
+            /** Highlights */
+            highlights: string;
+            /** Month */
+            month: string;
+            /** Next Month Priorities */
+            next_month_priorities: string;
+            /** Risks */
+            risks: string;
+        };
+        /** MonthlyActionSummaryResult */
+        MonthlyActionSummaryResult: {
+            /**
+             * Review Month
+             * Format: date
+             */
+            review_month: string;
+            /** Version Number */
+            version_number: number;
+        };
+        /** MonthlyReviewResponse */
+        MonthlyReviewResponse: {
+            action_summary: components["schemas"]["SavedMonthlyActionSummary"] | null;
+            /** Class Participation */
+            class_participation: {
+                [key: string]: unknown;
+            }[];
+            /** Course Participation */
+            course_participation: {
+                [key: string]: unknown;
+            }[];
+            /** Level Distribution */
+            level_distribution: {
+                [key: string]: unknown;
+            }[];
+            /** New Courses */
+            new_courses: {
+                [key: string]: unknown;
+            }[];
+            /** Participation */
+            participation: {
+                [key: string]: unknown;
+            }[];
+            /** Program */
+            program: {
+                [key: string]: unknown;
+            }[];
+            /** Progress */
+            progress: {
+                [key: string]: unknown;
+            }[];
+            proposed_action_summary: components["schemas"]["MonthlyActionSummary"];
+            /**
+             * Review Month
+             * Format: date
+             */
+            review_month: string;
+            summary: components["schemas"]["MonthlySummary"];
+        };
+        /** MonthlySummary */
+        MonthlySummary: {
+            /** Active */
+            active: number;
+            /** Attendance Ratio */
+            attendance_ratio: number | null;
+            /** Delivered */
+            delivered: number;
+            /** Delivery Rate */
+            delivery_rate: number | null;
+            /** Improved Count */
+            improved_count: number;
+            /** Improved Rate */
+            improved_rate: number | null;
+            /** Low Count */
+            low_count: number;
+            /** Low Rate */
+            low_rate: number | null;
+            /** New Course Count */
+            new_course_count: number;
+            /** Planned */
+            planned: number;
+            /** Repeated */
+            repeated: number;
+            /** Tested Count */
+            tested_count: number;
+            /** Variance */
+            variance: number;
+        };
         /** ProfileOptions */
         ProfileOptions: {
             /** Business Units */
@@ -1222,6 +1371,24 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** SavedMonthlyActionSummary */
+        SavedMonthlyActionSummary: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By Username */
+            created_by_username: string;
+            /** Highlights */
+            highlights: string;
+            /** Next Month Priorities */
+            next_month_priorities: string;
+            /** Risks */
+            risks: string;
+            /** Version Number */
+            version_number: number;
         };
         /** StartCourseRunOption */
         StartCourseRunOption: {
@@ -1974,6 +2141,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileUpdateResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    monthly_review_read_api_monthly_review_get: {
+        parameters: {
+            query: {
+                month: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MonthlyReviewResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    monthly_review_action_summary_api_monthly_review_action_summary_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MonthlyActionSummaryBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MonthlyActionSummaryResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    monthly_review_export_api_monthly_review_export_get: {
+        parameters: {
+            query: {
+                month: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

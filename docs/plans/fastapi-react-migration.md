@@ -624,6 +624,12 @@ Acceptance:
 
 ### Phase 5: Review, Follow-Ups, Classes, Reports, And Audit
 
+Implementation status (2026-07-16): Issue #9 delivers normalized monthly
+overview/detail reads, a clearly separated server proposal, immutable
+named-actor HR conclusions, and authenticated private XLSX export through one
+React journey. Workbook sheet/value parity and concurrent version allocation
+are covered at the HTTP interface.
+
 Deliver:
 
 - Implement monthly review, saved action summary, and XLSX export.

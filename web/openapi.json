@@ -2270,6 +2270,278 @@
         "title": "MakeupUnitOption",
         "type": "object"
       },
+      "MonthlyActionSummary": {
+        "properties": {
+          "highlights": {
+            "title": "Highlights",
+            "type": "string"
+          },
+          "next_month_priorities": {
+            "title": "Next Month Priorities",
+            "type": "string"
+          },
+          "risks": {
+            "title": "Risks",
+            "type": "string"
+          }
+        },
+        "required": [
+          "highlights",
+          "risks",
+          "next_month_priorities"
+        ],
+        "title": "MonthlyActionSummary",
+        "type": "object"
+      },
+      "MonthlyActionSummaryBody": {
+        "additionalProperties": false,
+        "properties": {
+          "highlights": {
+            "maxLength": 5000,
+            "title": "Highlights",
+            "type": "string"
+          },
+          "month": {
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "Month",
+            "type": "string"
+          },
+          "next_month_priorities": {
+            "maxLength": 5000,
+            "title": "Next Month Priorities",
+            "type": "string"
+          },
+          "risks": {
+            "maxLength": 5000,
+            "title": "Risks",
+            "type": "string"
+          }
+        },
+        "required": [
+          "month",
+          "highlights",
+          "risks",
+          "next_month_priorities"
+        ],
+        "title": "MonthlyActionSummaryBody",
+        "type": "object"
+      },
+      "MonthlyActionSummaryResult": {
+        "properties": {
+          "review_month": {
+            "format": "date",
+            "title": "Review Month",
+            "type": "string"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "review_month",
+          "version_number"
+        ],
+        "title": "MonthlyActionSummaryResult",
+        "type": "object"
+      },
+      "MonthlyReviewResponse": {
+        "properties": {
+          "action_summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SavedMonthlyActionSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "class_participation": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Class Participation",
+            "type": "array"
+          },
+          "course_participation": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Course Participation",
+            "type": "array"
+          },
+          "level_distribution": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Level Distribution",
+            "type": "array"
+          },
+          "new_courses": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "New Courses",
+            "type": "array"
+          },
+          "participation": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Participation",
+            "type": "array"
+          },
+          "program": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Program",
+            "type": "array"
+          },
+          "progress": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Progress",
+            "type": "array"
+          },
+          "proposed_action_summary": {
+            "$ref": "#/components/schemas/MonthlyActionSummary"
+          },
+          "review_month": {
+            "format": "date",
+            "title": "Review Month",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/MonthlySummary"
+          }
+        },
+        "required": [
+          "review_month",
+          "summary",
+          "program",
+          "participation",
+          "course_participation",
+          "class_participation",
+          "progress",
+          "level_distribution",
+          "new_courses",
+          "action_summary",
+          "proposed_action_summary"
+        ],
+        "title": "MonthlyReviewResponse",
+        "type": "object"
+      },
+      "MonthlySummary": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "integer"
+          },
+          "attendance_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attendance Ratio"
+          },
+          "delivered": {
+            "title": "Delivered",
+            "type": "integer"
+          },
+          "delivery_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Rate"
+          },
+          "improved_count": {
+            "title": "Improved Count",
+            "type": "integer"
+          },
+          "improved_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Improved Rate"
+          },
+          "low_count": {
+            "title": "Low Count",
+            "type": "integer"
+          },
+          "low_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Rate"
+          },
+          "new_course_count": {
+            "title": "New Course Count",
+            "type": "integer"
+          },
+          "planned": {
+            "title": "Planned",
+            "type": "integer"
+          },
+          "repeated": {
+            "title": "Repeated",
+            "type": "integer"
+          },
+          "tested_count": {
+            "title": "Tested Count",
+            "type": "integer"
+          },
+          "variance": {
+            "title": "Variance",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "active",
+          "repeated",
+          "planned",
+          "delivered",
+          "variance",
+          "attendance_ratio",
+          "low_count",
+          "improved_count",
+          "tested_count",
+          "delivery_rate",
+          "low_rate",
+          "improved_rate",
+          "new_course_count"
+        ],
+        "title": "MonthlySummary",
+        "type": "object"
+      },
       "ProfileOptions": {
         "properties": {
           "business_units": {
@@ -2430,6 +2702,45 @@
           "name"
         ],
         "title": "ReferenceOption",
+        "type": "object"
+      },
+      "SavedMonthlyActionSummary": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_username": {
+            "title": "Created By Username",
+            "type": "string"
+          },
+          "highlights": {
+            "title": "Highlights",
+            "type": "string"
+          },
+          "next_month_priorities": {
+            "title": "Next Month Priorities",
+            "type": "string"
+          },
+          "risks": {
+            "title": "Risks",
+            "type": "string"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "highlights",
+          "risks",
+          "next_month_priorities",
+          "version_number",
+          "created_at",
+          "created_by_username"
+        ],
+        "title": "SavedMonthlyActionSummary",
         "type": "object"
       },
       "StartCourseRunOption": {
@@ -3918,6 +4229,188 @@
           }
         },
         "summary": "Learner Profile Update"
+      }
+    },
+    "/api/monthly-review": {
+      "get": {
+        "operationId": "monthly_review_read_api_monthly_review_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "title": "Month",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Monthly Review Read"
+      }
+    },
+    "/api/monthly-review/action-summary": {
+      "post": {
+        "operationId": "monthly_review_action_summary_api_monthly_review_action_summary_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonthlyActionSummaryBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyActionSummaryResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Monthly Review Action Summary"
+      }
+    },
+    "/api/monthly-review/export": {
+      "get": {
+        "operationId": "monthly_review_export_api_monthly_review_export_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "title": "Month",
+              "type": "string"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Monthly Review Export"
       }
     },
     "/api/run-enrollments/{run_enrollment_id}/completion-confirmation": {

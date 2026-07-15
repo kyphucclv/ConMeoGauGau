@@ -313,6 +313,22 @@ Issue #8 freezes the final-result subset as follows:
 | `POST /api/remediation/legacy-attendance-exceptions` | Single or approved bulk legacy exception command | Admin only; scope and reason required. |
 | `POST /api/remediation/unknown-placements` | `backfill_unknown_business_placements` | Admin only; explicit confirmation. |
 
+Issue #9 freezes the monthly-review subset as follows:
+
+- `month` is exactly `YYYY-MM` and is normalized server-side to the first
+  calendar day. The response returns summary metrics, all registered detail
+  tables, the latest saved conclusion, and a separate server-derived proposal.
+- `POST .../action-summary` is admin/editor-only, requires CSRF, forbids actor
+  and version input, and appends one immutable version with named-user audit.
+  An advisory month lock assigns distinct sequential versions under concurrency.
+- `GET .../export` is admin/editor-only and exports the selected month using
+  the latest saved conclusion, or the derived proposal when none has been
+  saved. It returns the allow-listed `.xlsx` filename and MIME type with
+  `Cache-Control: private, no-store`.
+- Viewer, invalid month, forged fields, missing CSRF, and unexpected export
+  failures use the stable safe error contract without leaking workbook or
+  database internals.
+
 Generic `POST /follow-ups/{id}/resolve` is not used for derived operational
 issues that require a domain-specific correction or owner-approved remediation.
 

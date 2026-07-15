@@ -56,10 +56,10 @@ Current visibility is preserved unless an owner approves a product change:
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Monthly overview/detail | `monthly_review_data`, `monthly_review_summary` | none | admin/editor | none | Monthly-review slice | Numbers must reconcile |
-| Proposed monthly actions | `proposed_monthly_actions` | none | admin/editor | none | Monthly-review slice | Derived, not committed truth |
-| Save action summary | Current monthly data | `save_monthly_action_summary` | admin/editor | `monthly_review.action_summary.save` | Monthly-review slice | Immutable versions |
-| Export XLSX | `monthly_review_xlsx` | none | admin/editor | none | Monthly-review slice | Filename/content parity |
+| Monthly overview/detail | `monthly_review_data`, `monthly_review_summary` | none | admin/editor | none | Monthly-review slice | Verified in Issue #9; `YYYY-MM` is normalized server-side and summary/detail share one read model |
+| Proposed monthly actions | `proposed_monthly_actions` | none | admin/editor | none | Monthly-review slice | Verified in Issue #9; server-derived proposal remains distinct from saved HR truth |
+| Save action summary | Current monthly data | `save_monthly_action_summary` | admin/editor | `monthly_review.action_summary.save` | Monthly-review slice | Verified in Issue #9; named immutable versions remain safe under concurrent saves |
+| Export XLSX | `monthly_review_xlsx` | none | admin/editor | none | Monthly-review slice | Verified in Issue #9; displayed month/conclusion, safe filename, private cache, MIME, sheets, and values match |
 | Registered reports | `REPORTS`, `run_report`, metric definitions | none | admin/editor/viewer | none | Reports/audit slice | Allow-listed keys only |
 
 ## Follow-ups and remediation

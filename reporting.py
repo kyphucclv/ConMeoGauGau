@@ -213,8 +213,11 @@ def monthly_review_data(pool, review_month: date) -> dict[str, object]:
     """, (review_month, next_month))
     new_courses = fetch_all(pool, """SELECT course_code,course_name,expected_units,attendance_threshold_ratio,created_at
                                      FROM courses WHERE created_at >= %s AND created_at < %s ORDER BY created_at,course_name""", (review_month, next_month))
-    action_versions = fetch_all(pool, """SELECT version_number,highlights,risks,next_month_priorities,created_at
-                                         FROM monthly_review_action_summary_versions
+    action_versions = fetch_all(pool, """SELECT summary.version_number,summary.highlights,summary.risks,
+                                                summary.next_month_priorities,summary.created_at,
+                                                actor.username AS created_by_username
+                                         FROM monthly_review_action_summary_versions summary
+                                         JOIN app_users actor ON actor.user_id=summary.created_by_user_id
                                          WHERE review_month=%s ORDER BY version_number DESC LIMIT 1""", (review_month,))
     level_distribution: dict[tuple[str, str], int] = {}
     for row in progress:
