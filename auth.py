@@ -135,8 +135,15 @@ class UserAdminService:
                         """,
                         (username,),
                     )
-                    if not cur.fetchone():
+                    row = cur.fetchone()
+                    if not row:
                         raise CommandError("not_found", "active user not found")
+                    cur.execute(
+                        """UPDATE app_sessions
+                           SET revoked_at = NOW(), revocation_reason = 'user_inactive'
+                           WHERE user_id = %s AND revoked_at IS NULL""",
+                        (row[0],),
+                    )
                     self._audit_in_tx(cur, "app_user.deactivate", username, {})
 
     def _audit_in_tx(self, cur, action: str, username: str, details: dict) -> None:

@@ -264,6 +264,10 @@ not a null silently interpreted as a level.
 `audit_events` physical columns: `audit_event_id`, `actor_user_id`,
 `actor_username`, `action`, `entity_type`, `entity_key`, `details`, `created_at`.
 
+`app_sessions` physical columns: `app_session_id`, `user_id`, `token_hash`,
+`csrf_token`, `created_at`, `last_seen_at`, `expires_at`, `revoked_at`,
+`revocation_reason`.
+
 | Table | Grain and purpose |
 |---|---|
 | `cohort_capacity_overrides` | One approved admission above cohort capacity, including employee, run, previous capacity, resulting count, reason, actor, and timestamp. |
@@ -271,6 +275,7 @@ not a null silently interpreted as a level.
 | `attendance_roster_legacy_exceptions` | One owner-approved acknowledgement that a historical session roster is unavailable; it creates no attendance fact. |
 | `data_quality_issues` | One imported or manually logged issue with explicit open/resolved/ignored lifecycle. |
 | `audit_events` | One named-actor application event with entity key and structured details. |
+| `app_sessions` | One revocable authenticated browser session. Only the SHA-256 digest of the opaque bearer token is stored. |
 
 ## Derived progress and reporting fields
 

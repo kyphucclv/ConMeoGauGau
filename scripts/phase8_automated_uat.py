@@ -174,6 +174,7 @@ def verify_migrations(conn) -> list[str]:
         "017_phase11_enrollment_membership_snapshot_remediation",
         "018_phase13_makeup_replacement_credit",
         "019_phase13_makeup_link_immutability",
+        "020_app_sessions",
     ]
     assert versions == expected
     return versions
@@ -594,7 +595,7 @@ def backup_restore_rehearsal(database_url: str, restored_db: str, maintenance_ur
         restored_counts = one(restored_conn, "SELECT count(*) AS employees FROM employees")
         assert source_counts["employees"] == restored_counts["employees"]
         restored_schema = one(restored_conn, "SELECT count(*) AS versions FROM schema_migrations")
-        assert restored_schema["versions"] == 19
+        assert restored_schema["versions"] == 20
         return {"restored_employees": restored_counts["employees"], "restored_migrations": restored_schema["versions"]}
     finally:
         source_conn.close()

@@ -16,6 +16,7 @@ TABLES = (
     "attendance",
     "attendance_roster_legacy_exceptions",
     "audit_events",
+    "app_sessions",
     "cohort_capacity_overrides",
     "cohort_memberships",
     "cohort_pic_assignments",
@@ -94,14 +95,14 @@ def run_check(database_url: str) -> dict[str, int | str]:
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version=%s)",
-                ("019_phase13_makeup_link_immutability",),
+                ("020_app_sessions",),
             )
             if not cur.fetchone()[0]:
-                raise AssertionError("applied database has not reached migration 019")
+                raise AssertionError("applied database has not reached migration 020")
         return {
             "tables_checked": len(TABLES),
             "legacy_aliases_checked": len(LEGACY_FIELD_ALIASES),
-            "schema_baseline": "019_phase13_makeup_link_immutability",
+            "schema_baseline": "020_app_sessions",
         }
     finally:
         conn.close()

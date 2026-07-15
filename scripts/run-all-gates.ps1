@@ -28,6 +28,8 @@ function Invoke-Gate([string]$Name, [scriptblock]$Command) {
 }
 
 Invoke-Gate "pytest fast suite"        { python -m pytest tests/ -q }
+Invoke-Gate "react unit suite"         { npm --prefix web test }
+Invoke-Gate "react production build"   { npm --prefix web run build }
 Invoke-Gate "phase13 dictionary check" { python scripts/phase13_dictionary_check.py }
 
 if (-not $SkipHeavy) {

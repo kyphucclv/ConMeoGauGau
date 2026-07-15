@@ -7,3 +7,6 @@ __pycache__/
 .streamlit/secrets.toml
 .env
 backups/
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
