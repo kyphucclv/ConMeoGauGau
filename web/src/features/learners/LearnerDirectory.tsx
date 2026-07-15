@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { apiJson, type LearnerDetail, type LearnerPage } from '../../api/client'
+import { apiJson, type LearnerDetail, type LearnerPage, type ProfileOptions, type ProfileUpdateBody, type ProfileUpdateResult } from '../../api/client'
 
 type Filters = {
   q: string
@@ -19,7 +19,7 @@ function display(value: string | number | boolean | null | undefined) {
   return String(value)
 }
 
-export function LearnerDirectory() {
+export function LearnerDirectory({ csrfToken, onProfileSaved }: { csrfToken: string; onProfileSaved: () => void }) {
   const [draft, setDraft] = useState<Filters>(initialFilters)
   const [filters, setFilters] = useState<Filters>(initialFilters)
   const [page, setPage] = useState(1)
@@ -27,6 +27,7 @@ export function LearnerDirectory() {
   const [detail, setDetail] = useState<LearnerDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
 
   const load = useCallback(async (nextPage: number, activeFilters: Filters) => {
     setLoading(true); setError('')
@@ -52,7 +53,14 @@ export function LearnerDirectory() {
     finally { setLoading(false) }
   }
 
-  if (detail) return <LearnerDetailView detail={detail} onBack={() => setDetail(null)} />
+  async function profileSaved(employeeId: number) {
+    const updated = await apiJson<LearnerDetail>(`/api/learners/${employeeId}`)
+    setDetail(updated)
+    setNotice('Profile saved.')
+    onProfileSaved()
+  }
+
+  if (detail) return <LearnerDetailView detail={detail} csrfToken={csrfToken} notice={notice} onBack={() => { setDetail(null); setNotice('') }} onProfileSaved={profileSaved} />
 
   return <section>
     <div className="section-heading"><div><p className="eyebrow">HR workspace</p><h2>Learners</h2></div></div>
@@ -77,11 +85,56 @@ export function LearnerDirectory() {
   </section>
 }
 
-function LearnerDetailView({detail,onBack}:{detail:LearnerDetail;onBack:()=>void}) {
+function LearnerDetailView({detail,csrfToken,notice,onBack,onProfileSaved}:{detail:LearnerDetail;csrfToken:string;notice:string;onBack:()=>void;onProfileSaved:(employeeId:number)=>Promise<void>}) {
   const learner = detail.learner
+  const [editing, setEditing] = useState(false)
+  const [options, setOptions] = useState<ProfileOptions | null>(null)
+  const [formError, setFormError] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  async function editProfile() {
+    setEditing(true); setFormError('')
+    try { setOptions(await apiJson<ProfileOptions>('/api/learners/profile-options')) }
+    catch (error) { setFormError(error instanceof Error ? error.message : 'Could not load profile options') }
+  }
+
+  async function saveProfile(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setSaving(true); setFormError('')
+    const form = new FormData(event.currentTarget)
+    const body: ProfileUpdateBody = {
+      emp_code: learner.emp_code,
+      full_name: String(form.get('full_name') ?? ''),
+      employment_status: String(form.get('employment_status')) as ProfileUpdateBody['employment_status'],
+      business_unit_id: Number(form.get('business_unit_id')),
+      job_role_id: Number(form.get('job_role_id')),
+      organization_valid_from: String(form.get('organization_valid_from')),
+      expected_org_valid_from: learner.current_org_valid_from ?? null,
+    }
+    try {
+      await apiJson<ProfileUpdateResult>(`/api/learners/${learner.employee_id}/profile`, {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json','X-CSRF-Token':csrfToken},
+        body:JSON.stringify(body),
+      })
+      await onProfileSaved(learner.employee_id)
+      setEditing(false)
+    } catch (error) { setFormError(error instanceof Error ? error.message : 'Could not save profile') }
+    finally { setSaving(false) }
+  }
+
   return <section><button className="back-button" onClick={onBack}>← Back to learners</button>
-    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span></div>
+    {notice && <p className="success-notice" role="status">{notice}</p>}
+    <div className="section-heading"><div><p className="eyebrow">{learner.emp_code}</p><h2>{learner.full_name}</h2></div><div className="heading-actions"><span className="badge">{learner.lifecycle.replaceAll('_',' ')}</span><button onClick={() => void editProfile()}>Edit profile</button></div></div>
     <div className="detail-grid"><article><span>Current class</span><strong>{display(learner.active_class_code)}</strong></article><article><span>Course</span><strong>{display(learner.active_course_name ?? learner.latest_course_name)}</strong></article><article><span>Entrance level</span><strong>{display(learner.entrance_level)}</strong></article><article><span>Business unit</span><strong>{display(learner.business_unit_name)}</strong></article></div>
+    {editing && <section className="profile-editor"><h3>Edit profile</h3>{formError && <p role="alert">{formError}</p>}{!options && !formError ? <p aria-live="polite">Loading profile options…</p> : options && <form onSubmit={saveProfile}>
+      <label>Employee code<input value={learner.emp_code} disabled /></label>
+      <label>Full name<input name="full_name" defaultValue={learner.full_name} required /></label>
+      <label>Employment status<select name="employment_status" defaultValue={learner.employment_status}><option value="active">Active</option><option value="inactive">Inactive</option><option value="unknown">Unknown</option></select></label>
+      <label>Business unit<select name="business_unit_id" defaultValue={String(learner.business_unit_id ?? '')} required><option value="" disabled>Select business unit</option>{options.business_units.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></label>
+      <label>Role<select name="job_role_id" defaultValue={String(learner.job_role_id ?? '')} required><option value="" disabled>Select role</option>{options.job_roles.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></label>
+      <label>Organization effective date<input name="organization_valid_from" type="date" defaultValue={learner.current_org_valid_from ?? new Date().toISOString().slice(0,10)} required /></label>
+      <div className="form-actions"><button type="submit" disabled={saving}>{saving?'Saving…':'Save profile'}</button><button type="button" className="secondary" onClick={() => { setEditing(false); setFormError('') }}>Cancel</button></div>
+    </form>}</section>}
     <h3>Course history</h3>
     {detail.course_history.length === 0 ? <p>No course history.</p> : <div className="table-wrap"><table><thead><tr><th>Started</th><th>Class</th><th>Course</th><th>Status</th><th>Attendance</th><th>Final level</th><th>Passed</th></tr></thead><tbody>{detail.course_history.map((row,index) => <tr key={`${row.start_date}-${row.class_code}-${index}`}><td>{row.start_date}</td><td>{row.class_code}</td><td>{row.course_name}</td><td>{row.status}</td><td>{row.attendance_ratio == null ? '—' : `${Math.round(row.attendance_ratio*100)}%`}</td><td>{display(row.final_level)}</td><td>{display(row.passed)}</td></tr>)}</tbody></table></div>}
     <h3>Change history</h3>

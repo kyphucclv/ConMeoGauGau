@@ -6,6 +6,9 @@ export type Auth = Schemas['AuthResponse']
 export type DashboardData = Schemas['DashboardResponse']
 export type LearnerPage = Schemas['LearnerPage']
 export type LearnerDetail = Schemas['LearnerDetail']
+export type ProfileOptions = Schemas['ProfileOptions']
+export type ProfileUpdateBody = Schemas['ProfileUpdateBody']
+export type ProfileUpdateResult = Schemas['ProfileUpdateResult']
 
 type ErrorEnvelope = { message?: string }
 

@@ -127,6 +127,25 @@ FastAPI OpenAPI is exported to `web/openapi.json`; `openapi-typescript`
 generates `web/src/api/schema.d.ts`. `npm run api:check` is the contract-drift
 gate.
 
+Issue #3 freezes the employee-profile subset as follows:
+
+- `GET /api/learners/profile-options` is admin/editor only and returns only
+  active `{id,name}` business-unit and job-role options in stable name order.
+- `PATCH /api/learners/{employee_id}/profile` is admin/editor only and requires
+  the session CSRF token. The request contains `emp_code` as immutable business
+  identity confirmation, editable `full_name`, `employment_status`,
+  `business_unit_id`, `job_role_id`, `organization_valid_from`, and the required
+  nullable `expected_org_valid_from` stale precondition.
+- The command locks the path employee and its current organization assignment.
+  A path/body identity mismatch or changed organization version returns `409`
+  and rolls back person, organization, and audit writes.
+- Unknown organization references return `404`; invalid or extra input returns
+  `422`; viewer and bad CSRF requests return `403`. Enrollment IDs/snapshots,
+  attendance, derived fields, and audit attribution are forbidden extra input.
+- Success returns only `employee_id` and `org_history_action`; React then
+  refetches the selected learner detail and invalidates dashboard data without
+  refetching the directory.
+
 Start/transfer returns `409` when authoritative destination state or proposed
 start session changed after the user loaded the form.
 

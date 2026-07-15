@@ -14,20 +14,41 @@ import psycopg2.extras
 from services.base import CommandError, CommandResult, _json_safe, _normalize_label, _required
 
 
+_UNSET = object()
+
+
 class EmployeeOnboardingCommands:
     def create_or_update_employee(self, emp_code: str, full_name: str, *, english_name=None, email=None,
                                   employment_status="unknown", business_unit_id=None, job_role_id=None,
-                                  valid_from: date | None = None) -> CommandResult:
+                                  valid_from: date | None = None, expected_employee_id: int | None = None,
+                                  expected_org_valid_from: date | None | object = _UNSET) -> CommandResult:
         def op(cur):
             _required(emp_code, "emp_code"); _required(full_name, "full_name")
             if employment_status not in {"active", "inactive", "unknown"}:
                 raise CommandError("invalid_input", "employment_status is invalid")
-            cur.execute("""INSERT INTO employees(emp_code,full_name,english_name,email,employment_status)
-                         VALUES(%s,%s,%s,%s,%s)
-                         ON CONFLICT(emp_code) DO UPDATE SET full_name=EXCLUDED.full_name,
-                           english_name=EXCLUDED.english_name,email=EXCLUDED.email,
-                           employment_status=EXCLUDED.employment_status RETURNING employee_id""",
-                        (emp_code.strip(), full_name.strip(), english_name, email, employment_status))
+            if expected_employee_id is not None:
+                cur.execute(
+                    "SELECT emp_code FROM employees WHERE employee_id=%s FOR UPDATE",
+                    (expected_employee_id,),
+                )
+                current_employee = cur.fetchone()
+                if not current_employee:
+                    raise CommandError("not_found", "employee not found")
+                if current_employee[0] != emp_code.strip():
+                    raise CommandError("identity_conflict", "employee identity changed; reload before saving")
+                cur.execute(
+                    """UPDATE employees
+                       SET full_name=%s,english_name=%s,email=%s,employment_status=%s
+                       WHERE employee_id=%s RETURNING employee_id""",
+                    (full_name.strip(), english_name, email, employment_status, expected_employee_id),
+                )
+            else:
+                cur.execute("""INSERT INTO employees(emp_code,full_name,english_name,email,employment_status)
+                             VALUES(%s,%s,%s,%s,%s)
+                             ON CONFLICT(emp_code) DO UPDATE SET full_name=EXCLUDED.full_name,
+                               english_name=EXCLUDED.english_name,email=EXCLUDED.email,
+                               employment_status=EXCLUDED.employment_status RETURNING employee_id""",
+                            (emp_code.strip(), full_name.strip(), english_name, email, employment_status))
             employee_id = cur.fetchone()[0]
             org_history_action = "not_requested"
             if business_unit_id is not None or job_role_id is not None:
@@ -40,6 +61,10 @@ class EmployeeOnboardingCommands:
                     (employee_id,),
                 )
                 current_org = cur.fetchone()
+                if expected_org_valid_from is not _UNSET:
+                    actual_org_valid_from = current_org[3] if current_org else None
+                    if actual_org_valid_from != expected_org_valid_from:
+                        raise CommandError("stale_profile", "organization profile changed; reload before saving")
                 requested_org = (business_unit_id, job_role_id)
                 if current_org and requested_org == (current_org[1], current_org[2]):
                     org_history_action = "unchanged"

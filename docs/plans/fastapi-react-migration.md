@@ -565,6 +565,11 @@ Acceptance:
 
 ### Phase 3: Learner Commands
 
+Implementation status (2026-07-15): Issue #3 delivers profile edit from learner
+detail with narrow reference options, canonical identity binding, organization
+stale detection, CSRF, atomic audit, and targeted learner/dashboard refresh.
+Learner start and transfer remain on Streamlit until Issues #4 and #5.
+
 Deliver:
 
 - Implement profile, learner start, and run-enrollment transfer endpoints.

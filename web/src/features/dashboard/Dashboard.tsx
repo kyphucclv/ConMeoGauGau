@@ -25,13 +25,13 @@ function Metrics({ values, labels }: { values: Record<string, number>; labels: R
   ))}</div>
 }
 
-export function Dashboard({ canAccessHr }: { canAccessHr: boolean }) {
+export function Dashboard({ canAccessHr, refreshToken }: { canAccessHr: boolean; refreshToken: number }) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
     apiJson<DashboardData>('/api/dashboard').then(setData).catch(error => setError(error.message))
-  }, [])
+  }, [refreshToken])
 
   if (error) return <p role="alert">{error}</p>
   if (!data) return <p aria-live="polite">Loading dashboard…</p>

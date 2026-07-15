@@ -10,6 +10,7 @@ export function App() {
   const [checking, setChecking] = useState(true)
   const [error, setError] = useState('')
   const [view, setView] = useState<View>('home')
+  const [dashboardRefreshToken, setDashboardRefreshToken] = useState(0)
   useEffect(() => { apiJson<Auth>('/api/auth/me').then(setAuth).catch(() => setAuth(null)).finally(() => setChecking(false)) }, [])
 
   async function login(event: FormEvent<HTMLFormElement>) {
@@ -32,7 +33,9 @@ export function App() {
   return <div className="app-shell" data-testid="protected-content">
     <header><div><span className="brand-mark">EC</span><strong>English Class</strong></div><div className="user-menu"><span>{auth.user.full_name}<small>{auth.user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></header>
     <div className="app-body"><nav aria-label="Main navigation"><button className={view==='home'?'active':''} onClick={() => setView('home')}>Home</button>{canAccessHr && <button className={view==='learners'?'active':''} onClick={() => setView('learners')}>Learners</button>}</nav>
-      <main className="workspace">{view === 'learners' && canAccessHr ? <LearnerDirectory /> : <Dashboard canAccessHr={canAccessHr} />}</main>
+      <main className="workspace">{view === 'learners' && canAccessHr
+        ? <LearnerDirectory csrfToken={auth.csrf_token} onProfileSaved={() => setDashboardRefreshToken(value => value + 1)} />
+        : <Dashboard canAccessHr={canAccessHr} refreshToken={dashboardRefreshToken} />}</main>
     </div>
   </div>
 }

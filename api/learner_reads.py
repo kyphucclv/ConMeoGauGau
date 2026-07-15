@@ -49,6 +49,7 @@ class LearnerJourney(BaseModel):
     business_unit_name: str | None = None
     job_role_id: int | None = None
     job_role_name: str | None = None
+    current_org_valid_from: date | None = None
     placement_id: int | None = None
     entrance_level_id: int | None = None
     entrance_level: str | None = None

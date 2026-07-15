@@ -22,6 +22,8 @@ from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
+from api.profile_commands import ProfileOptions, ProfileUpdateBody, ProfileUpdateResult, profile_options, update_profile
+from services.base import CommandError
 
 
 @dataclass(frozen=True)
@@ -112,6 +114,15 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
             raise ForbiddenFailure()
         return session
 
+    def require_hr_csrf(
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_session),
+        csrf: str | None = Header(default=None, alias="X-CSRF-Token"),
+    ):
+        if not request.app.state.sessions.csrf_matches(session, csrf):
+            raise CsrfFailure()
+        return session
+
     @app.exception_handler(AuthFailure)
     async def auth_error(request: Request, exc: "AuthFailure"):
         return _error(request, 401, "unauthenticated", "Sign in is required.")
@@ -123,6 +134,20 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
     @app.exception_handler(NotFoundFailure)
     async def not_found_error(request: Request, exc: "NotFoundFailure"):
         return _error(request, 404, "not_found", "Learner was not found.")
+
+    @app.exception_handler(CsrfFailure)
+    async def csrf_error(request: Request, exc: "CsrfFailure"):
+        return _error(request, 403, "csrf_rejected", "CSRF token is invalid.")
+
+    @app.exception_handler(CommandError)
+    async def command_error(request: Request, exc: CommandError):
+        status = {
+            "unauthorized": 401,
+            "forbidden": 403,
+            "not_found": 404,
+            "invalid_input": 422,
+        }.get(exc.code, 409)
+        return _error(request, status, exc.code, exc.message)
 
     @app.get("/api/health/live")
     def live():
@@ -198,6 +223,13 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
             page_size=page_size,
         )
 
+    @app.get("/api/learners/profile-options", response_model=ProfileOptions)
+    def learner_profile_options(
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return profile_options(request.app.state.pool)
+
     @app.get("/api/learners/{employee_id}", response_model=LearnerDetail)
     def learner_detail(
         employee_id: int,
@@ -208,6 +240,15 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
         if detail is None:
             raise NotFoundFailure()
         return detail
+
+    @app.patch("/api/learners/{employee_id}/profile", response_model=ProfileUpdateResult)
+    def learner_profile_update(
+        employee_id: int,
+        body: ProfileUpdateBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_csrf),
+    ):
+        return update_profile(request.app.state.pool, session.user.user_id, employee_id, body)
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):
@@ -233,4 +274,8 @@ class ForbiddenFailure(Exception):
 
 
 class NotFoundFailure(Exception):
+    pass
+
+
+class CsrfFailure(Exception):
     pass

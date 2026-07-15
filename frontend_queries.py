@@ -165,6 +165,7 @@ def learner_journey_context(pool, employee_id: int) -> dict | None:
         SELECT e.employee_id, e.emp_code, e.full_name, e.employment_status,
                eoh.business_unit_id, bu.business_unit_name,
                eoh.job_role_id, jr.job_role_name,
+               eoh.valid_from AS current_org_valid_from,
                p.placement_id, p.level_id AS entrance_level_id,
                level.level_name AS entrance_level,
                active_run.run_enrollment_id AS active_enrollment_id,

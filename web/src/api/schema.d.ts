@@ -123,6 +123,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/learners/profile-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Learner Profile Options */
+        get: operations["learner_profile_options_api_learners_profile_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/learners/{employee_id}": {
         parameters: {
             query?: never;
@@ -138,6 +155,23 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/learners/{employee_id}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Learner Profile Update */
+        patch: operations["learner_profile_update_api_learners__employee_id__profile_patch"];
         trace?: never;
     };
 }
@@ -250,6 +284,8 @@ export interface components {
             business_unit_id?: number | null;
             /** Business Unit Name */
             business_unit_name?: string | null;
+            /** Current Org Valid From */
+            current_org_valid_from?: string | null;
             /** Emp Code */
             emp_code: string;
             /** Employee Id */
@@ -335,6 +371,46 @@ export interface components {
             /** Username */
             username: string;
         };
+        /** ProfileOptions */
+        ProfileOptions: {
+            /** Business Units */
+            business_units: components["schemas"]["ReferenceOption"][];
+            /** Job Roles */
+            job_roles: components["schemas"]["ReferenceOption"][];
+        };
+        /** ProfileUpdateBody */
+        ProfileUpdateBody: {
+            /** Business Unit Id */
+            business_unit_id: number;
+            /** Emp Code */
+            emp_code: string;
+            /**
+             * Employment Status
+             * @enum {string}
+             */
+            employment_status: "active" | "inactive" | "unknown";
+            /** Expected Org Valid From */
+            expected_org_valid_from: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Job Role Id */
+            job_role_id: number;
+            /**
+             * Organization Valid From
+             * Format: date
+             */
+            organization_valid_from: string;
+        };
+        /** ProfileUpdateResult */
+        ProfileUpdateResult: {
+            /** Employee Id */
+            employee_id: number;
+            /**
+             * Org History Action
+             * @enum {string}
+             */
+            org_history_action: "unchanged" | "changed" | "created";
+        };
         /** PublicUser */
         PublicUser: {
             /** Full Name */
@@ -348,6 +424,13 @@ export interface components {
             user_id: number;
             /** Username */
             username: string;
+        };
+        /** ReferenceOption */
+        ReferenceOption: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -578,6 +661,37 @@ export interface operations {
             };
         };
     };
+    learner_profile_options_api_learners_profile_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOptions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     learner_detail_api_learners__employee_id__get: {
         parameters: {
             query?: never;
@@ -598,6 +712,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LearnerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    learner_profile_update_api_learners__employee_id__profile_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                employee_id: number;
+            };
+            cookie?: {
+                english_class_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdateBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileUpdateResult"];
                 };
             };
             /** @description Validation Error */

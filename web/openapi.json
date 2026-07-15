@@ -339,6 +339,18 @@
             ],
             "title": "Business Unit Name"
           },
+          "current_org_valid_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Org Valid From"
+          },
           "emp_code": {
             "title": "Emp Code",
             "type": "string"
@@ -670,6 +682,117 @@
         "title": "LoginBody",
         "type": "object"
       },
+      "ProfileOptions": {
+        "properties": {
+          "business_units": {
+            "items": {
+              "$ref": "#/components/schemas/ReferenceOption"
+            },
+            "title": "Business Units",
+            "type": "array"
+          },
+          "job_roles": {
+            "items": {
+              "$ref": "#/components/schemas/ReferenceOption"
+            },
+            "title": "Job Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "business_units",
+          "job_roles"
+        ],
+        "title": "ProfileOptions",
+        "type": "object"
+      },
+      "ProfileUpdateBody": {
+        "additionalProperties": false,
+        "properties": {
+          "business_unit_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Business Unit Id",
+            "type": "integer"
+          },
+          "emp_code": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Emp Code",
+            "type": "string"
+          },
+          "employment_status": {
+            "enum": [
+              "active",
+              "inactive",
+              "unknown"
+            ],
+            "title": "Employment Status",
+            "type": "string"
+          },
+          "expected_org_valid_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Org Valid From"
+          },
+          "full_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "job_role_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Job Role Id",
+            "type": "integer"
+          },
+          "organization_valid_from": {
+            "format": "date",
+            "title": "Organization Valid From",
+            "type": "string"
+          }
+        },
+        "required": [
+          "emp_code",
+          "full_name",
+          "employment_status",
+          "business_unit_id",
+          "job_role_id",
+          "organization_valid_from",
+          "expected_org_valid_from"
+        ],
+        "title": "ProfileUpdateBody",
+        "type": "object"
+      },
+      "ProfileUpdateResult": {
+        "properties": {
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "org_history_action": {
+            "enum": [
+              "unchanged",
+              "changed",
+              "created"
+            ],
+            "title": "Org History Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "employee_id",
+          "org_history_action"
+        ],
+        "title": "ProfileUpdateResult",
+        "type": "object"
+      },
       "PublicUser": {
         "properties": {
           "full_name": {
@@ -701,6 +824,24 @@
           "role"
         ],
         "title": "PublicUser",
+        "type": "object"
+      },
+      "ReferenceOption": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "ReferenceOption",
         "type": "object"
       },
       "ValidationError": {
@@ -1148,6 +1289,52 @@
         "summary": "Learners"
       }
     },
+    "/api/learners/profile-options": {
+      "get": {
+        "operationId": "learner_profile_options_api_learners_profile_options_get",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Profile Options"
+      }
+    },
     "/api/learners/{employee_id}": {
       "get": {
         "operationId": "learner_detail_api_learners__employee_id__get",
@@ -1201,6 +1388,87 @@
           }
         },
         "summary": "Learner Detail"
+      }
+    },
+    "/api/learners/{employee_id}/profile": {
+      "patch": {
+        "operationId": "learner_profile_update_api_learners__employee_id__profile_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "english_class_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "English Class Session"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUpdateResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Learner Profile Update"
       }
     }
   }

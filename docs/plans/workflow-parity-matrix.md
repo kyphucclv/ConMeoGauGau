@@ -27,7 +27,7 @@ Current visibility is preserved unless an owner approves a product change:
 | Learner detail/current journey | `learner_journey_context` | none | admin/editor | none | Read-only shell | Verified in Issue #2; fixed-fixture API/UI/Playwright coverage |
 | Course history | `learner_course_history` | none | admin/editor | none | Read-only shell | Verified in Issue #2; stable newest-first order |
 | Learner audit summary | `employee_audit_rows` | none | admin/editor | none | Read-only shell | Verified in Issue #2; only when/actor/action exposed, no details JSON |
-| Create/update employee profile | Learner context, business-unit/job-role refs | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile slice | Inventoried |
+| Create/update employee profile | Learner context, business-unit/job-role refs | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile slice | Verified in Issue #3; React owns profile edit with identity/org stale preconditions |
 | First-time/returning learner start | Journey/capacity/start-session context | `onboard_learner` | admin/editor | `learner.onboard` plus owned related events | Learner start slice | Inventoried |
 | Cross-class learner transfer | Journey/capacity/start-session context | `transfer_learner` | admin/editor | `learner.transfer`, capacity override when applicable | Transfer slice | Inventoried |
 
@@ -79,7 +79,7 @@ Current visibility is preserved unless an owner approves a product change:
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
 | Create class with first course run/PIC | Workflow refs and proposed code | `create_class_course_run` | admin/editor | class/run/PIC audit events | Classes/schedule slice | One atomic event |
-| Employee admin search/upsert | `employee_search_rows` | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile or classes slice | Avoid duplicate UI contract |
+| Employee admin search/upsert | `employee_search_rows` | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile or classes slice | Profile edit is canonical in learner detail; separate admin search UI remains deferred |
 | List/create class record | `cohort_rows` | `create_cohort` | admin/editor | cohort creation audit | Classes/schedule slice | Inventoried |
 | Assign PIC employee/team label | Workflow refs | `assign_pic` | admin/editor | PIC assignment audit | Classes/schedule slice | Label remains non-identity |
 | List/add course run | `course_run_dashboard_rows` | `create_course_run` | admin/editor | run creation audit | Classes/schedule slice | Inventoried |
