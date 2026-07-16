@@ -5,15 +5,10 @@ from __future__ import annotations
 import argparse
 import getpass
 import os
-import tomllib
-from pathlib import Path
 
 from auth import bootstrap_first_admin
 from db import create_pool
 from services import CommandError
-
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 def configured_database_url(explicit_url: str | None) -> str:
@@ -22,10 +17,6 @@ def configured_database_url(explicit_url: str | None) -> str:
     env_url = os.getenv("APP_DATABASE_URL") or os.getenv("DATABASE_URL")
     if env_url:
         return env_url
-    secrets_path = ROOT / ".streamlit" / "secrets.toml"
-    if secrets_path.exists():
-        secrets = tomllib.loads(secrets_path.read_text(encoding="utf-8"))
-        return secrets.get("database", {}).get("url", "")
     return ""
 
 

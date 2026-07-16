@@ -519,62 +519,6 @@ def verify_operational_issue_inbox(conn, ids: dict[str, int]) -> dict[str, objec
     return {"operational_issue_detected": detected["total"], "unknown_org_backfilled": unknown_backfill.values["employee_count"], "legacy_attendance_exception": True, "bulk_legacy_attendance_exception": True, "unknown_placement_backfilled": placement_backfill.values["employee_count"], "operational_issue_corrected": True}
 
 
-def streamlit_smoke(database_url: str) -> dict[str, int]:
-    os.environ["APP_DATABASE_URL"] = database_url
-    from streamlit.testing.v1 import AppTest
-
-    app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=10)
-    app.run(timeout=10)
-    assert not app.exception
-    assert any("English class HR workspace" in item.value for item in app.title)
-    assert not app.tabs
-    sign_in_buttons = sum(1 for button in app.button if button.label == "Sign in")
-    assert sign_in_buttons == 1
-    next(item for item in app.text_input if item.label == "Username").input("phase8_admin")
-    next(item for item in app.text_input if item.label == "Password").input("admin-pass")
-    next(button for button in app.button if button.label == "Sign in").click()
-    app.run(timeout=10)
-    assert not app.exception
-    assert [tab.label for tab in app.tabs] == [
-        ":material/home_work: HR workspace",
-        ":material/table_chart: Reports",
-        ":material/history: Audit",
-    ]
-    assert any(button.label == "Sign out" for button in app.button)
-    assert len(app.segmented_control) >= 1
-
-    next(control for control in app.segmented_control if control.label == "Task area").set_value("Learners")
-    app.run(timeout=10)
-    assert not app.exception
-    learner_task = next(control for control in app.segmented_control if control.label == "Learner task")
-    assert learner_task.value == "Find learners"
-    assert any(button.label == "Start learning" for button in app.button)
-    assert any(frame.key == "learner_results_v2" for frame in app.dataframe)
-
-    app.session_state["learner_results_v2"] = {"selection": {"rows": [0]}}
-    app.run(timeout=10)
-    assert not app.exception
-    assert any("Course history" in item.value for item in app.markdown)
-
-    learner_task = next(control for control in app.segmented_control if control.label == "Learner task")
-    learner_task.set_value("Start learning")
-    app.run(timeout=10)
-    assert not app.exception
-    employee_mode = next(control for control in app.segmented_control if control.label == "Employee")
-    employee_mode.set_value("New employee")
-    app.run(timeout=10)
-    assert not app.exception
-    assert any(item.label == "Destination class and course" for item in app.selectbox)
-    assert any(button.label == "Add and start learning" for button in app.button)
-
-    return {
-        "titles": len(app.title),
-        "tabs": len(app.tabs),
-        "sign_in_buttons": sign_in_buttons,
-        "learner_views": 3,
-    }
-
-
 def backup_restore_rehearsal(database_url: str, restored_db: str, maintenance_url: str) -> dict[str, int]:
     if not PG_DUMP.exists() or not PG_RESTORE.exists():
         raise RuntimeError("PostgreSQL backup tools are not installed at the expected path")
@@ -623,7 +567,6 @@ def main() -> None:
     finally:
         conn.close()
 
-    smoke = streamlit_smoke(database_url)
     restore = backup_restore_rehearsal(database_url, restored_db, maintenance_url)
 
     print("Phase 8 automated verification and UAT gate passed.")
@@ -633,8 +576,6 @@ def main() -> None:
     for key, value in monthly_review.items():
         print(f"{key}: {value}")
     for key, value in operational_issues.items():
-        print(f"{key}: {value}")
-    for key, value in smoke.items():
         print(f"{key}: {value}")
     for key, value in restore.items():
         print(f"{key}: {value}")

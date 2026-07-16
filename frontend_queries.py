@@ -1,4 +1,4 @@
-"""Task-oriented read models for the Streamlit application."""
+"""Task-oriented read models shared by the application API."""
 
 from __future__ import annotations
 

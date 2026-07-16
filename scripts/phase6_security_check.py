@@ -178,10 +178,13 @@ def seed_app_users(database_url: str) -> dict[str, int]:
 
 
 def assert_no_runtime_secret_ui() -> None:
-    streamlit_app = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
-    forbidden = ["PostgreSQL connection string", "st.exception", "use_container_width"]
+    frontend_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((ROOT / "web" / "src").rglob("*.ts*"))
+    )
+    forbidden = ["postgresql://", "APP_DATABASE_URL", "password_hash", "session_token"]
     for text in forbidden:
-        if text in streamlit_app:
+        if text in frontend_source:
             raise AssertionError(f"forbidden runtime UI/source pattern found: {text}")
 
 

@@ -1,6 +1,6 @@
 """Transactional Phase 4 business commands.
 
-This module deliberately has no Streamlit dependency.  A command owns one
+This module deliberately has no UI-framework dependency.  A command owns one
 transaction, validates business state before writing, and records its audit
 event before commit.  The UI can translate ``CommandResult`` and
 ``CommandError`` into user-facing messages without inspecting SQL exceptions.

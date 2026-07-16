@@ -10,7 +10,6 @@ spreadsheet. Follow this on the new machine.
 
 | File | Purpose |
 |---|---|
-| `legacy/setup.ps1` | Legacy helper (archived); do not use for the canonical application. |
 | `migrations/`, `migrate.py` | Canonical v3 schema and reporting migrations. |
 | `scripts/stage_workbook.py` | Raw workbook staging and profiling. |
 | `scripts/canonical_etl_v3.py` | Canonical v3 ETL. |
@@ -18,10 +17,8 @@ spreadsheet. Follow this on the new machine.
 | `scripts/phase11_operational_issue_snapshot.py` | Phase 11 operational issue snapshot and owner-decision gate. |
 | `scripts/bootstrap_admin.py` | One-time named application admin bootstrap. |
 | `database_roles.sql` | Restricted migration/app/read-only DB roles. |
-| `run_app.cmd`, `run_app.ps1` | Windows launcher and app health check. |
-| `.streamlit/config.toml` | Local Streamlit server defaults. |
-| `.streamlit/secrets.example.toml` | Template for the ignored local database secret. |
-| `streamlit_app.py` | Canonical Streamlit app entrypoint. |
+| `run_react_app.cmd`, `run_react_app.ps1` | Checked FastAPI/React launcher and host preflight. |
+| `api/`, `web/` | FastAPI HTTP boundary and React frontend. |
 | `okok_FIXED_v2.xlsx` | Source data. |
 | `README.md` | Canonical path and archived legacy context. |
 | `SETUP_GUIDE.md` | This file. |
@@ -35,8 +32,9 @@ python scripts\phase9_cutover_rehearsal.py
 ```
 
 This creates disposable databases, applies migrations, stages the workbook,
-runs canonical ETL, checks idempotency, creates restricted roles, smoke-tests
-the app, and proves backup/restore.
+runs canonical ETL, checks idempotency, creates restricted roles, and proves
+backup/restore. API, React and browser verification run through
+`.\scripts\run-all-gates.ps1`.
 
 If `winget` isn't available on the target machine (older Windows), install
 manually:
@@ -98,29 +96,25 @@ when no named application user exists and writes the bootstrap audit event in
 the same transaction as the user. Application startup never creates,
 reactivates, or promotes a user.
 
-## Run the dashboard app
+## Run the React/FastAPI app
 
 After you have loaded the data, start the web UI with the checked launcher:
 
 ```powershell
-.\run_app.cmd
+.\run_react_app.cmd
 ```
 
-Then open `http://127.0.0.1:8501`. Keep the launcher window open while using
-the app; press `Ctrl+C` in that window to stop it.
+The launcher checks Python dependencies, the restricted app database
+connection, schema, production build and connection budget. Store the
+restricted app connection in `APP_DATABASE_URL` or `DATABASE_URL`; never store
+it in the repository. The current machine reaches the app through the installed
+HTTPS gateway at `https://english-class.cyberlogitec.local`. Sign in with a
+named application username and password so each write remains attributable.
 
-The launcher checks Python dependencies, Streamlit, the restricted app database
-connection, and the canonical schema before it starts the app. Store the
-restricted app connection in `APP_DATABASE_URL`, `DATABASE_URL`, or copy
-`.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill in the
-local value. The real `secrets.toml` is ignored by git and should stay local.
-Sign in with a named application username and password. Each write and audit
-event is attributed to that named user.
-
-For a health check without starting Streamlit:
+For a health check without starting the FastAPI service:
 
 ```powershell
-.\run_app.cmd -CheckOnly
+.\run_react_app.cmd -CheckOnly
 ```
 
 ## Updating an existing database
@@ -136,8 +130,7 @@ python migrate.py "$env:MIGRATION_DATABASE_URL"
 
 `migrate.py` records applied versions in `schema_migrations`, skips completed
 versions, and stops if an already-applied migration file was modified.
-The current chain is expected to include
-`019_phase13_makeup_link_immutability`.
+The current chain is expected to include `020_app_sessions`.
 
 ## Troubleshooting
 

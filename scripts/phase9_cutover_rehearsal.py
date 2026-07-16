@@ -1,7 +1,7 @@
 """Phase 9 cutover rehearsal on disposable databases.
 
 This does not mutate production.  It proves the cutover sequence using the
-current workbook, migrations, canonical ETL, restricted roles, app smoke, and a
+current workbook, migrations, canonical ETL, restricted roles, and a
 backup/restore rehearsal.
 """
 
@@ -21,8 +21,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from auth import bootstrap_first_admin
-from db import create_pool
 from migrate import apply_migrations
 from scripts.canonical_etl_v3 import run_canonical_etl
 from scripts.phase4_integration_check import _database_url, recreate_database
@@ -101,40 +99,6 @@ def summarize_database(database_url: str) -> dict:
     }
 
 
-def streamlit_smoke(database_url: str) -> dict:
-    os.environ["APP_DATABASE_URL"] = database_url
-    pool = create_pool(database_url, application_name="phase9_streamlit_smoke")
-    try:
-        bootstrap_first_admin(pool, "phase9_admin", "Phase 9 Admin", "phase9-pass")
-    finally:
-        pool.closeall()
-    with psycopg2.connect(database_url) as conn:
-        restricted_user = one(conn, "SELECT current_user AS username")["username"]
-    from streamlit.testing.v1 import AppTest
-
-    app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=12)
-    app.run(timeout=12)
-    assert not app.exception
-    assert any("English class HR workspace" in item.value for item in app.title)
-    assert not app.tabs
-    next(item for item in app.text_input if item.label == "Username").input("phase9_admin")
-    next(item for item in app.text_input if item.label == "Password").input("phase9-pass")
-    next(button for button in app.button if button.label == "Sign in").click()
-    app.run(timeout=12)
-    assert not app.exception
-    assert [tab.label for tab in app.tabs] == [
-        ":material/home_work: HR workspace",
-        ":material/table_chart: Reports",
-        ":material/history: Audit",
-    ]
-    return {
-        "database_user": restricted_user,
-        "tabs": len(app.tabs),
-        "errors": len(app.error),
-        "exceptions": len(app.exception),
-    }
-
-
 def backup_restore(database_url: str, restored_db: str, maintenance_url: str) -> dict:
     if not PG_DUMP.exists() or not PG_RESTORE.exists():
         raise RuntimeError("PostgreSQL backup tools are not installed at the expected path")
@@ -172,7 +136,6 @@ def main() -> None:
     staging = stage_current_workbook(database_url)
     etl = run_canonical_etl(database_url)
     idempotent = run_canonical_etl(database_url)
-    smoke = streamlit_smoke(roles["app"].url(db_name))
     summary = summarize_database(database_url)
     phase11_snapshot = generate_phase11_operational_issue_snapshot(
         database_url, PHASE11_REHEARSAL_JSON, PHASE11_REHEARSAL_MARKDOWN
@@ -194,7 +157,6 @@ def main() -> None:
         "operational_data_issues": summary["operational_data_issues"],
         "phase11_operational_issue_snapshot": phase11_snapshot,
         "restricted_roles": sorted(role.name for role in roles.values()),
-        "streamlit_smoke": smoke,
         "backup_restore": restore,
         "profile_output": staging["profile_output"],
     }

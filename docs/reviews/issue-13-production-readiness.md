@@ -1,12 +1,12 @@
 # Issue 13 production readiness evidence
 
 Date: 2026-07-16
-Status: **changes required — LAN DNS/client trust, HR UAT and stabilization are pending**
+Status: **closed as not planned — owner withdrew HR/LAN rollout on 2026-07-16**
 
 Owner-approved production hostname: `english-class.cyberlogitec.local`.
 Authorization to configure the HTTPS gateway and Windows service on the
 designated host was provided on 2026-07-16. Host service/TLS proof is complete;
-LAN DNS and HR-workstation trust remain pending.
+the remaining LAN and HR-workstation scope was later withdrawn.
 
 ## Change identity
 
@@ -51,8 +51,8 @@ change metric definitions, filters or grain.
   clickjacking/MIME/referrer/permissions headers and HSTS in secure mode.
 - Production build metadata and keyboard-focusable scroll tables; automated axe
   WCAG A/AA coverage for sign-in, every admin workspace and viewer reports.
-- Routing-only Streamlit fallback and explicit prohibition of dual-write,
-  reverse migration or database restore for frontend rollback.
+- A tagged final compatible Streamlit artifact and explicit prohibition of
+  dual-write, reverse migration or database restore for frontend rollback.
 
 ## Test evidence to date
 
@@ -125,6 +125,14 @@ certificates. The host checker therefore uses a one-hour emergency floor rather
 than a 30-day public-certificate window; trust-root distribution and renewal
 rehearsal remain separate mandatory evidence.
 
+## Owner scope change and closure
+
+On 2026-07-16 the owner explicitly limited the final deployment to testing on
+the designated machine and withdrew the HR/LAN rollout. LAN DNS, client trust,
+named HR UAT and the production stabilization window are therefore not claimed.
+GitHub Issue #13 closed with reason `not planned`, not `completed`. The owner
+separately approved Issue #14 retirement without an active Streamlit fallback.
+
 ## Reconciliation
 
 | Dataset | Expected | Observed | Difference |
@@ -157,7 +165,7 @@ two Windows services, three scoped firewall rules, one hosts entry, one trusted
 internal CA root and one scheduled backup task. It does not change schema or
 production rows. All load writes target disposable `english_class_pytest`.
 
-## Remaining acceptance evidence
+## Original production acceptance not pursued
 
 - [x] Approved hostname: `english-class.cyberlogitec.local`
 - [x] Gateway/service manager, service identities and host firewall proof
@@ -172,12 +180,11 @@ production rows. All load writes target disposable `english_class_pytest`.
 - [ ] Named HR UAT for every parity workflow
 - [ ] Stabilization completed with no high/critical defect or unexplained report,
   audit or key-count mismatch
-- [ ] Explicit owner approval of React as canonical frontend; Streamlit retained
-  as fallback until separate Issue 14 retirement approval
+- [x] Explicit owner approval of React as the only local-test frontend and
+  Streamlit retirement under separate Issue #14
 
-## Reviewer decision
+## Closure decision
 
-- [ ] Approved
-- [x] Changes required
-
-Do not close Issue 13 or start Issue 14 from this repository evidence alone.
+- [x] Local host evidence accepted for local testing only
+- [x] Original HR/LAN production rollout closed as not planned
+- [x] Streamlit retirement explicitly approved by the owner

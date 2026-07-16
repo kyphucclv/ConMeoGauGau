@@ -147,7 +147,7 @@ The terms must be defined at the same source-row grain.
 
 ## 10. Security and privacy
 
-- Never commit database passwords or `.streamlit/secrets.toml`.
+- Never commit database passwords or local secret files.
 - The app uses a restricted database role, never the PostgreSQL superuser.
 - Parameterize every query containing external or user-provided values.
 - Do not expose password hashes, connection strings, raw SQL consoles, or
@@ -157,7 +157,7 @@ The terms must be defined at the same source-row grain.
 
 ## 11. Code structure
 
-- Keep database access and business commands outside Streamlit page code.
+- Keep database access and business commands outside UI component code.
 - UI modules collect input and render results; they do not own SQL strings.
 - Repository functions handle persistence, service functions handle business
   transactions, and views/queries handle reporting.
