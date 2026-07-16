@@ -80,10 +80,11 @@ gates) in one command:
 .\scripts\run-all-gates.ps1 -TargetHost # also require live trusted HTTPS host proof
 ```
 
-The approved production host must run the `EnglishClassDbBackup` scheduled task
-daily with catch-up enabled, verified destinations and 30-day retention. Issue
-#13 host inspection did not find that task, so operators must create/verify it
-and record a disposable restore before React cutover. Manual run:
+The production host runs the `EnglishClassDbBackup` scheduled task daily at
+12:00 as SYSTEM with catch-up enabled, verified destinations and 30-day
+retention. Issue #13 host verification runs the task and requires a new non-empty
+dump with result code zero; Phase 9 supplies the disposable restore proof.
+Manual run:
 
 ```powershell
 .\backup.ps1

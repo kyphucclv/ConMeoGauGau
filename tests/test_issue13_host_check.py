@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
-from scripts.issue13_host_check import connection_budget, validate_origin
+from scripts.issue13_host_check import certificate_window, connection_budget, validate_origin
 
 
 def test_https_origin_contract_accepts_only_one_clean_origin():
@@ -25,3 +27,10 @@ def test_connection_budget_accounts_for_workers_pool_and_existing_connections():
     )
     assert passing["passes"] is True and passing["configured_app_max"] == 5
     assert failing["passes"] is False and failing["available_before_start"] == 7
+
+
+def test_short_lived_automatically_renewed_certificate_uses_an_hour_window():
+    now = datetime(2026, 7, 16, tzinfo=timezone.utc)
+    hours, passes = certificate_window(now + timedelta(hours=12), now, minimum_hours=1)
+    _, fails = certificate_window(now + timedelta(minutes=30), now, minimum_hours=1)
+    assert hours == 12 and passes is True and fails is False
