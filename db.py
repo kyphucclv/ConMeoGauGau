@@ -3,11 +3,45 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from threading import BoundedSemaphore
 from typing import Any, Iterable
 
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
+
+
+POOL_MIN = 1
+POOL_MAX = 5
+POOL_ACQUIRE_TIMEOUT_SECONDS = 5
+
+
+class BlockingThreadedConnectionPool(psycopg2.pool.ThreadedConnectionPool):
+    """Bound concurrency while allowing short request bursts to wait safely."""
+
+    def __init__(self, minconn, maxconn, *args, acquire_timeout=POOL_ACQUIRE_TIMEOUT_SECONDS, **kwargs):
+        super().__init__(minconn, maxconn, *args, **kwargs)
+        self._capacity = BoundedSemaphore(maxconn)
+        self._acquire_timeout = acquire_timeout
+
+    def getconn(self, key=None):
+        if key is not None:
+            raise psycopg2.pool.PoolError("keyed connections are not supported by the application pool")
+        if not self._capacity.acquire(timeout=self._acquire_timeout):
+            raise psycopg2.pool.PoolError("timed out waiting for an application database connection")
+        try:
+            return super().getconn(key)
+        except Exception:
+            self._capacity.release()
+            raise
+
+    def putconn(self, conn=None, key=None, close=False):
+        if key is not None:
+            raise psycopg2.pool.PoolError("keyed connections are not supported by the application pool")
+        try:
+            return super().putconn(conn, key, close)
+        finally:
+            self._capacity.release()
 
 
 def normalize_conn_str(conn_str: str) -> str:
@@ -17,9 +51,9 @@ def normalize_conn_str(conn_str: str) -> str:
 
 
 def create_pool(conn_str: str, *, application_name: str = "english_class_app"):
-    return psycopg2.pool.ThreadedConnectionPool(
-        1,
-        5,
+    return BlockingThreadedConnectionPool(
+        POOL_MIN,
+        POOL_MAX,
         dsn=normalize_conn_str(conn_str),
         connect_timeout=5,
         application_name=application_name,

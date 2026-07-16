@@ -77,11 +77,13 @@ gates) in one command:
 ```powershell
 .\scripts\run-all-gates.ps1            # everything
 .\scripts\run-all-gates.ps1 -SkipHeavy # fast suite + dictionary check only
+.\scripts\run-all-gates.ps1 -TargetHost # also require live trusted HTTPS host proof
 ```
 
-Daily database backup runs as the `EnglishClassDbBackup` scheduled task at
-12:00 (catches up when the machine was off). It writes verified dumps to
-`backups\` and `C:\Backups\english_class` with 30-day retention. Manual run:
+The approved production host must run the `EnglishClassDbBackup` scheduled task
+daily with catch-up enabled, verified destinations and 30-day retention. Issue
+#13 host inspection did not find that task, so operators must create/verify it
+and record a disposable restore before React cutover. Manual run:
 
 ```powershell
 .\backup.ps1
@@ -125,7 +127,7 @@ Latest rehearsal evidence is recorded in
 `docs/reviews/phase-9-cutover-rehearsal.md`.
 
 The current local production database is applied through
-`019_phase13_makeup_link_immutability`, which additionally enforces one linked
+`020_app_sessions`. Migration 019 additionally enforces one linked
 make-up per original absence and excludes make-up units from the attendance
 denominator while preserving present replacement credit and immutable linkage.
 
@@ -168,7 +170,9 @@ denominator while preserving present replacement credit and immutable linkage.
 
 Production cutover completed on 2026-07-13. The pre-cutover legacy database and
 verified backups are retained for rollback; use the Phase 9 runbook for restore
-and verification steps.
+and verification steps. React traffic cutover is a separate Issue #13 approval;
+use `docs/runbooks/issue-13-production-cutover.md`, and keep Streamlit as the
+routing-only fallback until stabilization and explicit retirement approval.
 
 ## Archived legacy notes
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import time
-import uuid
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -14,6 +13,7 @@ from fastapi import Cookie, Depends, FastAPI, Header, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from psycopg2.pool import PoolError
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
@@ -29,6 +29,7 @@ from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
 from api.learner_transfer import LearnerTransferBody, LearnerTransferOptions, LearnerTransferResult, learner_transfer_options, transfer_learner
 from api.monthly_review import MonthlyActionSummaryBody, MonthlyActionSummaryResult, MonthlyReviewResponse, export_monthly_review, monthly_review, parse_review_month, save_action_summary
+from api.observability import log_access, request_id_or_new
 from api.profile_commands import ProfileOptions, ProfileUpdateBody, ProfileUpdateResult, profile_options, update_profile
 from api.reports_audit import AuditEventPage, ReportCatalog, ReportPage, audit_events, registered_report, report_catalog
 from services.base import CommandError
@@ -75,6 +76,22 @@ def _error(request: Request, status: int, code: str, message: str, field_errors=
     return JSONResponse(status_code=status, content={"code": code, "message": message, "field_errors": field_errors or {}, "request_id": request.state.request_id})
 
 
+def _protect_response(request: Request, response: Response, *, secure_transport: bool) -> None:
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    response.headers.setdefault(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+        "connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    )
+    if request.url.path.startswith("/api/"):
+        response.headers.setdefault("Cache-Control", "private, no-store")
+    if secure_transport:
+        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+
+
 def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
     settings = settings or Settings.from_env()
     owns_pool = pool is None
@@ -92,10 +109,18 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
 
     @app.middleware("http")
     async def request_id(request: Request, call_next):
-        request.state.request_id = request.headers.get("x-request-id") or uuid.uuid4().hex
-        response = await call_next(request)
-        response.headers["X-Request-ID"] = request.state.request_id
-        return response
+        request.state.request_id = request_id_or_new(request.headers.get("x-request-id"))
+        request.state.actor_user_id = None
+        started = time.perf_counter()
+        status = 500
+        try:
+            response = await call_next(request)
+            status = response.status_code
+            response.headers["X-Request-ID"] = request.state.request_id
+            _protect_response(request, response, secure_transport=settings.secure_cookie)
+            return response
+        finally:
+            log_access(request, status=status, duration_ms=(time.perf_counter() - started) * 1000)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request: Request, exc: RequestValidationError):
@@ -106,10 +131,15 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
     async def unexpected_error(request: Request, exc: Exception):
         return _error(request, 500, "internal_error", "An unexpected error occurred.")
 
+    @app.exception_handler(PoolError)
+    async def database_busy_error(request: Request, exc: PoolError):
+        return _error(request, 503, "database_busy", "The service is temporarily busy. Try again.")
+
     def current_session(request: Request, session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):
         session = request.app.state.sessions.authenticate(session_cookie)
         if not session:
             return None
+        request.state.actor_user_id = session.user.user_id
         return session
 
     def require_session(request: Request, session=Depends(current_session)):

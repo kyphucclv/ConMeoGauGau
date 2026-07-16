@@ -47,5 +47,5 @@ export function MonthlyReviewWorkspace({csrfToken}:{csrfToken:string}){
 
 function ReviewTable({title,rows}:{title:string;rows:Array<Record<string,unknown>>}){
   const headers=rows.length?Object.keys(rows[0]):[]
-  return <section className="review-table"><h3>{title}</h3>{!rows.length?<p className="notice">No activity for this month.</p>:<div className="table-wrap"><table><thead><tr>{headers.map(header=><th key={header}>{header.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr key={index}>{headers.map(header=><td key={header}>{String(row[header]??'—')}</td>)}</tr>)}</tbody></table></div>}</section>
+  return <section className="review-table"><h3>{title}</h3>{!rows.length?<p className="notice">No activity for this month.</p>:<div className="table-wrap" tabIndex={0}><table><thead><tr>{headers.map(header=><th key={header}>{header.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr key={index}>{headers.map(header=><td key={header}>{String(row[header]??'—')}</td>)}</tr>)}</tbody></table></div>}</section>
 }

@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from frontend_queries import application_snapshot, hr_home_snapshot
+from frontend_queries import application_snapshot
 
 
 class ApplicationSummary(BaseModel):
@@ -29,10 +29,18 @@ class DashboardResponse(BaseModel):
 
 
 def dashboard_for(pool, role: str) -> DashboardResponse:
+    snapshot = application_snapshot(pool)
     return DashboardResponse(
-        summary=ApplicationSummary.model_validate(application_snapshot(pool)),
+        summary=ApplicationSummary.model_validate(snapshot),
         hr_home=(
-            HrHomeSummary.model_validate(hr_home_snapshot(pool))
+            HrHomeSummary(
+                active_people=snapshot["active_employees"],
+                current_learners=snapshot["active_learners"],
+                open_classes=snapshot["open_course_runs"],
+                review_items=snapshot["operational_issues"],
+                urgent_items=snapshot["high_issues"],
+                follow_ups=snapshot["open_quality_issues"],
+            )
             if role in {"admin", "editor"}
             else None
         ),
