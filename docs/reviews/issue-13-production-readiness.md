@@ -1,12 +1,12 @@
 # Issue 13 production readiness evidence
 
 Date: 2026-07-16
-Status: **changes required — target-host configuration, HR UAT and stabilization are pending**
+Status: **changes required — LAN DNS/client trust, HR UAT and stabilization are pending**
 
 Owner-approved production hostname: `english-class.cyberlogitec.local`.
 Authorization to configure the HTTPS gateway and Windows service on the
-designated host was provided on 2026-07-16; DNS, certificate and live-host proof
-remain pending.
+designated host was provided on 2026-07-16. Host service/TLS proof is complete;
+LAN DNS and HR-workstation trust remain pending.
 
 ## Change identity
 
@@ -92,19 +92,38 @@ target because the dashboard performed the same six metrics twice. Reusing the
 single snapshot removed that duplicate work and the representative 10-session
 test passed both thresholds. These failures were fixed rather than waived.
 
-## Current target-host inspection
+## Target-host deployment evidence
 
-Read-only inspection on 2026-07-16 found PostgreSQL 17 running and proved the
-current application database uses restricted role `english_class_app`, schema
-`020_app_sessions`, `max_connections=100`, three reserved connections and an
-available budget sufficient for one 1-5 pool. No approved HTTPS gateway,
-FastAPI Windows service, matching machine certificate, `APP_ORIGIN`, secure
-cookie host setting or documented `EnglishClassDbBackup` scheduled task was
-found. `web/dist` exists.
+The initial read-only inspection on 2026-07-16 found only PostgreSQL 17. The
+approved deployment then installed Caddy 2.11.4 and WinSW 2.12 and produced this
+sanitized evidence on the merged release:
 
-This is explicit negative evidence: it is not production TLS/service/firewall/
-renewal/log-rotation/backup approval. Full `issue13_host_check.py` cannot pass
-until the owner decisions and host configuration in the runbook are completed.
+- `EnglishClassReact` and `EnglishClassCaddy` are Running/Automatic and both
+  recover through an explicit restart.
+- Caddy listens on 80/443; FastAPI listens only on `127.0.0.1:8000` with one
+  worker. Firewall allows 80/443 only from `10.0.50.0/24` and explicitly blocks
+  inbound 8000/8501/5432.
+- Full `issue13_host_check.py` passed against
+  `https://english-class.cyberlogitec.local`: trusted TLS, live/ready 200,
+  restricted `english_class_app`, schema `020_app_sessions`, static build and a
+  1-5 pool with 90 connections available before app start.
+- The response has HSTS, CSP, private/no-store and a request ID. HTTP redirects
+  to HTTPS with status 308.
+- Logs contain 21 structured access events, no connection URL or assigned
+  password/CSRF/session-cookie/database-URL value, and use 10 MiB/14-file WinSW
+  rotation for app and gateway output.
+- `EnglishClassDbBackup` runs daily at 12:00 as SYSTEM with catch-up enabled. A
+  forced run returned zero and created verified dump
+  `english_class_20260716_132423.dump` (2,575,806 bytes); Phase 9 proves restore.
+- The internal root is trusted on the server and exported with its elevated
+  installer to `C:\Users\Public\Documents\EnglishClass` for HR clients.
+- `10.0.50.119` is currently DHCP-assigned. A DHCP reservation for Wi-Fi MAC
+  `00-93-37-64-12-F7` is required before LAN DNS/UAT approval.
+
+The approved Caddy internal-CA design uses automatically renewed short-lived
+certificates. The host checker therefore uses a one-hour emergency floor rather
+than a 30-day public-certificate window; trust-root distribution and renewal
+rehearsal remain separate mandatory evidence.
 
 ## Reconciliation
 
@@ -129,22 +148,27 @@ never written to production.
   or unsafe admin bypass was added.
 - [x] Backup/restore rehearsal inspected 365 employees, 20 migrations, 552 run
   enrollments, 6,281 attendance rows and zero open quality issues.
-- [ ] Review again on the deployed release after host configuration and UAT.
+- [x] Reviewed again on the deployed release after host configuration and
+  forced service restart/backup.
+- [ ] Review again after named HR UAT and stabilization.
 
-Potentially destructive behavior reviewed: none in this change. All load writes
-target the disposable `english_class_pytest` database; host inspection and
-production preflight are read-only.
+Potentially destructive behavior reviewed: the approved host installer creates
+two Windows services, three scoped firewall rules, one hosts entry, one trusted
+internal CA root and one scheduled backup task. It does not change schema or
+production rows. All load writes target disposable `english_class_pytest`.
 
 ## Remaining acceptance evidence
 
 - [x] Approved hostname: `english-class.cyberlogitec.local`
-- [ ] Gateway/service manager, service identity, DNS and firewall proof
-- [ ] Browser-trusted TLS plus renewal rehearsal
-- [ ] Protected secret injection, restart recovery, log rotation/retention/ACL
-- [ ] Current backup task and disposable restore proof
+- [x] Gateway/service manager, service identities and host firewall proof
+- [ ] DHCP reservation, LAN DNS record and HR-workstation connectivity proof
+- [ ] HR-browser root trust distribution and observed short-lived leaf renewal
+- [x] Protected secret injection, restart recovery, log rotation/retention/ACL
+- [x] Current backup task and disposable restore proof
 - [x] Full repository regression, disposable parity/load and backup/restore
   rehearsal on the release candidate
-- [ ] Target-host LAN/HTTPS/load evidence on the deployed release commit
+- [x] Target-host HTTPS/restart evidence on the deployed release commit
+- [ ] HR-workstation LAN and representative production-session evidence
 - [ ] Named HR UAT for every parity workflow
 - [ ] Stabilization completed with no high/critical defect or unexplained report,
   audit or key-count mismatch

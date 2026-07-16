@@ -1,7 +1,7 @@
 # FastAPI + React Deployment And Session Decisions
 
-Status: **Phase 0 defaults approved for planning; validate on the target host in
-the first tracer slice**
+Status: **target-host service/TLS contract validated; LAN DNS/client trust, HR
+UAT and stabilization remain pending**
 
 These decisions define the deployment and security contract. The concrete TLS
 gateway product remains replaceable; it must prove this contract on the actual
@@ -86,14 +86,13 @@ LAN, replace this with a shared limiter or an approved gateway control.
 
 ## Remaining host validation
 
-The topology is decided, but Phase 1 cannot claim production readiness until the
-target host proves:
+The target host now proves the Caddy/WinSW service topology, loopback backend,
+restricted database role and budget, protected secrets, rotated service logs,
+firewall rules, trusted server TLS, restart recovery and scheduled backup. Issue
+#13 cannot claim final production readiness until it also proves:
 
-- approved internal hostname resolution;
-- browser-trusted TLS certificate and renewal procedure;
-- firewall rules and port ownership;
-- service startup/restart under the chosen Windows operator mechanism;
-- PostgreSQL maximum connection budget;
-- protected secret injection;
-- log rotation and disk-retention behavior;
-- Streamlit routing fallback.
+- approved hostname resolution from HR workstations;
+- Caddy internal root distribution to HR browsers and observed leaf renewal;
+- named HR UAT for every parity workflow;
+- stabilization without a high/critical defect or unexplained count mismatch;
+- Streamlit routing fallback rehearsal from a client workstation.

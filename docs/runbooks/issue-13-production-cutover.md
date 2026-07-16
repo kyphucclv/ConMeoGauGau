@@ -1,6 +1,6 @@
 # Issue 13 React production cutover runbook
 
-Status: **implementation ready; target-host and HR approvals pending**
+Status: **target host configured; LAN DNS/trust distribution, HR UAT and stabilization pending**
 
 This runbook moves user traffic from Streamlit to the same-origin React/FastAPI
 application without changing the canonical database. Streamlit remains the
@@ -14,13 +14,13 @@ Record each decision in `docs/reviews/issue-13-production-readiness.md`.
 
 | Decision | Required evidence | Current state |
 |---|---|---|
-| Approved internal hostname | DNS resolution from an HR workstation | Owner-approved: `english-class.cyberlogitec.local`; DNS proof pending |
-| HTTPS gateway and Windows service manager | Product/version, service names, service identities, startup mode | Pending; no gateway/app service found on the inspected host |
-| Certificate issuer and renewal owner | Trusted chain, expiry, renewal command/task and alert owner | Pending; no matching machine certificate found |
-| Firewall owner | Inbound HTTPS allowed from approved LAN; ports 8000, 8501 and 5432 not exposed to users | Pending |
-| Secret owner | Protected service-account environment for `APP_DATABASE_URL`, `APP_ORIGIN`, `APP_COOKIE_SECURE=true` | Pending |
-| Log owner | Gateway/app log paths, ACLs, rotation size/age and retention | Pending |
-| Backup owner | Daily task identity, destination, retention and latest restore proof | Pending; the documented task was not found on the inspected host |
+| Approved internal hostname | DNS resolution from an HR workstation | Owner-approved: `english-class.cyberlogitec.local`; server hosts entry complete, LAN DNS proof pending |
+| HTTPS gateway and Windows service manager | Product/version, service names, service identities, startup mode | Caddy 2.11.4 + WinSW 2.12; `EnglishClassCaddy` LocalService and `EnglishClassReact` LocalSystem, automatic delayed start |
+| Certificate issuer and renewal owner | Trusted chain, expiry, renewal command/task and alert owner | Caddy internal CA with short-lived automatic leaf renewal; server trust complete, HR client distribution/renewal observation pending |
+| Firewall owner | Inbound HTTPS allowed from approved LAN; ports 8000, 8501 and 5432 not exposed to users | Rules active for `10.0.50.0/24`; backend ports explicitly blocked |
+| Secret owner | Protected service-account environment for `APP_DATABASE_URL`, `APP_ORIGIN`, `APP_COOKIE_SECURE=true` | Protected under `C:\ProgramData\EnglishClass`; SYSTEM/Administrators only |
+| Log owner | Gateway/app log paths, ACLs, rotation size/age and retention | WinSW logs under `C:\ProgramData\EnglishClass\logs`; 10 MiB, 14-file rotation |
+| Backup owner | Daily task identity, destination, retention and latest restore proof | `EnglishClassDbBackup` runs daily at 12:00 as SYSTEM; current verified dump and Phase 9 restore proof complete |
 | HR UAT and cutover owner | Named approvers and signed workflow matrix | Pending |
 | Stabilization window | Start/end, support contact and rollback authority | Pending |
 
@@ -49,7 +49,7 @@ operator group.
 
 ## Service and gateway contract
 
-Configure the chosen Windows service manager with these fixed properties:
+The installed Windows service configuration has these fixed properties:
 
 - working directory is the versioned release directory;
 - command is `powershell -NoProfile -ExecutionPolicy Bypass -File run_react_app.ps1`;
@@ -65,18 +65,29 @@ Configure the chosen Windows service manager with these fixed properties:
 - gateway request/body/time limits are documented, and health endpoints remain
   available at `/api/health/live` and `/api/health/ready`.
 
-After configuration, prove restart rather than only initial launch:
+To prove restart rather than only initial launch:
 
 ```powershell
-Restart-Service -Name <approved-fastapi-service-name>
-Restart-Service -Name <approved-gateway-service-name>
-Get-Service -Name <approved-fastapi-service-name>,<approved-gateway-service-name>
+Restart-Service -Name EnglishClassReact
+Restart-Service -Name EnglishClassCaddy
+Get-Service -Name EnglishClassReact,EnglishClassCaddy
 python scripts\issue13_host_check.py
 ```
 
 The final host check must not use `--skip-origin-probe`. It verifies trusted TLS,
-at least 30 certificate days remaining, both health endpoints, the restricted
+at least one certificate hour remaining, both health endpoints, the restricted
 database role, schema head and connection budget without printing secrets.
+The one-hour emergency window stays below Caddy's default renewal window for its
+12-hour internal certificates; renewal and root distribution still require
+explicit evidence.
+
+The client trust bundle is at
+`C:\Users\Public\Documents\EnglishClass`. After the network administrator adds
+`english-class.cyberlogitec.local -> 10.0.50.119` to LAN DNS, each HR workstation
+must receive `english-class-root.crt` through the approved trust policy (or run
+the included elevated `install-root-ca.ps1`) before browser UAT.
+The server address is currently DHCP-assigned; reserve `10.0.50.119` for Wi-Fi
+MAC `00-93-37-64-12-F7` before relying on the DNS record.
 
 ## Firewall, certificate, logs and backup evidence
 
@@ -86,7 +97,7 @@ Capture sanitized command output showing:
 2. user workstations cannot reach FastAPI 8000, Streamlit 8501 or PostgreSQL
    5432;
 3. the certificate chain is browser-trusted and its renewal rehearsal leaves at
-   least 30 days;
+   least one hour on the newly issued short-lived certificate;
 4. an app restart preserves readiness and a gateway restart restores routing;
 5. access logs contain request ID, route template, status, duration and safe
    actor ID, but no query, body, password, cookie, CSRF token, SQL value or URL;

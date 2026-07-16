@@ -83,14 +83,21 @@ def database_evidence(database_url: str, *, workers: int, pool_max: int) -> dict
         connection.close()
 
 
-def origin_evidence(origin: str, *, minimum_certificate_days: int) -> dict[str, object]:
+def certificate_window(expires: datetime, now: datetime, *, minimum_hours: int) -> tuple[float, bool]:
+    hours_remaining = (expires - now).total_seconds() / 3600
+    return hours_remaining, hours_remaining >= minimum_hours
+
+
+def origin_evidence(origin: str, *, minimum_certificate_hours: int) -> dict[str, object]:
     host, port = validate_origin(origin)
     context = ssl.create_default_context()
     with socket.create_connection((host, port), timeout=5) as raw_socket:
         with context.wrap_socket(raw_socket, server_hostname=host) as tls_socket:
             certificate = tls_socket.getpeercert()
             expires = datetime.strptime(certificate["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
-            days_remaining = (expires - datetime.now(timezone.utc)).days
+            hours_remaining, window_passes = certificate_window(
+                expires, datetime.now(timezone.utc), minimum_hours=minimum_certificate_hours
+            )
     statuses: dict[str, int] = {}
     for path in ("/api/health/live", "/api/health/ready"):
         request = Request(origin.rstrip("/") + path, headers={"User-Agent": "english-class-readiness/1"})
@@ -100,14 +107,14 @@ def origin_evidence(origin: str, *, minimum_certificate_days: int) -> dict[str, 
         "host": host,
         "port": port,
         "certificate_expires_at": expires.isoformat(),
-        "certificate_days_remaining": days_remaining,
-        "certificate_window_passes": days_remaining >= minimum_certificate_days,
+        "certificate_hours_remaining": round(hours_remaining, 2),
+        "certificate_window_passes": window_passes,
         "health_statuses": statuses,
     }
 
 
 def readiness(*, skip_origin_probe: bool, workers: int, pool_max: int,
-              minimum_certificate_days: int) -> tuple[dict[str, object], list[str]]:
+              minimum_certificate_hours: int) -> tuple[dict[str, object], list[str]]:
     failures: list[str] = []
     origin = os.getenv("APP_ORIGIN", "")
     database_url = os.getenv("APP_DATABASE_URL") or os.getenv("DATABASE_URL")
@@ -140,9 +147,9 @@ def readiness(*, skip_origin_probe: bool, workers: int, pool_max: int,
     tls: dict[str, object] | None = None
     if not skip_origin_probe and "host" in origin_contract:
         try:
-            tls = origin_evidence(origin, minimum_certificate_days=minimum_certificate_days)
+            tls = origin_evidence(origin, minimum_certificate_hours=minimum_certificate_hours)
             if not tls["certificate_window_passes"]:
-                failures.append("TLS certificate renewal window is too short")
+                failures.append("TLS certificate expires too soon")
             if set(tls["health_statuses"].values()) != {200}:
                 failures.append("target health endpoints did not both return 200")
         except Exception as exc:
@@ -168,15 +175,15 @@ def main() -> None:
     parser.add_argument("--skip-origin-probe", action="store_true", help="Validate configuration and DB only; never use as final TLS evidence.")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--pool-max", type=int, default=5)
-    parser.add_argument("--minimum-certificate-days", type=int, default=30)
+    parser.add_argument("--minimum-certificate-hours", type=int, default=1)
     args = parser.parse_args()
-    if args.workers < 1 or args.pool_max < 1 or args.minimum_certificate_days < 1:
-        raise SystemExit("workers, pool maximum, and certificate days must be positive")
+    if args.workers < 1 or args.pool_max < 1 or args.minimum_certificate_hours < 1:
+        raise SystemExit("workers, pool maximum, and certificate hours must be positive")
     evidence, failures = readiness(
         skip_origin_probe=args.skip_origin_probe,
         workers=args.workers,
         pool_max=args.pool_max,
-        minimum_certificate_days=args.minimum_certificate_days,
+        minimum_certificate_hours=args.minimum_certificate_hours,
     )
     print(json.dumps(evidence, indent=2))
     if failures:
