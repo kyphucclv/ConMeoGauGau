@@ -1,0 +1,8 @@
+.brand-mark {
+  background: #2457c5 !important;
+}
+
+.table-wrap:focus {
+  outline: 2px solid #155eef;
+  outline-offset: 2px;
+}

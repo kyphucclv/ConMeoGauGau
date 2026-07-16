@@ -1,4 +1,8 @@
+import json
+import logging
+
 from fastapi.testclient import TestClient
+from psycopg2.pool import PoolError
 
 from api.main import Settings, create_app
 from auth import AppUser, UserAdminService
@@ -60,6 +64,9 @@ def test_errors_are_stable_and_hide_exceptions(database_url):
         @client.app.get("/api/test/boom")
         def boom():
             raise RuntimeError("database password must never leak")
+        @client.app.get("/api/test/busy")
+        def busy():
+            raise PoolError("database URL must never leak")
         with client:
             bad = client.post("/api/auth/login", headers={"Origin": ORIGIN}, json={})
             assert bad.status_code == 422 and bad.json()["code"] == "invalid_input"
@@ -67,6 +74,10 @@ def test_errors_are_stable_and_hide_exceptions(database_url):
             assert response.status_code == 500
             assert "password" not in response.text
             assert response.json()["request_id"]
+            busy_response = client.get("/api/test/busy")
+            assert busy_response.status_code == 503
+            assert busy_response.json()["code"] == "database_busy"
+            assert "database url" not in busy_response.text.lower()
     finally:
         pool.closeall()
 
@@ -80,5 +91,60 @@ def test_login_is_same_origin_and_rate_limited(database_url):
                 assert client.post("/api/auth/login", headers={"Origin":ORIGIN}, json={"username":"nobody","password":"wrong"}).status_code == 401
             response = client.post("/api/auth/login", headers={"Origin":ORIGIN}, json={"username":"nobody","password":"wrong"})
             assert response.status_code == 429 and response.json()["code"] == "rate_limited"
+    finally:
+        pool.closeall()
+
+
+def test_security_headers_and_cross_origin_preflight_are_fail_closed(database_url):
+    pool = create_pool(database_url, application_name="pytest_api_security")
+    app = create_app(Settings(database_url, "https://english-class.test", secure_cookie=True, serve_static=False), pool=pool)
+    try:
+        with TestClient(app) as client:
+            response = client.get("/api/health/live")
+            assert response.headers["cache-control"] == "private, no-store"
+            assert response.headers["x-content-type-options"] == "nosniff"
+            assert response.headers["x-frame-options"] == "DENY"
+            assert response.headers["referrer-policy"] == "no-referrer"
+            assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
+            assert response.headers["strict-transport-security"].startswith("max-age=31536000")
+
+            preflight = client.options(
+                "/api/auth/login",
+                headers={
+                    "Origin": "https://attacker.test",
+                    "Access-Control-Request-Method": "POST",
+                },
+            )
+            assert preflight.status_code == 405
+            assert "access-control-allow-origin" not in preflight.headers
+    finally:
+        pool.closeall()
+
+
+def test_access_log_is_structured_bounded_and_contains_no_request_secrets(database_url, caplog):
+    pool, client = client_for(database_url)
+    try:
+        with caplog.at_level(logging.INFO, logger="english_class.access"):
+            with client:
+                login = client.post(
+                    "/api/auth/login",
+                    headers={"Origin": ORIGIN, "X-Request-ID": "invalid request id"},
+                    json={"username": "pytest_viewer", "password": "viewer-pass"},
+                )
+                dashboard = client.get(
+                    "/api/dashboard?do_not_log=this-query",
+                    headers={"X-Request-ID": "production-check-1"},
+                )
+        assert login.status_code == 200 and dashboard.status_code == 200
+        events = [json.loads(record.message) for record in caplog.records if record.name == "english_class.access"]
+        dashboard_event = next(event for event in events if event["route"] == "/api/dashboard")
+        assert dashboard_event["request_id"] == "production-check-1"
+        assert dashboard_event["authenticated"] is True
+        assert isinstance(dashboard_event["actor_user_id"], int)
+        serialized = json.dumps(events).lower()
+        assert "do_not_log" not in serialized
+        assert "viewer-pass" not in serialized
+        assert login.json()["csrf_token"].lower() not in serialized
+        assert "english_class_session" not in serialized
     finally:
         pool.closeall()

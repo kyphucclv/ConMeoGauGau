@@ -1,7 +1,7 @@
 # Streamlit To React Workflow Parity Matrix
 
-Status: **Phase 0 inventory; acceptance/evidence columns are completed per
-tracer slice**
+Status: **Issue 13 technical inventory complete; target-host proof, HR UAT and
+stabilization approval pending**
 
 Current visibility is preserved unless an owner approves a product change:
 
@@ -13,9 +13,9 @@ Current visibility is preserved unless an owner approves a product change:
 
 | Workflow | Current entry/read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Named sign-in | `streamlit_app.render_sign_in`, `auth.authenticate` | Session-state assignment only | all active users | none | Secure sign-in foundation | Inventoried |
-| Session revalidation | `active_user_by_id` on rerun | none | all active users | none | Secure sign-in foundation | Inventoried |
-| Sign out | sidebar session-state removal | none | all | none | Secure sign-in foundation | Inventoried |
+| Named sign-in | `streamlit_app.render_sign_in`, `auth.authenticate` | Session-state assignment only | all active users | none | Secure sign-in foundation | Verified in Issue #1; opaque durable session, exact-origin login and bounded rate limit |
+| Session revalidation | `active_user_by_id` on rerun | none | all active users | none | Secure sign-in foundation | Verified in Issue #1; active user/session revalidated server-side with absolute and idle expiry |
+| Sign out | sidebar session-state removal | none | all | none | Secure sign-in foundation | Verified in Issue #1; server row revoked before secure cookie expiry and CSRF required |
 | Header summary | `application_snapshot` | none | admin/editor/viewer | none | Read-only shell | Verified in Issue #2; viewer receives summary and `hr_home=null` |
 | HR home | `hr_home_snapshot` | none | admin/editor | none | Read-only shell | Verified in Issue #2; React owns this read surface |
 
@@ -80,7 +80,7 @@ Current visibility is preserved unless an owner approves a product change:
 |---|---|---|---|---|---|---|
 | Create class with first course run/PIC | Workflow refs and proposed code | `create_class_course_run` | admin/editor | class/run/PIC audit events | Classes/schedule slice | Verified in Issue #11; one atomic command and rollback test |
 | Employee admin search/upsert | `employee_search_rows` | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile or classes slice | Profile edit is canonical in learner detail; separate admin search UI remains deferred |
-| List/create class record | `cohort_rows` | `create_cohort` | admin/editor | cohort creation audit | Classes/schedule slice | Inventoried |
+| List/create class record | `cohort_rows` | `create_cohort` | admin/editor | cohort creation audit | Classes/schedule slice | Superseded in target UI by Issue #11 atomic class + first run/PIC command; no separate partial-create React command |
 | Assign PIC employee/team label | Workflow refs | `assign_pic` | admin/editor | PIC assignment audit | Classes/schedule slice | Verified in Issue #11; label remains non-identity |
 | List/add course run | `course_run_dashboard_rows` | `create_course_run` | admin/editor | run creation audit | Classes/schedule slice | Verified in Issue #11; stable paging and concurrent run numbering |
 | Change course-run status | Course-run dashboard | `change_course_run_status` | admin/editor | status audit | Classes/schedule slice | Verified in Issue #11; lifecycle conflict retained |
@@ -108,3 +108,28 @@ For each row, replace `Inventoried` with links/references to:
 4. fixed-fixture or production-like parity comparison;
 5. HR owner UAT result;
 6. current canonical frontend ownership and fallback path.
+
+## Issue 13 production ownership and fallback
+
+All target workflows above have approved HTTP/OpenAPI, disposable database and
+React/browser evidence in Issues #1-#12. The repository gates add production-
+style load, accessibility, security and failure-path evidence in Issue #13.
+Named HR UAT and target-host proof remain pending and must not be inferred from
+automated tests.
+
+| Workflow group | Canonical owner after approved cutover | Stabilization fallback | UAT/cutover state |
+|---|---|---|---|
+| Authentication and shell | React/FastAPI | Tagged schema-compatible Streamlit route | Pending named HR/host approval |
+| Learners/profile/start/transfer | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Attendance and make-up | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Final results/completion | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Monthly review/export | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Follow-ups/remediation | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Classes and schedule | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
+| Registered reports/restricted audit | React/FastAPI | Streamlit using the same registered definitions/database | Pending named HR approval |
+| User administration/bootstrap | Operator/service only; out of parity | Same operator path | Separate feature/approval |
+
+Fallback switches routing only. Both frontends must remain on the same canonical
+schema and transactional service layer; dual-write, reverse migration and UI-
+rollback database restore are prohibited. Streamlit retirement requires a
+separate explicit approval after the Issue #13 stabilization window.

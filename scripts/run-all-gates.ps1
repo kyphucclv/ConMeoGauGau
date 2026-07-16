@@ -1,9 +1,10 @@
 # Run the full verification battery in one command.
 # Fast suite first (seconds), then the heavyweight disposable-DB gates.
-# Usage (from repo root):  .\scripts\run-all-gates.ps1  [-SkipHeavy]
+# Usage (from repo root):  .\scripts\run-all-gates.ps1  [-SkipHeavy] [-TargetHost]
 
 param(
-    [switch]$SkipHeavy
+    [switch]$SkipHeavy,
+    [switch]$TargetHost
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,7 +32,15 @@ Invoke-Gate "pytest fast suite"        { python -m pytest tests/ -q }
 Invoke-Gate "openapi contract check"   { npm --prefix web run api:check }
 Invoke-Gate "react unit suite"         { npm --prefix web test }
 Invoke-Gate "react production build"   { npm --prefix web run build }
+Invoke-Gate "npm high severity audit"  { npm --prefix web audit --audit-level=high }
 Invoke-Gate "phase13 dictionary check" { python scripts/phase13_dictionary_check.py }
+
+if ($TargetHost) {
+    if (-not $env:APP_DATABASE_URL) { $env:APP_DATABASE_URL = [Environment]::GetEnvironmentVariable("APP_DATABASE_URL", "User") }
+    if (-not $env:APP_ORIGIN) { $env:APP_ORIGIN = [Environment]::GetEnvironmentVariable("APP_ORIGIN", "User") }
+    if (-not $env:APP_COOKIE_SECURE) { $env:APP_COOKIE_SECURE = [Environment]::GetEnvironmentVariable("APP_COOKIE_SECURE", "User") }
+    Invoke-Gate "target HTTPS host check" { python scripts/issue13_host_check.py }
+}
 
 if (-not $SkipHeavy) {
     Invoke-Gate "playwright read journey"  { npm --prefix web run test:e2e }

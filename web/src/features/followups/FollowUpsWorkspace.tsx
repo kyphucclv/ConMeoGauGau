@@ -43,7 +43,7 @@ export function FollowUpsWorkspace({csrfToken, role}: Props) {
 
   return <section>
     <div className="section-heading"><div><p className="eyebrow">Operations</p><h2>Follow-ups</h2><p>Review derived conditions separately from the durable quality-issue ledger.</p></div></div>
-    <div className="workspace-tabs" role="tablist">
+    <div className="workspace-tabs">
       <button className={mode==='operational'?'active':''} onClick={()=>changeMode('operational')}>To check</button>
       <button className={mode==='logged'?'active':''} onClick={()=>changeMode('logged')}>Logged issues</button>
       {role==='admin'&&<button className={mode==='actions'?'active':''} onClick={()=>changeMode('actions')}>Approved actions</button>}
@@ -58,7 +58,7 @@ export function FollowUpsWorkspace({csrfToken, role}: Props) {
     </>}
     {mode==='logged'&&<>
       <div className="filters followup-filters"><label>Status<select value={status} onChange={e=>{setStatus(e.target.value);setPage(1)}}><option value="open">Open</option><option value="resolved">Resolved</option><option value="ignored">Ignored</option><option value="all">All</option></select></label></div>
-      <div className="table-wrap"><table><thead><tr><th>Issue</th><th>Source</th><th>Status</th><th>Resolution</th></tr></thead><tbody>{logged?.items.map(item=><tr key={item.issue_id}><td><strong>{item.issue_code}</strong><small>{item.entity_type} {item.entity_key}</small><details><summary>Original details</summary><pre>{JSON.stringify(item.details,null,2)}</pre></details></td><td>{item.source_sheet||'—'}<small>{item.source_row_number?`Row ${item.source_row_number}`:'No source row'}</small></td><td><span className="badge">{item.status}</span></td><td>{item.status==='open'?<ResolveIssue issueId={item.issue_id} post={post}/>:<><span>{item.resolution_note}</span><small>{item.resolved_by_username}</small></>}</td></tr>)}</tbody></table></div>
+      <div className="table-wrap" tabIndex={0}><table><thead><tr><th>Issue</th><th>Source</th><th>Status</th><th>Resolution</th></tr></thead><tbody>{logged?.items.map(item=><tr key={item.issue_id}><td><strong>{item.issue_code}</strong><small>{item.entity_type} {item.entity_key}</small><details><summary>Original details</summary><pre>{JSON.stringify(item.details,null,2)}</pre></details></td><td>{item.source_sheet||'—'}<small>{item.source_row_number?`Row ${item.source_row_number}`:'No source row'}</small></td><td><span className="badge">{item.status}</span></td><td>{item.status==='open'?<ResolveIssue issueId={item.issue_id} post={post}/>:<><span>{item.resolution_note}</span><small>{item.resolved_by_username}</small></>}</td></tr>)}</tbody></table></div>
     </>}
     {mode==='actions'&&role==='admin'&&<ApprovedActions post={post}/>}
     {mode!=='actions'&&current&&<div className="pagination"><span>Page {current.page} · {current.total} item(s)</span><button className="secondary" disabled={page===1} onClick={()=>setPage(v=>v-1)}>Previous</button><button className="secondary" disabled={page*current.page_size>=current.total} onClick={()=>setPage(v=>v+1)}>Next</button></div>}
@@ -67,7 +67,7 @@ export function FollowUpsWorkspace({csrfToken, role}: Props) {
 
 function IssueTable({rows}:{rows:OperationalIssuePage['items']}) {
   if(!rows.length) return <p className="empty-state">No operational follow-ups match these filters.</p>
-  return <div className="table-wrap"><table><thead><tr><th>Priority</th><th>Follow-up</th><th>Workflow</th><th>Context</th></tr></thead><tbody>{rows.map(item=><tr key={`${item.issue_code}-${item.entity_type}-${item.entity_key}`}><td><span className={`badge ${item.severity}`}>{item.severity}</span></td><td><strong>{item.title}</strong><small>{item.issue_code}</small></td><td>{item.workflow}</td><td><details><summary>{item.entity_type} {item.entity_key}</summary><pre>{JSON.stringify(item.details,null,2)}</pre></details></td></tr>)}</tbody></table></div>
+  return <div className="table-wrap" tabIndex={0}><table><thead><tr><th>Priority</th><th>Follow-up</th><th>Workflow</th><th>Context</th></tr></thead><tbody>{rows.map(item=><tr key={`${item.issue_code}-${item.entity_type}-${item.entity_key}`}><td><span className={`badge ${item.severity}`}>{item.severity}</span></td><td><strong>{item.title}</strong><small>{item.issue_code}</small></td><td>{item.workflow}</td><td><details><summary>{item.entity_type} {item.entity_key}</summary><pre>{JSON.stringify(item.details,null,2)}</pre></details></td></tr>)}</tbody></table></div>
 }
 
 function ResolveIssue({issueId,post}:{issueId:number;post:(url:string,body:unknown)=>Promise<void>}) {
