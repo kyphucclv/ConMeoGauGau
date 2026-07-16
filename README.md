@@ -28,13 +28,19 @@ the versioned migrations, staging loader, canonical ETL, and FastAPI/React app.
 
 Read these documents in order before changing code or data:
 
-1. `DATA_DICTIONARY.md` - field meaning and source of truth.
-2. `TARGET_ARCHITECTURE.md` - entity grain and business invariants.
-3. `PROJECT_RULES.md` - mandatory engineering and data-safety rules.
-4. `IMPLEMENTATION_PLAN.md` - phased tasks, dependencies, tests, and gates.
-5. `docs/reviews/phase-11-operations-workspace-spec.md` - approved HR workflow
+1. `CONTEXT.md` - shared English Class business language.
+2. `DATA_DICTIONARY.md` - field meaning and source of truth.
+3. `TARGET_ARCHITECTURE.md` - entity grain and business invariants.
+4. `PROJECT_RULES.md` - mandatory engineering and data-safety rules.
+5. `IMPLEMENTATION_PLAN.md` - phased tasks, dependencies, tests, and gates.
+6. `docs/reviews/phase-11-operations-workspace-spec.md` - approved HR workflow
    and UX acceptance criteria.
-6. `DEVELOPER_REVIEW_CHECKLIST.md` - evidence required for every phase/PR.
+7. `DEVELOPER_REVIEW_CHECKLIST.md` - evidence required for every phase/PR.
+
+For integration into ConCho2, start with
+`docs/integration/concho2-integration-handoff.md`. It maps both codebases,
+records the domain-ownership decision, defines the command boundary, and gives
+the migration, reconciliation, test, and cutover checklist.
 
 ## Verified canonical path
 

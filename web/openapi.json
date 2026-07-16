@@ -911,9 +911,16 @@
             "title": "Passed"
           },
           "start_date": {
-            "format": "date",
-            "title": "Start Date",
-            "type": "string"
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
           },
           "start_session_number": {
             "title": "Start Session Number",

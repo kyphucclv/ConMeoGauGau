@@ -85,6 +85,25 @@ def test_editor_reads_learner_detail_history_and_safe_audit_summary(database_url
         pool.closeall()
 
 
+def test_editor_reads_course_history_without_confirmed_run_start_date(database_url, seed_ids, factory, conn):
+    _, course_run_id = factory.cohort_run()
+    onboarded = factory.onboard(course_run_id, full_name="Undated History Learner")
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("UPDATE course_runs SET start_date = NULL WHERE course_run_id = %s", (course_run_id,))
+
+    pool, client = client_for(database_url)
+    try:
+        with client:
+            _login(client, "pytest_editor", "editor-pass")
+            response = client.get(f"/api/learners/{onboarded.values['employee_id']}")
+
+        assert response.status_code == 200
+        assert response.json()["course_history"][0]["start_date"] is None
+    finally:
+        pool.closeall()
+
+
 def test_directory_filters_by_current_class(database_url, seed_ids, factory):
     first_cohort, first_run = factory.cohort_run()
     factory.onboard(first_run, full_name="Filtered One")

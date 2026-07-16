@@ -69,7 +69,7 @@ class LearnerJourney(BaseModel):
 
 
 class CourseHistoryItem(BaseModel):
-    start_date: date
+    start_date: date | None
     class_code: str
     course_name: str
     status: str

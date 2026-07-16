@@ -40,7 +40,7 @@ test('admin navigates, edits a profile, and refetches only affected reads', asyn
       saved = true
       return jsonResponse({employee_id:41,org_history_action:'unchanged'})
     }
-    if (url === '/api/learners/41') return jsonResponse({learner:{employee_id:41,emp_code:'E041',full_name:saved?'Directory Updated':'Directory Alpha',employment_status:'active',business_unit_id:1,business_unit_name:'People',job_role_id:1,job_role_name:'Specialist',current_org_valid_from:'2026-08-01',placement_id:1,entrance_level_id:1,entrance_level:'Entrance',active_enrollment_id:51,active_course_run_id:2,active_cohort_id:3,active_class_code:'A1',active_course_name:'Pytest Course',active_membership_id:4,membership_cohort_id:3,membership_class_code:'A1',latest_enrollment_status:'active',latest_class_code:'A1',latest_course_name:'Pytest Course',membership_count:1,lifecycle:'active'},course_history:[{start_date:'2026-08-01',class_code:'A1',course_name:'Pytest Course',status:'active',start_session_number:1,attendance_ratio:0.75,final_level:null,passed:null}],audit_summary:saved?[{created_at:'2026-08-02T00:00:00Z',actor_username:'admin',action:'employee.upsert'}]:[{created_at:'2026-08-01T00:00:00Z',actor_username:'admin',action:'learner.onboard'}]})
+    if (url === '/api/learners/41') return jsonResponse({learner:{employee_id:41,emp_code:'E041',full_name:saved?'Directory Updated':'Directory Alpha',employment_status:'active',business_unit_id:1,business_unit_name:'People',job_role_id:1,job_role_name:'Specialist',current_org_valid_from:'2026-08-01',placement_id:1,entrance_level_id:1,entrance_level:'Entrance',active_enrollment_id:51,active_course_run_id:2,active_cohort_id:3,active_class_code:'A1',active_course_name:'Pytest Course',active_membership_id:4,membership_cohort_id:3,membership_class_code:'A1',latest_enrollment_status:'active',latest_class_code:'A1',latest_course_name:'Pytest Course',membership_count:1,lifecycle:'active'},course_history:[{start_date:null,class_code:'A1',course_name:'Pytest Course',status:'active',start_session_number:1,attendance_ratio:0.75,final_level:null,passed:null}],audit_summary:saved?[{created_at:'2026-08-02T00:00:00Z',actor_username:'admin',action:'employee.upsert'}]:[{created_at:'2026-08-01T00:00:00Z',actor_username:'admin',action:'learner.onboard'}]})
     throw new Error(`Unexpected fetch: ${url}`)
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -55,6 +55,8 @@ test('admin navigates, edits a profile, and refetches only affected reads', asyn
   expect(await screen.findByRole('heading',{name:'Directory Alpha'})).toBeTruthy()
   expect(screen.getByText('Course history')).toBeTruthy()
   expect(screen.getAllByText('Pytest Course').length).toBeGreaterThan(0)
+  const historyCourse = screen.getAllByText('Pytest Course').find(node => node.closest('tr'))
+  expect(historyCourse?.closest('tr')?.querySelector('td')?.textContent).toBe('—')
   expect(screen.getByText('learner.onboard')).toBeTruthy()
   const directoryCallsBeforeSave = fetchMock.mock.calls.filter(([url]) => String(url).startsWith('/api/learners?')).length
   fireEvent.click(screen.getByRole('button',{name:'Edit profile'}))

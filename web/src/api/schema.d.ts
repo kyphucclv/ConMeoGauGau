@@ -1162,11 +1162,8 @@ export interface components {
             final_level?: string | null;
             /** Passed */
             passed?: boolean | null;
-            /**
-             * Start Date
-             * Format: date
-             */
-            start_date: string;
+            /** Start Date */
+            start_date: string | null;
             /** Start Session Number */
             start_session_number: number;
             /** Status */
