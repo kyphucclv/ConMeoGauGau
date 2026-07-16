@@ -5,8 +5,11 @@ import { LearnerDirectory } from './features/learners/LearnerDirectory'
 import { AttendanceWorkspace } from './features/attendance/AttendanceWorkspace'
 import { EvaluationWorkspace } from './features/evaluations/EvaluationWorkspace'
 import { MonthlyReviewWorkspace } from './features/monthly-review/MonthlyReviewWorkspace'
+import { FollowUpsWorkspace } from './features/followups/FollowUpsWorkspace'
+import { AdministrationWorkspace } from './features/administration/AdministrationWorkspace'
+import { ReportsWorkspace } from './features/reports/ReportsWorkspace'
 
-type View = 'home' | 'learners' | 'attendance' | 'evaluations' | 'monthly-review'
+type View = 'home' | 'learners' | 'attendance' | 'evaluations' | 'monthly-review' | 'follow-ups' | 'administration' | 'reports'
 
 export function App() {
   const [auth, setAuth] = useState<Auth|null>(null)
@@ -35,7 +38,7 @@ export function App() {
   const canAccessHr = auth.user.role === 'admin' || auth.user.role === 'editor'
   return <div className="app-shell" data-testid="protected-content">
     <header><div><span className="brand-mark">EC</span><strong>English Class</strong></div><div className="user-menu"><span>{auth.user.full_name}<small>{auth.user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></header>
-    <div className="app-body"><nav aria-label="Main navigation"><button className={view==='home'?'active':''} onClick={() => setView('home')}>Home</button>{canAccessHr && <><button className={view==='learners'?'active':''} onClick={() => setView('learners')}>Learners</button><button className={view==='attendance'?'active':''} onClick={() => setView('attendance')}>Attendance</button><button className={view==='evaluations'?'active':''} onClick={() => setView('evaluations')}>Final results</button><button className={view==='monthly-review'?'active':''} onClick={() => setView('monthly-review')}>Monthly review</button></>}</nav>
+    <div className="app-body"><nav aria-label="Main navigation"><button className={view==='home'?'active':''} onClick={() => setView('home')}>Home</button>{canAccessHr && <><button className={view==='learners'?'active':''} onClick={() => setView('learners')}>Learners</button><button className={view==='attendance'?'active':''} onClick={() => setView('attendance')}>Attendance</button><button className={view==='evaluations'?'active':''} onClick={() => setView('evaluations')}>Final results</button><button className={view==='monthly-review'?'active':''} onClick={() => setView('monthly-review')}>Monthly review</button><button className={view==='follow-ups'?'active':''} onClick={() => setView('follow-ups')}>Follow-ups</button><button className={view==='administration'?'active':''} onClick={() => setView('administration')}>Classes & schedule</button></>}<button className={view==='reports'?'active':''} onClick={() => setView('reports')}>Reports</button></nav>
       <main className="workspace">{view === 'learners' && canAccessHr
         ? <LearnerDirectory csrfToken={auth.csrf_token} onProfileSaved={() => setDashboardRefreshToken(value => value + 1)} />
         : view === 'attendance' && canAccessHr
@@ -44,6 +47,12 @@ export function App() {
             ? <EvaluationWorkspace csrfToken={auth.csrf_token} role={auth.user.role as 'admin'|'editor'} onSaved={() => setDashboardRefreshToken(value => value + 1)} />
           : view === 'monthly-review' && canAccessHr
             ? <MonthlyReviewWorkspace csrfToken={auth.csrf_token} />
+          : view === 'follow-ups' && canAccessHr
+            ? <FollowUpsWorkspace csrfToken={auth.csrf_token} role={auth.user.role as 'admin'|'editor'} />
+          : view === 'administration' && canAccessHr
+            ? <AdministrationWorkspace csrfToken={auth.csrf_token} />
+          : view === 'reports'
+            ? <ReportsWorkspace role={auth.user.role as 'admin'|'editor'|'viewer'} />
           : <Dashboard canAccessHr={canAccessHr} refreshToken={dashboardRefreshToken} />}</main>
     </div>
   </div>

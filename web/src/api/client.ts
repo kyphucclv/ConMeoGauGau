@@ -36,6 +36,17 @@ export type CompletionActionResult = Schemas['CompletionActionResult']
 export type MonthlyReviewResponse = Schemas['MonthlyReviewResponse']
 export type MonthlyActionSummaryBody = Schemas['MonthlyActionSummaryBody']
 export type MonthlyActionSummaryResult = Schemas['MonthlyActionSummaryResult']
+export type OperationalIssuePage = Schemas['OperationalIssuePage']
+export type QualityIssuePage = Schemas['QualityIssuePage']
+export type RemediationResult = Schemas['RemediationResult']
+export type AdministrationOptions = Schemas['AdministrationOptions']
+export type ClassPage = Schemas['ClassPage']
+export type CourseRunPage = Schemas['CourseRunPage']
+export type SchedulePage = Schemas['SchedulePage']
+export type AdministrationCommandResult = Schemas['AdministrationCommandResult']
+export type ReportCatalog = Schemas['ReportCatalog']
+export type ReportPage = Schemas['ReportPage']
+export type AuditEventPage = Schemas['AuditEventPage']
 
 type ErrorEnvelope = { message?: string }
 

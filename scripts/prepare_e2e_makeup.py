@@ -17,8 +17,12 @@ from services import BusinessService
 
 
 def main() -> None:
+    # Browser fixtures must never follow APP_DATABASE_URL: that variable can
+    # legitimately point at the local production database. Keep this script on
+    # the dedicated disposable database unless an explicit E2E URL is supplied.
     database_url = os.getenv(
-        "APP_DATABASE_URL", "postgresql://postgres@localhost:5432/english_class_pytest"
+        "ENGLISH_CLASS_E2E_DATABASE_URL",
+        "postgresql://postgres@localhost:5432/english_class_pytest",
     )
     connection = psycopg2.connect(database_url)
     try:
@@ -47,6 +51,19 @@ def main() -> None:
             unit_type="makeup",
             status="planned",
         )
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """INSERT INTO data_quality_issues(
+                           issue_code,entity_type,entity_key,source_sheet,source_row_number,details
+                       )
+                       SELECT 'playwright_followup','employee','browser-fixture','E2E',1,
+                              '{"source":"browser-fixture"}'::jsonb
+                       WHERE NOT EXISTS (
+                         SELECT 1 FROM data_quality_issues
+                         WHERE issue_code='playwright_followup' AND status='open'
+                       )"""
+                )
     finally:
         connection.close()
 
