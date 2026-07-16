@@ -1,7 +1,7 @@
 # Streamlit To React Workflow Parity Matrix
 
-Status: **Issue 13 technical inventory complete; target-host proof, HR UAT and
-stabilization approval pending**
+Status: **historical parity inventory complete; React/FastAPI is the only live
+frontend after owner-approved local-only retirement on 2026-07-16**
 
 Current visibility is preserved unless an owner approves a product change:
 
@@ -109,27 +109,24 @@ For each row, replace `Inventoried` with links/references to:
 5. HR owner UAT result;
 6. current canonical frontend ownership and fallback path.
 
-## Issue 13 production ownership and fallback
+## Final local-only ownership decision
 
-All target workflows above have approved HTTP/OpenAPI, disposable database and
-React/browser evidence in Issues #1-#12. The repository gates add production-
-style load, accessibility, security and failure-path evidence in Issue #13.
-Named HR UAT and target-host proof remain pending and must not be inferred from
-automated tests.
+All target workflows above have HTTP/OpenAPI, disposable database and
+React/browser evidence from Issues #1-#12. The owner withdrew HR/LAN production
+rollout and limited use to local testing on the designated machine. Named HR UAT
+and production stabilization were not completed and must not be inferred.
 
-| Workflow group | Canonical owner after approved cutover | Stabilization fallback | UAT/cutover state |
+| Workflow group | Active owner | Live fallback | Final state |
 |---|---|---|---|
-| Authentication and shell | React/FastAPI | Tagged schema-compatible Streamlit route | Pending named HR/host approval |
-| Learners/profile/start/transfer | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Attendance and make-up | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Final results/completion | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Monthly review/export | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Follow-ups/remediation | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Classes and schedule | React/FastAPI services | Streamlit using the same services/database | Pending named HR approval |
-| Registered reports/restricted audit | React/FastAPI | Streamlit using the same registered definitions/database | Pending named HR approval |
+| Authentication and shell | React/FastAPI | None | Local test only |
+| Learners/profile/start/transfer | React/FastAPI services | None | Local test only |
+| Attendance and make-up | React/FastAPI services | None | Local test only |
+| Final results/completion | React/FastAPI services | None | Local test only |
+| Monthly review/export | React/FastAPI services | None | Local test only |
+| Follow-ups/remediation | React/FastAPI services | None | Local test only |
+| Classes and schedule | React/FastAPI services | None | Local test only |
+| Registered reports/restricted audit | React/FastAPI | None | Local test only |
 | User administration/bootstrap | Operator/service only; out of parity | Same operator path | Separate feature/approval |
 
-Fallback switches routing only. Both frontends must remain on the same canonical
-schema and transactional service layer; dual-write, reverse migration and UI-
-rollback database restore are prohibited. Streamlit retirement requires a
-separate explicit approval after the Issue #13 stabilization window.
+The final compatible Streamlit source is archived at tag
+`streamlit-final-compatible-2026-07-16`. It is not an active or supported route.

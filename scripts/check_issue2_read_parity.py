@@ -1,4 +1,4 @@
-"""Compare Issue #2 endpoint reads with the current Streamlit read model."""
+"""Compare Issue #2 endpoint reads with the retained canonical read model."""
 
 from __future__ import annotations
 

@@ -84,12 +84,16 @@ demoable and crosses the necessary schema, HTTP, UI, test, and operational seams
     - Covers: full parity matrix, accessibility/security/load tests, connection
       budget, TLS/service/runbook, backup/restore check, fallback rehearsal,
       HR UAT, dated stabilization window, and ownership switch.
+    - Final state: closed as not planned after the owner withdrew HR/LAN rollout
+      and accepted local-only testing on 2026-07-16.
 
 14. **Retire Streamlit after the stabilization gate**
     - Blocked by: 13 and explicit owner retirement approval.
     - Covers: archived compatible release, removal of Streamlit runtime/UI-only
       paths, replacement verification, documentation update, retained rollback
       artifacts, and clean full-gate evidence.
+    - Owner decision: retirement explicitly approved for the local-only scope
+      on 2026-07-16; no live Streamlit fallback remains.
 
 15. **Make Phase 11 operational snapshot identity deterministic**
     - Blocked by: none; must complete before 13.

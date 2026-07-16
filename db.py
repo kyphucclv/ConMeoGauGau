@@ -1,4 +1,4 @@
-"""Database access helpers for the Streamlit app and service tests."""
+"""Database access helpers for the application and service tests."""
 
 from __future__ import annotations
 

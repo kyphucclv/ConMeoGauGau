@@ -1,7 +1,7 @@
 # FastAPI + React Deployment And Session Decisions
 
-Status: **target-host service/TLS contract validated; LAN DNS/client trust, HR
-UAT and stabilization remain pending**
+Status: **local-only target host validated; HR/LAN rollout withdrawn and
+Streamlit retirement approved on 2026-07-16**
 
 These decisions define the deployment and security contract. The concrete TLS
 gateway product remains replaceable; it must prove this contract on the actual
@@ -12,7 +12,7 @@ Windows/LAN host before production use.
 | Topic | Decision |
 |---|---|
 | Runtime host | Start on the current designated Windows internal application host; do not introduce cloud hosting in this migration. |
-| User access | LAN users access one approved internal HTTPS hostname. Direct access to FastAPI, Vite, PostgreSQL, or Streamlit ports is not the production user path. |
+| User access | The designated machine accesses one HTTPS hostname. Direct access to FastAPI, Vite or PostgreSQL ports is not an approved user path. |
 | Origin | React static files and `/api/*` share one origin. Production CORS is disabled by default. |
 | TLS | HTTPS is mandatory for LAN login. Certificate trust, installation, and renewal belong in the runbook and cutover rehearsal. |
 | Frontend serving | Deploy a versioned Vite production build. The Vite development server is local-development-only. |
@@ -23,7 +23,7 @@ Windows/LAN host before production use.
 | Network exposure | Bind only to the intended host interface; restrict backend/database ports with the host firewall. |
 | Logs | Structured application logs include request ID, route, status, duration, and safe actor/session identifiers; never passwords, cookies, CSRF tokens, SQL text with user values, or connection strings. |
 | Backup | Existing PostgreSQL backup/restore remains authoritative; frontend rollback normally does not restore data. |
-| Fallback | Keep a tagged, schema-compatible Streamlit release and switch user routing back without dual-write or reverse migration. |
+| Retained artifact | Keep tag `streamlit-final-compatible-2026-07-16` and the verified retirement backup; there is no active Streamlit route. |
 
 ## Initial service targets
 
@@ -84,15 +84,11 @@ acceptable for the initial internal slice:
 Before increasing worker count or exposing the application beyond the approved
 LAN, replace this with a shared limiter or an approved gateway control.
 
-## Remaining host validation
+## Owner-approved local-only scope
 
-The target host now proves the Caddy/WinSW service topology, loopback backend,
+The target host proves the Caddy/WinSW service topology, loopback backend,
 restricted database role and budget, protected secrets, rotated service logs,
-firewall rules, trusted server TLS, restart recovery and scheduled backup. Issue
-#13 cannot claim final production readiness until it also proves:
-
-- approved hostname resolution from HR workstations;
-- Caddy internal root distribution to HR browsers and observed leaf renewal;
-- named HR UAT for every parity workflow;
-- stabilization without a high/critical defect or unexplained count mismatch;
-- Streamlit routing fallback rehearsal from a client workstation.
+firewall rules, trusted server TLS, restart recovery and scheduled backup. The
+owner withdrew HR-workstation deployment, DNS distribution, HR UAT and the
+production stabilization window. Issue #13 therefore closed as not planned;
+these omitted production checks must not be inferred from local testing.

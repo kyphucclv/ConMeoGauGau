@@ -45,7 +45,7 @@ if ($TargetHost) {
 if (-not $SkipHeavy) {
     Invoke-Gate "playwright read journey"  { npm --prefix web run test:e2e }
     Invoke-Gate "phase8 automated UAT"     { python scripts/phase8_automated_uat.py }
-    Invoke-Gate "phase9 cutover rehearsal" { python scripts/phase9_cutover_rehearsal.py }
+    Invoke-Gate "phase9 data restore rehearsal" { python scripts/phase9_cutover_rehearsal.py }
     Invoke-Gate "phase10 sign-off gate"    { python scripts/phase10_quality_signoff.py --validate-decisions }
     Invoke-Gate "phase11 decision gate"    { python scripts/phase11_operational_issue_snapshot.py --validate-decisions }
 }

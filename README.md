@@ -13,15 +13,16 @@ Phase 13.2 now provides HR-first learner start, continuation, rejoin, profile,
 history, and transfer journeys while preserving the canonical service and audit
 boundaries.
 
-The FastAPI + React migration now owns the secure shell, learner, attendance,
-final-result, monthly-review, follow-up/remediation, class/schedule, registered
-report, and restricted audit journeys through Issues #1-#12. Streamlit remains
-the compatible fallback until production-readiness Issue #13 is approved.
+FastAPI + React is the only active frontend for the secure shell, learner,
+attendance, final-result, monthly-review, follow-up/remediation, class/schedule,
+registered-report, and restricted-audit journeys. The owner limited the final
+scope to local testing on the designated machine and approved Streamlit
+retirement on 2026-07-16.
 
-The pre-canonical prototype (old `app.py`, `etl.py`, `schema.sql`, `views.sql`,
-`admin_schema.sql`, `setup.ps1`, `quality_checks.sql`) is archived under
-`legacy/` and must not be run against the canonical database.  Use the
-versioned migrations, staging loader, canonical ETL, and `streamlit_app.py`.
+The remaining pre-canonical database/ETL prototype files are archived under
+`legacy/` and must not be run against the canonical database. The removed
+Streamlit wrapper/setup remains available only in the final compatible tag. Use
+the versioned migrations, staging loader, canonical ETL, and FastAPI/React app.
 
 ## Developer handoff
 
@@ -47,17 +48,16 @@ The current verified path is:
    `python scripts/stage_workbook.py okok_FIXED_v2.xlsx --database-url "<migration-role-database-url>" --profile-output docs/reviews/final-workbook-profile.json`
 5. Run canonical ETL:
    `python scripts/canonical_etl_v3.py "<migration-role-database-url>"`.
-6. Configure `APP_DATABASE_URL`, `DATABASE_URL`, or copy
-   `.streamlit/secrets.example.toml` to `.streamlit/secrets.toml` and fill the
-   restricted app role URL.
+6. Configure `APP_DATABASE_URL` or `DATABASE_URL` with the restricted app role
+   URL outside the repository.
 7. Create the first named app admin once:
    `python scripts/bootstrap_admin.py --username hr-admin --full-name "HR Admin"`.
-8. Start the app with the checked Windows launcher:
-   `.\run_app.cmd`
+8. Build the React frontend and start the checked FastAPI launcher:
+   `npm --prefix web run build`, then `.\run_react_app.cmd`.
 
 The launcher verifies Python packages, the restricted app database connection,
-and the canonical schema before starting Streamlit at
-`http://127.0.0.1:8501`.
+the canonical schema, the production build and the connection budget before
+starting one loopback-only FastAPI worker behind the HTTPS gateway.
 
 The app requires a named application username and password so every operational
 change and audit event is attributed to the HR user who performed it.
@@ -91,8 +91,7 @@ Manual run:
 ```
 
 Database URLs are read from the user-scoped `APP_DATABASE_URL` and
-`MIGRATION_DATABASE_URL` environment variables (preferred over
-`.streamlit/secrets.toml`, which should stay absent from synced folders).
+`MIGRATION_DATABASE_URL` environment variables and never from repository files.
 
 Phase 9 rehearsal command:
 
@@ -144,17 +143,12 @@ denominator while preserving present replacement credit and immutable linkage.
   concern (`base`, `employee_onboarding`, `membership_transfer`,
   `class_schedule`, `meetings_units`, `attendance_makeup`,
   `evaluation_completion`, `admin_remediation`).
-- `streamlit_app.py` + `frontend_workflows/` — HR-facing page and task-area
-  workflow modules (`operations_entry`, `learner_directory`,
-  `learner_journeys`, `attendance`, `evaluation`, `monthly_review`,
-  `data_issues`, `class_admin`, `schedule_admin`, `shared`).
-- `frontend_queries.py` — task-oriented canonical read models used by the UI.
+- `api/` + `web/` — FastAPI HTTP boundary and the React application.
+- `frontend_queries.py` — task-oriented canonical read models used by the API.
 - `tests/` — fast disposable-database business-rule regression suite.
 - `legacy/` — archived pre-canonical prototype; do not run.
-- `.streamlit/config.toml` — local Streamlit server defaults; keep
-  `.streamlit/secrets.toml` local and ignored.
-- `run_app.cmd` / `run_app.ps1` — Windows launcher and health check for the
-  local admin app.
+- `run_react_app.cmd` / `run_react_app.ps1` — checked loopback-only FastAPI
+  launcher used behind the HTTPS gateway.
 - `database_roles.sql` — restricted migration/app/read-only role grants.
 - `scripts/phase*_*.py` — disposable integration, UAT, and cutover rehearsal gates.
 - `scripts/phase10_quality_signoff.py` — reproducible quality issue snapshot and
@@ -169,11 +163,12 @@ denominator while preserving present replacement credit and immutable linkage.
 
 ## Cutover safety
 
-Production cutover completed on 2026-07-13. The pre-cutover legacy database and
-verified backups are retained for rollback; use the Phase 9 runbook for restore
-and verification steps. React traffic cutover is a separate Issue #13 approval;
-use `docs/runbooks/issue-13-production-cutover.md`, and keep Streamlit as the
-routing-only fallback until stabilization and explicit retirement approval.
+Database cutover completed on 2026-07-13. The owner withdrew the HR/LAN rollout
+and accepted local-only testing on 2026-07-16, so Issue #13 closed as not
+planned. The final Streamlit-compatible source is retained at tag
+`streamlit-final-compatible-2026-07-16`; the live repository has no Streamlit
+runtime. See `docs/runbooks/issue-14-streamlit-retirement.md` for the retained
+artifact and recovery evidence.
 
 ## Archived legacy notes
 

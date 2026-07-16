@@ -1,12 +1,12 @@
 # Issue 13 React production cutover runbook
 
-Status: **target host configured; LAN DNS/trust distribution, HR UAT and stabilization pending**
+Status: **archived — HR/LAN rollout withdrawn; local-only testing retained**
 
-This runbook moves user traffic from Streamlit to the same-origin React/FastAPI
-application without changing the canonical database. Streamlit remains the
-schema-compatible fallback throughout stabilization. Rollback changes routing
-only: do not dual-write, reverse migrations, or restore the database for a
-frontend rollback.
+This runbook records the production rollout that was considered but not
+completed. On 2026-07-16 the owner limited the final scope to testing on the
+designated machine and withdrew HR/LAN rollout, UAT and stabilization. The
+final compatible Streamlit source is retained only at tag
+`streamlit-final-compatible-2026-07-16`; it is no longer a live route.
 
 ## Owner decisions required before cutover
 
@@ -162,5 +162,6 @@ session failure or threshold breach accepted by the rollback owner:
 5. open an incident and obtain a new cutover approval after correction.
 
 Database restore is reserved for a separately proven database incident, not UI
-rollback. Streamlit retirement (Issue 14) requires completed stabilization and
-an explicit owner approval recorded after Issue 13.
+rollback. The owner explicitly waived the unperformed production stabilization
+gate when approving local-only Streamlit retirement on 2026-07-16. See
+`docs/runbooks/issue-14-streamlit-retirement.md` for the retained tag and backup.

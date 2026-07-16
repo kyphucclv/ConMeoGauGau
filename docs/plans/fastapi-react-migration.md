@@ -701,6 +701,10 @@ Acceptance:
 
 ### Phase 8: Streamlit Retirement
 
+Status: **owner-approved for local-only scope on 2026-07-16**. The HR/LAN
+production rollout and stabilization gate were withdrawn rather than completed;
+the retained tag and backup are the recovery artifacts.
+
 Deliver:
 
 - Archive the final compatible Streamlit release/tag and its rollback runbook.

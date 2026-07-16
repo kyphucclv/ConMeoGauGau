@@ -4,7 +4,6 @@ __pycache__/
 .pytest_cache/
 
 # Local credentials and machine-specific runtime state.
-.streamlit/secrets.toml
 .env
 backups/
 web/node_modules/

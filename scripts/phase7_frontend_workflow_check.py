@@ -1,8 +1,8 @@
-"""Phase 7 admin workflow gate.
+"""Phase 7 business workflow gate.
 
-The UI calls these same service commands; this script replays the monthly admin
-workflow against PostgreSQL and validates the database rows that the UI should
-surface after each major step.
+The API calls these same service commands; this script replays the monthly admin
+workflow against PostgreSQL and validates the database rows that the application
+should surface after each major step.
 """
 
 from __future__ import annotations
@@ -84,95 +84,7 @@ def seed(conn) -> dict[str, int]:
     return ids
 
 
-def _workflow_sources() -> dict[str, str]:
-    """UI workflow sources: the frontend_workflows package (or legacy module)."""
-    package_dir = ROOT / "frontend_workflows"
-    if package_dir.is_dir():
-        return {
-            f"frontend_workflows/{path.name}": path.read_text(encoding="utf-8")
-            for path in sorted(package_dir.glob("*.py"))
-        }
-    return {"frontend_workflows.py": (ROOT / "frontend_workflows.py").read_text(encoding="utf-8")}
-
-
-def assert_static_ui_contract() -> None:
-    sources = {"streamlit_app.py": (ROOT / "streamlit_app.py").read_text(encoding="utf-8")}
-    sources.update(_workflow_sources())
-    forbidden = ["st.exception", "Show SQL", "PostgreSQL connection string", "use_container_width"]
-    for filename, text in sources.items():
-        for pattern in forbidden:
-            if pattern in text:
-                raise AssertionError(f"{filename} contains forbidden UI pattern: {pattern}")
-        for sql_pattern in ("fetch_all(", "SELECT ", "FROM ", "JOIN ", "WHERE "):
-            if sql_pattern in text:
-                raise AssertionError(f"{filename} must delegate read SQL to frontend_queries.py: {sql_pattern}")
-    if "BusinessService" not in "".join(_workflow_sources().values()):
-        raise AssertionError("frontend workflows must call the service layer")
-    app_text = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
-    app_patterns = [
-        "page_icon=\":material/school:\"",
-        "operations_snapshot",
-        "render_app_header",
-        "render_sign_in",
-        "active_user_by_id",
-        ":material/home_work: HR workspace",
-    ]
-    for pattern in app_patterns:
-        if pattern not in app_text:
-            raise AssertionError(f"streamlit app missing P12.1 shell pattern: {pattern}")
-    workflow_text = "".join(_workflow_sources().values())
-    required_patterns = [
-        "on_select=\"rerun\"",
-        "selection_mode=\"single-row\"",
-        "create_class_course_run",
-        "create_meeting_with_units",
-        "add_session_units",
-        "accept_new_options=True",
-        "propose_next_attendance_session",
-        "save_attendance_roster",
-        "Historical gaps stay blank",
-        "_shift_review_month",
-        "course_participation",
-        "class_participation",
-        "Delivery rate",
-        "_operational_issue_rows",
-        "issue_severity_filter",
-        "operational_issue_grid",
-        "JsonColumn",
-        "propose_onboarding_start_session",
-        "learner_workspace_mode",
-        "_set_learner_workspace_mode",
-        "Find learners",
-        "Start learning",
-        "Continue learning",
-        "Move learner",
-        "I confirm this learner, class, course, and first session",
-        "No entrance level",
-        "attendance_workspace_mode",
-        "_set_attendance_workspace_mode",
-        "Mark attendance",
-        "Record make-up",
-        "render_attendance_makeup",
-        "data_issues_mode",
-        "render_operational_decision_actions",
-        "render_logged_quality_issues",
-        "monthly_review_mode",
-        "render_monthly_detail_tables",
-        "render_monthly_action_summary",
-        "evaluation_workspace_mode",
-        "render_eligibility_override",
-        "render_evaluation_record",
-        "render_completion_action",
-        "HR_TASK_AREAS",
-        "Follow-ups",
-        "render_hr_start",
-        "render_class_setup_workspace",
-        "render_employee_workflow",
-    ]
-    for pattern in required_patterns:
-        if pattern not in workflow_text:
-            raise AssertionError(f"frontend workflows missing P11.2 pattern: {pattern}")
-
+def assert_read_model_contract() -> None:
     query_text = (ROOT / "frontend_queries.py").read_text(encoding="utf-8")
     query_patterns = [
         "def application_snapshot",
@@ -396,7 +308,7 @@ def run_gate(database_url: str) -> dict[str, object]:
         progress = one(conn, "SELECT * FROM v_employee_progress_summary WHERE employee_id=%s", (employee,))
         assert progress["current_level_name"] == "P7 Highest"
 
-        assert_static_ui_contract()
+        assert_read_model_contract()
 
         return {
             "employee_id": employee,
@@ -421,7 +333,7 @@ def main() -> None:
     recreate_database(maintenance_url, db_name)
     apply_migrations(database_url)
     result = run_gate(database_url)
-    print("Phase 7 frontend workflow gate passed.")
+    print("Phase 7 business workflow gate passed.")
     for key, value in result.items():
         print(f"{key}: {value}")
 
