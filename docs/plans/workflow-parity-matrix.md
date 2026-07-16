@@ -60,41 +60,41 @@ Current visibility is preserved unless an owner approves a product change:
 | Proposed monthly actions | `proposed_monthly_actions` | none | admin/editor | none | Monthly-review slice | Verified in Issue #9; server-derived proposal remains distinct from saved HR truth |
 | Save action summary | Current monthly data | `save_monthly_action_summary` | admin/editor | `monthly_review.action_summary.save` | Monthly-review slice | Verified in Issue #9; named immutable versions remain safe under concurrent saves |
 | Export XLSX | `monthly_review_xlsx` | none | admin/editor | none | Monthly-review slice | Verified in Issue #9; displayed month/conclusion, safe filename, private cache, MIME, sheets, and values match |
-| Registered reports | `REPORTS`, `run_report`, metric definitions | none | admin/editor/viewer | none | Reports/audit slice | Allow-listed keys only |
+| Registered reports | `REPORTS`, `run_report`, metric definitions | none | admin/editor/viewer | none | Reports/audit slice | Verified in Issue #12; server registry owns SQL, approved columns, definitions, and bounded pagination |
 
 ## Follow-ups and remediation
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Operational inbox/filter/detail | `operational_issue_rows` | none | admin/editor | none | Follow-ups slice | Preserve derived issue detail/navigation |
-| Logged quality issues | `open_quality_issue_rows` | none | admin/editor | none | Follow-ups slice | Inventoried |
-| Resolve/ignore quality issue | Selected quality issue | `resolve_quality_issue` | admin/editor | quality issue resolution audit | Follow-ups slice | Original issue retained |
-| Backfill unknown org profile | Operational issues | `backfill_unknown_org_profiles` | admin only | remediation audit | Follow-ups slice | Owner-approved confirmation |
-| Approve one/all legacy attendance exceptions | Operational issues | dedicated exception command | admin only | remediation audit | Follow-ups slice | Never infer attendance |
-| Backfill unknown placement | Operational issues | `backfill_unknown_business_placements` | admin only | remediation audit | Follow-ups slice | Owner-approved confirmation |
-| Resolve schedule conflict | Operational issue details | `cancel_meeting` | admin/editor in current schedule conflict form; remediation section itself admin-oriented | `meeting.cancel` | Follow-ups/class-schedule slices | Role contract requires explicit owner review |
+| Operational inbox/filter/detail | `operational_issue_rows` | none | admin/editor | none | Follow-ups slice | Verified in Issue #10; derived rows are filtered/paged and remain separate from durable issue lifecycle |
+| Logged quality issues | `open_quality_issue_rows` | none | admin/editor | none | Follow-ups slice | Verified in Issue #10; open/resolved/ignored history and original details remain inspectable |
+| Resolve/ignore quality issue | Selected quality issue | `resolve_quality_issue` | admin/editor | quality issue resolution audit | Follow-ups slice | Verified in Issue #10; note, actor, time, source, and original details retained |
+| Backfill unknown org profile | Operational issues | `backfill_unknown_org_profiles` | admin only | remediation audit | Follow-ups slice | Verified in Issue #10; separate confirmed endpoint with owner reason |
+| Approve one/all legacy attendance exceptions | Operational issues | dedicated exception command | admin only | remediation audit | Follow-ups slice | Verified in Issue #10; one exception creates zero attendance facts |
+| Backfill unknown placement | Operational issues | `backfill_unknown_business_placements` | admin only | remediation audit | Follow-ups slice | Verified in Issue #10; separate confirmed endpoint with owner reason |
+| Resolve schedule conflict | Operational issue details | `cancel_meeting` | admin/editor in current schedule conflict form; remediation section itself admin-oriented | `meeting.cancel` | Follow-ups/class-schedule slices | Verified in Issues #10/#11; explicit duplicate choice and reason preserve the meeting schedule |
 
 ## Class and schedule administration
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Create class with first course run/PIC | Workflow refs and proposed code | `create_class_course_run` | admin/editor | class/run/PIC audit events | Classes/schedule slice | One atomic event |
+| Create class with first course run/PIC | Workflow refs and proposed code | `create_class_course_run` | admin/editor | class/run/PIC audit events | Classes/schedule slice | Verified in Issue #11; one atomic command and rollback test |
 | Employee admin search/upsert | `employee_search_rows` | `create_or_update_employee` | admin/editor | `employee.upsert` | Profile or classes slice | Profile edit is canonical in learner detail; separate admin search UI remains deferred |
 | List/create class record | `cohort_rows` | `create_cohort` | admin/editor | cohort creation audit | Classes/schedule slice | Inventoried |
-| Assign PIC employee/team label | Workflow refs | `assign_pic` | admin/editor | PIC assignment audit | Classes/schedule slice | Label remains non-identity |
-| List/add course run | `course_run_dashboard_rows` | `create_course_run` | admin/editor | run creation audit | Classes/schedule slice | Inventoried |
-| Change course-run status | Course-run dashboard | `change_course_run_status` | admin/editor | status audit | Classes/schedule slice | Lifecycle conflict tested |
-| List schedule | `schedule_rows` | none | admin/editor | none | Classes/schedule slice | Meeting/unit distinction retained |
-| Create meeting with one/two units | Schedule and refs | `create_meeting_with_units` | admin/editor | `meeting.units.create` | Classes/schedule slice | One transaction |
-| Correct meeting | Schedule row | `save_meeting` | admin/editor | `meeting.correct`/status | Classes/schedule slice | Change reason required where applicable |
-| Cancel meeting | Schedule row | `cancel_meeting` | admin/editor | `meeting.cancel` | Classes/schedule slice | Reason required |
-| Add session units | Schedule row | `add_session_units` | admin/editor | `meeting.units.add` | Classes/schedule slice | One/two-unit rules retained |
+| Assign PIC employee/team label | Workflow refs | `assign_pic` | admin/editor | PIC assignment audit | Classes/schedule slice | Verified in Issue #11; label remains non-identity |
+| List/add course run | `course_run_dashboard_rows` | `create_course_run` | admin/editor | run creation audit | Classes/schedule slice | Verified in Issue #11; stable paging and concurrent run numbering |
+| Change course-run status | Course-run dashboard | `change_course_run_status` | admin/editor | status audit | Classes/schedule slice | Verified in Issue #11; lifecycle conflict retained |
+| List schedule | `schedule_rows` | none | admin/editor | none | Classes/schedule slice | Verified in Issue #11; meetings aggregate their separate unit identities |
+| Create meeting with one/two units | Schedule and refs | `create_meeting_with_units` | admin/editor | `meeting.units.create` | Classes/schedule slice | Verified in Issue #11; one transaction and two-unit browser journey |
+| Correct meeting | Schedule row | `save_meeting` | admin/editor | `meeting.correct`/status | Classes/schedule slice | Verified in Issue #11; reason and before/after retained |
+| Cancel meeting | Schedule row | `cancel_meeting` | admin/editor | `meeting.cancel` | Classes/schedule slice | Verified in Issue #11; reason required and schedule preserved |
+| Add session units | Schedule row | `add_session_units` | admin/editor | `meeting.units.add` | Classes/schedule slice | Verified in Issue #11; one/two-unit rules retained |
 
 ## Audit and out-of-scope surfaces
 
 | Workflow | Current read | Current command | Roles | Expected audit | Target slice | Evidence/status |
 |---|---|---|---|---|---|---|
-| Global audit events | `audit_event_rows(limit=300)` | none | admin only | none | Reports/audit slice | Add server pagination/hard maximum |
+| Global audit events | `audit_event_rows(limit=300)` | none | admin only | none | Reports/audit slice | Verified in Issue #12; parameterized filters, bounded pages, and sanitized details |
 | User creation/deactivation UI | No Streamlit UI; operator/service only | `UserAdminService` | admin/operator | user audit | Out of parity | Separate approved feature after cutover |
 | First-admin bootstrap | Operator script | `bootstrap_first_admin` | operator | bootstrap audit | Foundation keeps script | Never application startup |
 

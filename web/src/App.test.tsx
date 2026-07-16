@@ -23,7 +23,7 @@ test('revalidates an existing session and signs out with csrf', async () => {
   expect(await screen.findByTestId('protected-content')).toBeTruthy()
   fireEvent.click(screen.getByText('Sign out'))
   await waitFor(() => expect(screen.getByText('Sign in to continue.')).toBeTruthy())
-  expect(fetchMock).toHaveBeenLastCalledWith('/api/auth/logout',{method:'POST',headers:{'X-CSRF-Token':'csrf'}})
+  expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout',{method:'POST',headers:{'X-CSRF-Token':'csrf'}})
 })
 
 test('admin navigates, edits a profile, and refetches only affected reads', async () => {

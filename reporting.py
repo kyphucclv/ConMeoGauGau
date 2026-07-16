@@ -19,6 +19,8 @@ class Report:
     label: str
     query: str
     metric_keys: tuple[str, ...] = ()
+    columns: tuple[str, ...] = ()
+    order_by: str = "1"
 
 
 REPORTS: tuple[Report, ...] = (
@@ -26,15 +28,17 @@ REPORTS: tuple[Report, ...] = (
         "cohort_dashboard",
         "Cohort/course-run dashboard",
         """
-        SELECT class_code, course_code, course_name, run_number, course_run_status,
+        SELECT course_run_id, class_code, course_code, course_name, run_number, course_run_status,
                enrollment_count, active_enrollments, completed_enrollments,
                completed_meetings, cancelled_meetings, non_cancelled_units,
                average_attendance_ratio, exam_eligible_enrollments
         FROM v_cohort_course_run_dashboard
-        ORDER BY class_code, course_name, run_number
-        LIMIT 300
         """,
         ("attendance_ratio", "effective_exam_eligible"),
+        ("course_run_id", "class_code", "course_code", "course_name", "run_number", "course_run_status",
+         "enrollment_count", "active_enrollments", "completed_enrollments", "completed_meetings",
+         "cancelled_meetings", "non_cancelled_units", "average_attendance_ratio", "exam_eligible_enrollments"),
+        "class_code,course_name,course_code,run_number,course_run_id",
     ),
     Report(
         "current_employee_state",
@@ -44,9 +48,11 @@ REPORTS: tuple[Report, ...] = (
                job_role_name, class_code, course_code, course_name,
                enrollment_status, course_run_status
         FROM v_current_employee_state
-        ORDER BY full_name
-        LIMIT 300
         """,
+        (),
+        ("emp_code", "full_name", "employment_status", "business_unit_name", "job_role_name",
+         "class_code", "course_code", "course_name", "enrollment_status", "course_run_status"),
+        "full_name,emp_code",
     ),
     Report(
         "attendance_eligibility",
@@ -57,10 +63,12 @@ REPORTS: tuple[Report, ...] = (
                attendance_ratio, calculated_exam_eligible, effective_exam_eligible,
                exam_eligibility_override
         FROM v_run_enrollment_attendance
-        ORDER BY course_run_id, employee_id
-        LIMIT 300
         """,
         ("attendance_ratio", "effective_exam_eligible"),
+        ("employee_id", "course_run_id", "enrollment_status", "start_session_number",
+         "applicable_units", "present_units", "absent_units", "makeup_present_units",
+         "attendance_ratio", "calculated_exam_eligible", "effective_exam_eligible", "exam_eligibility_override"),
+        "course_run_id,employee_id",
     ),
     Report(
         "monthly_sessions",
@@ -69,10 +77,11 @@ REPORTS: tuple[Report, ...] = (
         SELECT session_month, course_run_id, cohort_id, course_id,
                credited_session_units, final_test_units, final_test_duration_minutes
         FROM v_monthly_session_units
-        ORDER BY session_month DESC, course_run_id
-        LIMIT 300
         """,
         ("sessions_per_month",),
+        ("session_month", "course_run_id", "cohort_id", "course_id", "credited_session_units",
+         "final_test_units", "final_test_duration_minutes"),
+        "session_month DESC,course_run_id",
     ),
     Report(
         "progress_summary",
@@ -81,34 +90,38 @@ REPORTS: tuple[Report, ...] = (
         SELECT emp_code, full_name, entrance_level_name, current_level_name,
                highest_level_name, current_progress, peak_progress, regression_flag
         FROM v_employee_progress_summary
-        ORDER BY full_name
-        LIMIT 300
         """,
         ("current_level", "highest_level", "current_progress", "peak_progress", "regression_flag"),
+        ("emp_code", "full_name", "entrance_level_name", "current_level_name", "highest_level_name",
+         "current_progress", "peak_progress", "regression_flag"),
+        "full_name,emp_code",
     ),
     Report(
         "historical_enrollment_snapshot",
         "Historical enrollment snapshot",
         """
-        SELECT emp_code, full_name, class_code, course_code, course_name,
+        SELECT run_enrollment_id, emp_code, full_name, class_code, course_code, course_name,
                enrollment_status, enrollment_business_unit, enrollment_job_role,
-               start_session_number, transfer_from_enrollment_id
+               start_session_number, transfer_from_enrollment_id, enrollment_created_at
         FROM v_historical_enrollment_snapshot
-        ORDER BY enrollment_created_at DESC
-        LIMIT 300
         """,
+        (),
+        ("run_enrollment_id", "emp_code", "full_name", "class_code", "course_code", "course_name", "enrollment_status",
+         "enrollment_business_unit", "enrollment_job_role", "start_session_number", "transfer_from_enrollment_id",
+         "enrollment_created_at"),
+        "enrollment_created_at DESC,emp_code,class_code,course_code,run_enrollment_id",
     ),
     Report(
         "unresolved_quality_issues",
         "Unresolved quality issues",
         """
-        SELECT source, issue_code, entity_type, entity_key, source_sheet,
+        SELECT source, issue_key, issue_code, entity_type, entity_key, source_sheet,
                source_row_number, created_at
         FROM v_unresolved_quality_issues
-        ORDER BY created_at DESC
-        LIMIT 300
         """,
         ("unresolved_quality_issues",),
+        ("source", "issue_key", "issue_code", "entity_type", "entity_key", "source_sheet", "source_row_number", "created_at"),
+        "created_at DESC,source,issue_key",
     ),
 )
 
@@ -120,8 +133,28 @@ def report_by_label(label: str) -> Report:
     raise KeyError(label)
 
 
+def report_by_key(key: str) -> Report:
+    for report in REPORTS:
+        if report.key == key:
+            return report
+    raise KeyError(key)
+
+
 def run_report(pool, report: Report):
-    return fetch_all(pool, report.query)
+    return fetch_all(
+        pool,
+        f"SELECT * FROM ({report.query}) AS registered_report ORDER BY {report.order_by} LIMIT 300",
+    )
+
+
+def run_report_page(pool, report: Report, *, page: int, page_size: int) -> dict[str, object]:
+    total = fetch_all(pool, f"SELECT count(*) AS total FROM ({report.query}) AS registered_report")[0]["total"]
+    rows = fetch_all(
+        pool,
+        f"SELECT * FROM ({report.query}) AS registered_report ORDER BY {report.order_by} LIMIT %s OFFSET %s",
+        (page_size, (page - 1) * page_size),
+    )
+    return {"items": rows, "page": page, "page_size": page_size, "total": total}
 
 
 def metric_definitions(pool, metric_keys: Iterable[str]):

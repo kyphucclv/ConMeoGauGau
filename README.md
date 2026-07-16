@@ -13,6 +13,11 @@ Phase 13.2 now provides HR-first learner start, continuation, rejoin, profile,
 history, and transfer journeys while preserving the canonical service and audit
 boundaries.
 
+The FastAPI + React migration now owns the secure shell, learner, attendance,
+final-result, monthly-review, follow-up/remediation, class/schedule, registered
+report, and restricted audit journeys through Issues #1-#12. Streamlit remains
+the compatible fallback until production-readiness Issue #13 is approved.
+
 The pre-canonical prototype (old `app.py`, `etl.py`, `schema.sql`, `views.sql`,
 `admin_schema.sql`, `setup.ps1`, `quality_checks.sql`) is archived under
 `legacy/` and must not be run against the canonical database.  Use the

@@ -31,7 +31,7 @@ class AdminRemediationCommands:
             return CommandResult("data_quality_issue", issue_id, {"status": status})
         return self._run({"admin", "editor"}, op)
 
-    def backfill_unknown_org_profiles(self) -> CommandResult:
+    def backfill_unknown_org_profiles(self, reason: str | None = None) -> CommandResult:
         """Apply the owner-approved legacy BU/role placeholder without overwriting known values."""
         def op(cur):
             cur.execute("SELECT business_unit_id FROM business_units WHERE business_unit_name='Unknown BU'")
@@ -56,7 +56,8 @@ class AdminRemediationCommands:
                                    job_role_id=COALESCE(job_role_id,%s),observed_from=COALESCE(observed_from,'phase11_unknown_placeholder')
                                    WHERE employee_org_history_id=%s""", (unknown_bu_id, unknown_role_id, history_id))
             self._audit(cur, "employee_org.unknown_backfill", "employee_org_history", None,
-                        {"employee_count": len(rows), "placeholder_business_unit": "Unknown BU", "placeholder_job_role": "Unknown Role"})
+                        {"employee_count": len(rows), "placeholder_business_unit": "Unknown BU",
+                         "placeholder_job_role": "Unknown Role", "reason": _normalize_label(reason)})
             return CommandResult("employee_org_history", None, {"employee_count": len(rows)})
         return self._run({"admin"}, op)
 
@@ -116,7 +117,7 @@ class AdminRemediationCommands:
             return CommandResult("attendance_roster_legacy_exception", None, {"session_count": len(session_unit_ids)})
         return self._run({"admin"}, op)
 
-    def backfill_unknown_business_placements(self) -> CommandResult:
+    def backfill_unknown_business_placements(self, reason: str | None = None) -> CommandResult:
         """Apply the approved legacy placement placeholder without replacing an observed placement."""
         def op(cur):
             cur.execute("SELECT level_id FROM levels WHERE level_name='Unknown Entrance Level'")
@@ -132,6 +133,7 @@ class AdminRemediationCommands:
                                VALUES(%s,'business',%s,%s)""",
                             (employee_id, unknown_level[0], psycopg2.extras.Json({"source": "phase11_unknown_placement_placeholder"})))
             self._audit(cur, "placement.unknown_backfill", "placement", None,
-                        {"employee_count": len(employee_ids), "placeholder_level": "Unknown Entrance Level"})
+                        {"employee_count": len(employee_ids), "placeholder_level": "Unknown Entrance Level",
+                         "reason": _normalize_label(reason)})
             return CommandResult("placement", None, {"employee_count": len(employee_ids)})
         return self._run({"admin"}, op)

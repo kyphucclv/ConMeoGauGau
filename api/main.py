@@ -22,12 +22,15 @@ from db import create_pool, fetch_one
 from session_store import AuthenticatedSession, SessionStore
 from api.dashboard_reads import DashboardResponse, dashboard_for
 from api.attendance import AttendanceCourseRuns, AttendanceRoster, AttendanceRosterBody, AttendanceRosterResult, AttendanceSessionBody, AttendanceSessionResult, AttendanceSessionUnits, MakeupCreditBody, MakeupCreditResult, MakeupOptions, attendance_course_runs, attendance_roster, attendance_session_units, create_attendance_session, credit_makeup, makeup_options, save_attendance_roster
+from api.administration import AdministrationCommandResult, AdministrationOptions, ClassPage, ClassWithRunBody, CourseRunBody, CourseRunPage, CourseRunStatusBody, MeetingBody, MeetingCorrectionBody, PicAssignmentBody, ReasonBody as AdministrationReasonBody, SchedulePage, SessionUnitsBody, add_session_units as admin_add_session_units, administration_options, assign_pic as admin_assign_pic, cancel_meeting as admin_cancel_meeting, change_course_run_status as admin_change_course_run_status, classes as admin_classes, course_runs as admin_course_runs, correct_meeting as admin_correct_meeting, create_class_with_run, create_course_run as admin_create_course_run, create_meeting as admin_create_meeting, schedule as admin_schedule
 from api.evaluations import CompletionActionBody, CompletionActionResult, EligibilityOverrideBody, EligibilityOverrideResult, EvaluationPendingList, FinalResultBody, FinalResultDetail, FinalResultResult, apply_completion_action, final_result_detail, override_eligibility, pending_evaluations, record_final_result
+from api.followups import ConfirmedReasonBody, LegacyAttendanceExceptionBody, OperationalIssuePage, QualityIssuePage, QualityIssueResolutionBody, RemediationResult, ScheduleConflictResolutionBody, approve_legacy_attendance_exception, backfill_unknown_organizations, backfill_unknown_placements, operational_issues, quality_issues, resolve_quality_issue, resolve_schedule_conflict
 from api.learner_reads import LearnerDetail, LearnerPage, LearnerReadService
 from api.learner_start import LearnerStartBody, LearnerStartOptions, LearnerStartResult, learner_start_options, start_learner
 from api.learner_transfer import LearnerTransferBody, LearnerTransferOptions, LearnerTransferResult, learner_transfer_options, transfer_learner
 from api.monthly_review import MonthlyActionSummaryBody, MonthlyActionSummaryResult, MonthlyReviewResponse, export_monthly_review, monthly_review, parse_review_month, save_action_summary
 from api.profile_commands import ProfileOptions, ProfileUpdateBody, ProfileUpdateResult, profile_options, update_profile
+from api.reports_audit import AuditEventPage, ReportCatalog, ReportPage, audit_events, registered_report, report_catalog
 from services.base import CommandError
 
 
@@ -384,6 +387,178 @@ def create_app(settings: Settings | None = None, *, pool=None) -> FastAPI:
                 "Content-Disposition": f'attachment; filename="{filename}"',
             },
         )
+
+    @app.get("/api/follow-ups/operational", response_model=OperationalIssuePage)
+    def operational_follow_up_list(
+        request: Request,
+        severity: Literal["all", "high", "warning"] = "all",
+        workflow: str | None = Query(default=None, max_length=100),
+        issue_code: str | None = Query(default=None, max_length=100),
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return operational_issues(
+            request.app.state.pool,
+            severity=severity,
+            workflow=workflow,
+            issue_code=issue_code,
+            page=page,
+            page_size=page_size,
+        )
+
+    @app.get("/api/follow-ups/quality-issues", response_model=QualityIssuePage)
+    def logged_quality_issue_list(
+        request: Request,
+        status: Literal["all", "open", "resolved", "ignored"] = "open",
+        issue_code: str | None = Query(default=None, max_length=100),
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return quality_issues(
+            request.app.state.pool,
+            status=status,
+            issue_code=issue_code,
+            page=page,
+            page_size=page_size,
+        )
+
+    @app.post("/api/follow-ups/quality-issues/{issue_id}/resolution", response_model=RemediationResult)
+    def logged_quality_issue_resolution(
+        issue_id: int,
+        body: QualityIssueResolutionBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_hr_csrf),
+    ):
+        return resolve_quality_issue(request.app.state.pool, session.user.user_id, issue_id, body)
+
+    @app.post("/api/follow-ups/actions/unknown-organization", response_model=RemediationResult)
+    def unknown_organization_action(
+        body: ConfirmedReasonBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_admin_csrf),
+    ):
+        return backfill_unknown_organizations(request.app.state.pool, session.user.user_id, body)
+
+    @app.post("/api/follow-ups/actions/legacy-attendance-exception", response_model=RemediationResult)
+    def legacy_attendance_exception_action(
+        body: LegacyAttendanceExceptionBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_admin_csrf),
+    ):
+        return approve_legacy_attendance_exception(request.app.state.pool, session.user.user_id, body)
+
+    @app.post("/api/follow-ups/actions/unknown-placement", response_model=RemediationResult)
+    def unknown_placement_action(
+        body: ConfirmedReasonBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_admin_csrf),
+    ):
+        return backfill_unknown_placements(request.app.state.pool, session.user.user_id, body)
+
+    @app.post("/api/follow-ups/actions/schedule-conflict", response_model=RemediationResult)
+    def schedule_conflict_action(
+        body: ScheduleConflictResolutionBody,
+        request: Request,
+        session: AuthenticatedSession = Depends(require_admin_csrf),
+    ):
+        return resolve_schedule_conflict(request.app.state.pool, session.user.user_id, body)
+
+    @app.get("/api/administration/options", response_model=AdministrationOptions)
+    def administration_option_list(request: Request, session: AuthenticatedSession = Depends(require_hr_session)):
+        return administration_options(request.app.state.pool, session.user.user_id)
+
+    @app.get("/api/administration/classes", response_model=ClassPage)
+    def administration_class_list(
+        request: Request,
+        q: str = Query(default="", max_length=200),
+        status: Literal["all", "planned", "active", "completed", "archived"] = "all",
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return admin_classes(request.app.state.pool,q=q,status=status,page=page,page_size=page_size)
+
+    @app.get("/api/administration/course-runs", response_model=CourseRunPage)
+    def administration_course_run_list(
+        request: Request,
+        status: Literal["all", "planned", "active", "completed", "cancelled", "archived"] = "all",
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return admin_course_runs(request.app.state.pool,status=status,page=page,page_size=page_size)
+
+    @app.get("/api/administration/schedule", response_model=SchedulePage)
+    def administration_schedule_list(
+        request: Request,
+        course_run_id: int | None = Query(default=None, gt=0),
+        status: Literal["all", "planned", "completed", "cancelled"] = "all",
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=50, ge=1, le=100),
+        session: AuthenticatedSession = Depends(require_hr_session),
+    ):
+        return admin_schedule(request.app.state.pool,course_run_id=course_run_id,status=status,page=page,page_size=page_size)
+
+    @app.post("/api/administration/classes", response_model=AdministrationCommandResult)
+    def administration_class_create(body: ClassWithRunBody, request: Request, session: AuthenticatedSession = Depends(require_hr_csrf)):
+        return create_class_with_run(request.app.state.pool,session.user.user_id,body)
+
+    @app.post("/api/administration/cohorts/{cohort_id}/pic-assignments", response_model=AdministrationCommandResult)
+    def administration_pic_assign(cohort_id:int,body:PicAssignmentBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_assign_pic(request.app.state.pool,session.user.user_id,cohort_id,body)
+
+    @app.post("/api/administration/cohorts/{cohort_id}/course-runs", response_model=AdministrationCommandResult)
+    def administration_course_run_create(cohort_id:int,body:CourseRunBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_create_course_run(request.app.state.pool,session.user.user_id,cohort_id,body)
+
+    @app.post("/api/administration/course-runs/{course_run_id}/status", response_model=AdministrationCommandResult)
+    def administration_course_run_status(course_run_id:int,body:CourseRunStatusBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_change_course_run_status(request.app.state.pool,session.user.user_id,course_run_id,body)
+
+    @app.post("/api/administration/course-runs/{course_run_id}/meetings", response_model=AdministrationCommandResult)
+    def administration_meeting_create(course_run_id:int,body:MeetingBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_create_meeting(request.app.state.pool,session.user.user_id,course_run_id,body)
+
+    @app.patch("/api/administration/meetings/{meeting_id}", response_model=AdministrationCommandResult)
+    def administration_meeting_correct(meeting_id:int,body:MeetingCorrectionBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_correct_meeting(request.app.state.pool,session.user.user_id,meeting_id,body)
+
+    @app.post("/api/administration/meetings/{meeting_id}/cancellation", response_model=AdministrationCommandResult)
+    def administration_meeting_cancel(meeting_id:int,body:AdministrationReasonBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_cancel_meeting(request.app.state.pool,session.user.user_id,meeting_id,body)
+
+    @app.post("/api/administration/meetings/{meeting_id}/session-units", response_model=AdministrationCommandResult)
+    def administration_session_units_add(meeting_id:int,body:SessionUnitsBody,request:Request,session:AuthenticatedSession=Depends(require_hr_csrf)):
+        return admin_add_session_units(request.app.state.pool,session.user.user_id,meeting_id,body)
+
+    @app.get("/api/reports", response_model=ReportCatalog)
+    def registered_report_catalog(request:Request,session:AuthenticatedSession=Depends(require_session)):
+        return report_catalog(request.app.state.pool)
+
+    @app.get("/api/reports/{report_key}", response_model=ReportPage)
+    def registered_report_result(
+        report_key:str,
+        request:Request,
+        page:int=Query(default=1,ge=1),
+        page_size:int=Query(default=50,ge=1,le=100),
+        session:AuthenticatedSession=Depends(require_session),
+    ):
+        return registered_report(request.app.state.pool,report_key,page=page,page_size=page_size)
+
+    @app.get("/api/audit-events", response_model=AuditEventPage)
+    def restricted_audit_history(
+        request:Request,
+        action:str|None=Query(default=None,max_length=200),
+        entity_type:str|None=Query(default=None,max_length=100),
+        actor_username:str|None=Query(default=None,max_length=100),
+        page:int=Query(default=1,ge=1),
+        page_size:int=Query(default=50,ge=1,le=100),
+        session:AuthenticatedSession=Depends(require_admin_session),
+    ):
+        return audit_events(request.app.state.pool,action=action,entity_type=entity_type,
+                            actor_username=actor_username,page=page,page_size=page_size)
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session: AuthenticatedSession = Depends(require_session), csrf: str | None = Header(default=None, alias="X-CSRF-Token"), session_cookie: str | None = Cookie(default=None, alias=settings.cookie_name)):

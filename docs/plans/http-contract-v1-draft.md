@@ -306,12 +306,13 @@ Issue #8 freezes the final-result subset as follows:
 | `GET /api/monthly-review?month=YYYY-MM` | Monthly data and summary | Month normalized server-side to first day. |
 | `POST /api/monthly-review/action-summary` | `save_monthly_action_summary` | Admin/editor; immutable next version. |
 | `GET /api/monthly-review/export?month=YYYY-MM` | Existing XLSX generator | Safe filename, correct MIME type, private/no-store response. |
-| `GET /api/follow-ups` | Operational issues query | Severity/workflow/code filters plus pagination. |
-| `GET /api/quality-issues` | Open quality issue query | Pagination and authorized detail. |
-| `POST /api/quality-issues/{issue_id}/resolution` | `resolve_quality_issue` | Status and note; history retained. |
-| `POST /api/remediation/unknown-org-profiles` | `backfill_unknown_org_profiles` | Admin only; explicit confirmation. |
-| `POST /api/remediation/legacy-attendance-exceptions` | Single or approved bulk legacy exception command | Admin only; scope and reason required. |
-| `POST /api/remediation/unknown-placements` | `backfill_unknown_business_placements` | Admin only; explicit confirmation. |
+| `GET /api/follow-ups/operational` | Operational issues query | Severity/workflow/code filters plus pagination. |
+| `GET /api/follow-ups/quality-issues` | Durable quality issue ledger | Status/code filters, pagination, and authorized history. |
+| `POST /api/follow-ups/quality-issues/{issue_id}/resolution` | `resolve_quality_issue` | Status and note; history retained. |
+| `POST /api/follow-ups/actions/unknown-organization` | `backfill_unknown_org_profiles` | Admin only; explicit confirmation and owner reason. |
+| `POST /api/follow-ups/actions/legacy-attendance-exception` | Single legacy exception command | Admin only; exact session, confirmation, and reason required. |
+| `POST /api/follow-ups/actions/unknown-placement` | `backfill_unknown_business_placements` | Admin only; explicit confirmation and owner reason. |
+| `POST /api/follow-ups/actions/schedule-conflict` | `cancel_meeting` | Admin only; exact duplicate meeting, confirmation, and reason. |
 
 Issue #9 freezes the monthly-review subset as follows:
 
@@ -336,19 +337,18 @@ issues that require a domain-specific correction or owner-approved remediation.
 
 | Method and path | Read/command seam |
 |---|---|
-| `GET /api/classes` | Cohort rows, paginated |
-| `GET /api/classes/setup-options` | Narrow course/PIC/organization options |
-| `POST /api/classes/with-first-course-run` | `create_class_course_run` |
-| `POST /api/classes` | `create_cohort` |
-| `POST /api/classes/{cohort_id}/pic-assignments` | `assign_pic` |
-| `GET /api/course-runs` | Course-run dashboard, paginated/filtered |
-| `POST /api/course-runs` | `create_course_run` |
-| `POST /api/course-runs/{course_run_id}/status-change` | `change_course_run_status` |
-| `GET /api/schedule` | Schedule rows filtered by run/date |
-| `POST /api/schedule/meetings-with-units` | `create_meeting_with_units` |
-| `PATCH /api/schedule/meetings/{meeting_id}` | `save_meeting` correction/status contract |
-| `POST /api/schedule/meetings/{meeting_id}/cancellation` | `cancel_meeting` |
-| `POST /api/schedule/meetings/{meeting_id}/session-units` | `add_session_units` |
+| `GET /api/administration/options` | Narrow course/PIC/class/run options and proposed class code |
+| `GET /api/administration/classes` | Cohort rows, filtered and paginated |
+| `POST /api/administration/classes` | `create_class_course_run` |
+| `POST /api/administration/cohorts/{cohort_id}/pic-assignments` | `assign_pic` |
+| `GET /api/administration/course-runs` | Course-run rows, filtered and paginated |
+| `POST /api/administration/cohorts/{cohort_id}/course-runs` | `create_course_run` |
+| `POST /api/administration/course-runs/{course_run_id}/status` | `change_course_run_status` |
+| `GET /api/administration/schedule` | Meeting rows with separate credited units, filtered and paginated |
+| `POST /api/administration/course-runs/{course_run_id}/meetings` | `create_meeting_with_units` |
+| `PATCH /api/administration/meetings/{meeting_id}` | `save_meeting` correction/status contract |
+| `POST /api/administration/meetings/{meeting_id}/cancellation` | `cancel_meeting` |
+| `POST /api/administration/meetings/{meeting_id}/session-units` | `add_session_units` |
 
 Distinct routes preserve the difference between a meeting and its one or two
 credited session units.
@@ -357,10 +357,9 @@ credited session units.
 
 | Method and path | Contract |
 |---|---|
-| `GET /api/reports` | Allow-listed report keys, labels, columns, and metric keys. |
-| `GET /api/reports/{report_key}` | Runs only a server-registered report; paginates where semantics allow. |
-| `GET /api/reports/{report_key}/metric-definitions` | Approved metric definitions only. |
-| `GET /api/audit` | Admin only; page, actor, action, entity, and time filters with a hard maximum. |
+| `GET /api/reports` | Allow-listed report keys, labels, columns, and approved metric definitions. |
+| `GET /api/reports/{report_key}` | Runs only a server-registered report with bounded pagination and approved metric definitions. |
+| `GET /api/audit-events` | Admin only; page, actor, action, and entity filters with a hard maximum and sanitized details. |
 
 ## Concurrency contract
 

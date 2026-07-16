@@ -630,6 +630,12 @@ named-actor HR conclusions, and authenticated private XLSX export through one
 React journey. Workbook sheet/value parity and concurrent version allocation
 are covered at the HTTP interface.
 
+Issues #10-#12 now complete Phase 5: React owns operational/logged follow-ups
+and domain-specific remediation, class/course-run/PIC/schedule administration,
+and the registered reports plus admin-only sanitized audit history. Each slice
+has bounded reads, role/CSRF tests, generated OpenAPI types, React coverage, and
+Chrome journey evidence.
+
 Deliver:
 
 - Implement monthly review, saved action summary, and XLSX export.

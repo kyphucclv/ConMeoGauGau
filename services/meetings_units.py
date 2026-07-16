@@ -200,13 +200,25 @@ class MeetingsUnitsCommands:
                 raise CommandError("not_found", "meeting does not belong to the selected course run")
             if meeting[0] == "cancelled":
                 raise CommandError("invalid_state", "cancelled meetings cannot receive credited units")
+            # The meeting row lock serializes unit-number allocation for this meeting.
+            cur.execute(
+                "SELECT COALESCE(MAX(unit_number_in_meeting),0)+1 FROM session_units WHERE meeting_id=%s",
+                (meeting_id,),
+            )
+            first_unit_number = cur.fetchone()[0]
             unit_ids = []
             for offset in range(unit_count):
                 cur.execute(
                     """INSERT INTO session_units(
                            course_run_id,meeting_id,sequence_in_run,unit_number_in_meeting,unit_type
                        ) VALUES(%s,%s,%s,%s,%s) RETURNING session_unit_id""",
-                    (course_run_id, meeting_id, first_sequence_in_run + offset, offset + 1, unit_type),
+                    (
+                        course_run_id,
+                        meeting_id,
+                        first_sequence_in_run + offset,
+                        first_unit_number + offset,
+                        unit_type,
+                    ),
                 )
                 unit_ids.append(cur.fetchone()[0])
             self._audit(cur, "meeting.units.add", "meeting", meeting_id, {
